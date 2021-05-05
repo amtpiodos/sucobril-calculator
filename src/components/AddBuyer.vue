@@ -1,12 +1,12 @@
 <template>
   <section>
-    <button id="btn" type="button" @click="showModal">ADD BUYER</button>
+    <button id="btn" type="button" @click="showModal">+ Add Buyer</button>
     <transition name="slide-fade">
       <div id="myModal" class="modal" v-show="isShow">
         <div class="modal-content">
           <div class="modal-header">
             <span class="close" @click="isShow = false">&times;</span>
-            <h2>+Add Buyer</h2>
+            <h2>+ADD BUYER</h2>
           </div>
           <div class="modal-body">
             <form>

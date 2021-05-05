@@ -7,31 +7,31 @@
       
       <div id = "app">
         <img src="" alt="p2">
-          <router-link to="/"> Block 1 </router-link> 
+          <router-link to="/lots"> Block 1 </router-link> 
           <router-view/>
       </div>
 
       <div id = "app">
         <img src="" alt="p2">
-          <router-link to="/"> Block 2 </router-link> 
+          <router-link to="/lots"> Block 2 </router-link> 
           <router-view/>
       </div>
 
       <div id = "app">
         <img src="" alt="p2">
-          <router-link to="/"> Block 3 </router-link> 
+          <router-link to="/lots"> Block 3 </router-link> 
           <router-view/>
       </div>
 
       <div id = "app">
         <img src="" alt="p2">
-          <router-link to="/"> Block 4 </router-link> 
+          <router-link to="/lots"> Block 4 </router-link> 
           <router-view/>
       </div>
 
       <div id = "app">
         <img src="" alt="p2">
-          <router-link to="/"> Block 5 </router-link> 
+          <router-link to="/lots"> Block 5 </router-link> 
           <router-view/>
       </div>
 
