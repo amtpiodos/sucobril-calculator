@@ -29,7 +29,7 @@
                 <br />
                 <textarea cols="70" rows="10"></textarea>
                 <br /> -->
-                <button>Add</button>
+                <button id="btn" type="button" @click="addBuyer">Add</button>
               </div>
             </form>
           </div>
@@ -40,18 +40,25 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      isShow: false
-    };
-  },
-  methods: {
-    showModal() {
-      this.isShow = !this.isShow;
+  import { ipcRenderer } from 'electron'
+
+  export default {
+    data() {
+      return {
+        isShow: false
+      };
+    },
+    methods: {
+      showModal() {
+        console.log('showing modal')
+        this.isShow = !this.isShow;
+      },
+      addBuyer() {
+        console.log('Adding buyer')
+        ipcRenderer.send('sample')
+      }
     }
-  }
-};
+  };
 </script>
 
 <style scoped>

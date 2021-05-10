@@ -44,7 +44,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <span class="close" @click="isShow = false">&times;</span>
-              <h2>+ADD BUYER</h2>
+              <h2>+ ADD BUYER</h2>
             </div>
             <div class="modal-body">
               <form>
@@ -67,7 +67,7 @@
                   <textarea cols="70" rows="10"></textarea>
                   <br /> -->
                   <br />
-                  <button>Add</button>
+                  <button id="btn" type="button" @click="addBuyer">Add</button>
                 </div>
               </form>
             </div>
@@ -78,6 +78,9 @@
 </template>
 
 <script>
+
+  import { ipcRenderer } from 'electron'
+
   export default {
     data() {
       return {
@@ -87,6 +90,10 @@
     methods: {
       showModal() {
         this.isShow = !this.isShow;
+      },
+      addBuyer() {
+        console.log('Adding buyer')
+        ipcRenderer.send('sample')
       }
     }
   };
