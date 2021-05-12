@@ -79,6 +79,8 @@ if (isDevelopment) {
   }
 }
 
+
+
 var knex = require('knex')({
   client: 'sqlite3',
   connection: {
@@ -91,6 +93,10 @@ ipcMain.on('sample', (event, args) => {
   result.then(function(rows){
     console.log('lastname', rows)
   })
-  // console.log('result', result)
-  // console.log('SAMPLE')
+})
+
+ipcMain.on('addBuyer', (event, data) => {
+  knex('Buyer').insert(data).then(() => console.log(data, 'INSERTED'))
+    .catch((err) => { console.log('INSERT ERROR', err) ; throw err })
+    .finally(() => knex.destroy())
 })

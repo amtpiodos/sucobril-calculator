@@ -50,15 +50,15 @@
               <form>
                 <div>
                   <br />
-                  <input type="text" id="lastname" placeholder="Last Name" required />
+                  <input type="text" v-model="lastname" id="lastname" placeholder="Last Name" required >
                   
                   <br />
                   <br />
-                  <input type="text" id="firstname" placeholder="First Name" required />
+                  <input type="text" v-model="firstname" id="firstname" placeholder="First Name" required >
                 
                   <br />
                   <br />
-                  <input type="text" id="middlename" placeholder="Middle Name" />
+                  <input type="text" v-model="middlename" id="middlename" placeholder="Middle Name" >
                   
                 </div>
                 <div>
@@ -78,13 +78,15 @@
 </template>
 
 <script>
-
   import { ipcRenderer } from 'electron'
 
   export default {
     data() {
       return {
-        isShow: false
+        isShow: false,
+        lastname: '',
+        firstname: '',
+        middlename: ''
       };
     },
     methods: {
@@ -92,11 +94,15 @@
         this.isShow = !this.isShow;
       },
       addBuyer() {
-        console.log('Adding buyer')
-        ipcRenderer.send('sample')
+        const personal_data = {
+          lastname: this.lastname,
+          firstname: this.firstname,
+          middlename: this.middlename
+        }
+        ipcRenderer.send('addBuyer', personal_data)
       }
     }
-  };
+  }
 </script>
 
 <style scoped> 
