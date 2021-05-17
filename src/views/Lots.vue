@@ -100,6 +100,12 @@
           middlename: this.middlename
         }
         ipcRenderer.send('addBuyer', personal_data)
+        ipcRenderer.once('isBuyerAdded', (event, args) => {
+          console.log('isBuyerAdded', args)
+          if(args === 1) {
+            this.$router.push('/')
+          }
+        })
       }
     }
   }

@@ -8,13 +8,34 @@
 </template>
 
 <script>
+import { ipcRenderer } from 'electron';
 
-  import { mapGetters } from "vuex";
   export default {
-    computed: {
-      ...mapGetters(["buyers"])
+    data() {
+      return {
+        buyers: this.getBuyers()
+      }
+      
     },
-    methods: {
+    methods: { 
+      getBuyers() {
+        let buyersList = []
+        ipcRenderer.send('fetchAllBuyers')
+        ipcRenderer.once('fetchedAllBuyers', (event, buyers) => {
+          buyers.forEach(buyer => {
+            buyersList.push(buyer)
+          })
+        })
+        console.log('buyers', buyersList)
+        return buyersList
+        // const buyers = [
+        //     { id: 1, lastname: 'Murphy'},
+        //     { id: 2, lastname: 'Reynolds'},
+        //     { id: 3, lastname: 'Jabowski'}
+        //   ]
+        // console.log('buyers', buyers)
+        // return buyers
+      },
       selectBuyer(id) {
         this.$store.dispatch("showBuyer", id)
       }

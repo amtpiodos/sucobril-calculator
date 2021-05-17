@@ -81,22 +81,42 @@ if (isDevelopment) {
 
 
 
-var knex = require('knex')({
-  client: 'sqlite3',
-  connection: {
-    filename: './dbconfig/database.db'
-  }
-})
+
+
 
 ipcMain.on('sample', (event, args) => {
   let result = knex.select('lastname').from('Buyer')
-  result.then(function(rows){
+  result.then(function(rows) {
     console.log('lastname', rows)
   })
 })
 
 ipcMain.on('addBuyer', (event, data) => {
-  knex('Buyer').insert(data).then(() => console.log(data, 'INSERTED'))
-    .catch((err) => { console.log('INSERT ERROR', err) ; throw err })
-    .finally(() => knex.destroy())
+  const knex = getDbConnection()
+  knex('Buyer').insert(data).then(() => {
+      console.log('INSERTED', data)
+      event.reply('isBuyerAdded', 1)
+  }).catch((err) => { console.log('INSERT ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
 })
+
+ipcMain.on('fetchAllBuyers', (event, data) => {
+  const knex = getDbConnection()
+  knex.from('Buyer').select('id', 'lastname', 'firstname', 'middlename').then((buyers) => {
+    event.reply('fetchedAllBuyers', buyers)
+  }).catch((err) => { console.log('FETCH-ALL BUYERS ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+
+function getDbConnection() {
+  const knex = require('knex')({
+    client: 'sqlite3',
+    connection: {
+      filename: './dbconfig/database.db',
+      useNullAsDefault: true
+    }
+  })
+
+  return knex
+}
