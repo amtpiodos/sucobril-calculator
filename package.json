@@ -13,6 +13,8 @@
   "main": "background.js",
   "dependencies": {
     "core-js": "^3.6.5",
+    "knex": "^0.95.6",
+    "sqlite3": "^5.0.2",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
@@ -22,10 +24,17 @@
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
+    "autoprefixer": "^9.8.6",
     "electron": "^11.0.0",
     "electron-devtools-installer": "^3.1.0",
+    "postcss": "^7.0.35",
+    "stylelint-config-recommended": "^5.0.0",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.1.2",
     "vue-cli-plugin-electron-builder": "~2.0.0-rc.6",
     "vue-template-compiler": "^2.6.11"
+  },
+  "peerDependencies": {
+    "postcss": "^8.3.0"
   },
   "browserslist": [
     "> 1%",
