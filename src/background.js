@@ -104,7 +104,35 @@ ipcMain.on('fetchAllBuyers', (event, data) => {
   const knex = getDbConnection()
   knex.from('Buyer').select('id', 'lastname', 'firstname', 'middlename').then((buyers) => {
     event.reply('fetchedAllBuyers', buyers)
-  }).catch((err) => { console.log('FETCH-ALL BUYERS ERROR', err) ; throw err
+  }).catch((err) => { console.log('FETCH BUYERS LIST ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+
+ipcMain.on('fetchProjectsList', (event, data) => {
+  console.log('Fetching Projects')
+  const knex = getDbConnection()
+  knex('Project').select().then((projects) => {
+    event.reply('fetchedProjectsList', projects)
+  }).catch((err) => { console.log('FETCH PROJECTS LIST ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+ipcMain.on('fetchBlocksList', (event, data) => {
+  console.log('Fetching all BLOCKS under Project ID', data)
+  const knex = getDbConnection()
+  knex('Block').where({ project_id: data }).then((blocks) => {
+    event.reply('fetchedBlocksList', blocks)
+  }).catch((err) => { console.log('FETCH BLOCKS LIST ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+ipcMain.on('fetchLotsList', (event, data) => {
+  console.log('Fetching all LOTS under Block ID', data)
+  const knex = getDbConnection()
+  knex('Lot').where({ block_id: data }).then((lots) => {
+    event.reply('fetchedLotsList', lots)
+  }).catch((err) => { console.log('FETCH LOTS LIST ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
 
@@ -117,6 +145,11 @@ function getDbConnection() {
       useNullAsDefault: true
     }
   })
+
+
+
+
+
 
   return knex
 }

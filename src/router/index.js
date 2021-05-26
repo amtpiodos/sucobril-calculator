@@ -15,6 +15,18 @@ const routes = [
     path: '/projects',
     name: 'Projects',
     component: () => import('../version2/ProjectsList.vue')
+  },
+
+  {
+    path: '/project/:id',
+    name: 'Blocks',
+    component: () => import('../version2/BlocksList.vue')
+  },
+
+  {
+    path: '/blocks/:id',
+    name: 'Lots',
+    component: () => import('../version2/LotsList.vue')
   }
   // {
   //   path: '/projects',

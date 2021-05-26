@@ -1,32 +1,44 @@
 <template>
     <div>
         <main-header />
-        <div class="my-8 mx-24 grid grid-cols-2 gap-4 md:grid-cols-5 md:gap-8">
-            <single-project project_name="Gregory Homes"
-                            project_location="Carcar City, Cebu"
+        <div class="my-8 mx-24 grid grid-cols-2 gap-4 lg:grid-cols-4 md:gap-8">
+            <div v-for="project in projects" :key="project.id">
+                <single-project v-bind:project_name="project.name"
+                            v-bind:project_location="project.location"
+                            v-bind:project_id="project.id"
                             project_logo="../../assets/img/p2.jpeg"/>
-            <single-project project_name="Gregory Homes"
-                            project_location="Carcar City, Cebu"
-                            project_logo="../../assets/img/p2.jpeg"/>
-            <single-project project_name="Gregory Homes"
-                            project_location="Carcar City, Cebu"
-                            project_logo="../../assets/img/p2.jpeg"/>
-            <single-project project_name="Gregory Homes"
-                            project_location="Carcar City, Cebu"
-                            project_logo="../../assets/img/p2.jpeg"/>
-        
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+    import { ipcRenderer } from 'electron'
     import Header from '../components/v2/Header'
-    import Project from '../components/v2/Project'
+    import Project from '../components/v2/SingleProject'
 
     export default({
+        data() {
+            return {
+                projects: ''
+            }
+        },
         components: {
             'main-header': Header,
             'single-project': Project
+        },
+        created() {
+            this.fetchProjectsList()
+        },
+        methods: {
+            fetchProjectsList() {
+                console.log('fetchProjectsList')
+                ipcRenderer.send('fetchProjectsList')
+                ipcRenderer.once('fetchedProjectsList', (event, data) => {
+                    this.projects = data
+                    console.log('fetchedProjects', typeof(this.projects), this.projects)
+                })
+            }
         }
     })
 </script>
