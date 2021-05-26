@@ -28,6 +28,7 @@ const routes = [
     name: 'Lots',
     component: () => import('../version2/LotsList.vue')
   }
+
   // {
   //   path: '/projects',
   //   name: 'Projects',

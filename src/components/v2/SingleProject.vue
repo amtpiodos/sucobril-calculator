@@ -16,6 +16,8 @@
         methods: {
             fetchProject(project_id) {
                 console.log('fetching project id', project_id)
+                this.$store.dispatch('buyer_info/setUnitDetails', project_id)
+                
                 this.$router.push({ name: "Blocks", params: { id: project_id }})
             }
         }

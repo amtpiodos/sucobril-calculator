@@ -12,6 +12,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@ianwalter/vuex-reset": "^4.3.4",
     "core-js": "^3.6.5",
     "knex": "^0.95.6",
     "sqlite3": "^5.0.2",
