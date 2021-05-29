@@ -27,6 +27,12 @@ const routes = [
     path: '/blocks/:id',
     name: 'Lots',
     component: () => import('../version2/LotsList.vue')
+  },
+
+  {
+    path: '/addbuyerform',
+    name: "Add Buyer Form",
+    component: () => import('../version2/AddBuyerForm')
   }
 
   // {

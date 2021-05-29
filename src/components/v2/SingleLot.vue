@@ -8,7 +8,8 @@
 <script>
     export default ({
         props: ['lot_name',
-                'lot_status'],
+                'lot_status',
+                'lot_id'],
         data() {
             return {
                 status: this.lot_status === 0 ? 'Available' : 'Sold Out'
@@ -17,7 +18,8 @@
         methods: {
             fetchLot(lot_id) {
                 console.log('fetching lot_id', lot_id)
-                this.$router.replace({ name: "AddBuyerForm", params: { id: lot_id }})
+                // this.$router.replace({ name: "AddBuyerForm", params: { id: lot_id }})
+                this.$router.push('/addbuyerform')
             }
         }
     })
