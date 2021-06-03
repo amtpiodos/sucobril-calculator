@@ -136,6 +136,14 @@ ipcMain.on('fetchLotsList', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+ipcMain.on('fetchProject', (event, data) => {
+  console.log('Fetching project name', data)
+  const knex = getDbConnection()
+  knex('Project').where({ id: data }).then((lots) => {
+    event.reply('fetchedProject', lots)
+  }).catch((err) => { console.log('FETCH PROJECT NAME ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
 
 function getDbConnection() {
   const knex = require('knex')({

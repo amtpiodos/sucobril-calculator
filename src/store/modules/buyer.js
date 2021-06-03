@@ -4,8 +4,12 @@ const buyer_info = {
         buyer_details: {
             name: '',
             address: ''
-        },     
-        project_id: ''
+        },
+        project_id: '',
+        project_details: {
+            block_id: '',
+            lot_id: ''
+        }
 
     },
     mutations: {
@@ -15,6 +19,12 @@ const buyer_info = {
         },
         SET_UNIT_DETAILS(state, data) {
             state.project_id = data
+        },
+        SET_BLOCK_DETAILS(state, data) {
+            state.project_details.block_id = data
+        },
+        SET_LOT_DETAILS(state, data) {
+            state.project_details.lot_id = data
         }
     },
     actions: {
@@ -23,6 +33,12 @@ const buyer_info = {
         },
         setUnitDetails(context, data) {
             context.commit('SET_UNIT_DETAILS', data)
+        },
+        setBlockId(context, data) {
+            context.commit('SET_BLOCK_DETAILS', data)
+        },
+        setLotId(context, data) {
+            context.commit('SET_LOT_DETAILS', data)
         }
     }
 }
