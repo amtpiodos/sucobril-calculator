@@ -17,8 +17,8 @@
         },
         methods: {
             fetchBlock(block_id, block_name) {
-                console.log('fetching block id', block_id)
-                this.$store.dispatch('buyer_info/setBlockId', block_name)
+                const block = { block_id, block_name }
+                this.$store.dispatch('unit/setBlock', block)
                 this.$router.replace({ name: "Lots", params: {id: block_id }})
             }
         }

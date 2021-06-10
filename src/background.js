@@ -100,6 +100,7 @@ ipcMain.on('addBuyer', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+// FUNCTION TO FETCH ALL BUYERS FOR BUYERS LIST
 ipcMain.on('fetchAllBuyers', (event, data) => {
   const knex = getDbConnection()
   knex.from('Buyer').select('id', 'lastname', 'firstname', 'middlename').then((buyers) => {
@@ -108,7 +109,7 @@ ipcMain.on('fetchAllBuyers', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
-
+// FUNCTION TO FETCH ALL PROJECTS
 ipcMain.on('fetchProjectsList', (event, data) => {
   console.log('Fetching Projects')
   const knex = getDbConnection()
@@ -118,6 +119,7 @@ ipcMain.on('fetchProjectsList', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+// FUNCTION TO FETCH ALL BLOCKS
 ipcMain.on('fetchBlocksList', (event, data) => {
   console.log('Fetching all BLOCKS under Project ID', data)
   const knex = getDbConnection()
@@ -127,6 +129,7 @@ ipcMain.on('fetchBlocksList', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+// FUNCTION TO FETCH ALL LOTS
 ipcMain.on('fetchLotsList', (event, data) => {
   console.log('Fetching all LOTS under Block ID', data)
   const knex = getDbConnection()
@@ -136,15 +139,76 @@ ipcMain.on('fetchLotsList', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+// FUNCTION TO FETCH ALL BUYERS
+ipcMain.on('fetchBuyersList', (event, data) => {
+  const knex = getDbConnection()
+  knex('Buyer').select().then((buyers) => {
+    event.reply('fetchedBuyersList', buyers)
+  }).catch((err) => { console.log('FETCH BUYERS LIST ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH A SPECIFIC PROJECT
 ipcMain.on('fetchProject', (event, data) => {
   console.log('Fetching project name', data)
   const knex = getDbConnection()
-  knex('Project').where({ id: data }).then((lots) => {
-    event.reply('fetchedProject', lots)
+  knex('Project').where({ id: data }).then((project) => {
+    if(project[0]) {
+      console.log("FETCHING PROJECT", project[0])
+      event.reply('fetchedProject', project[0])
+    } else {
+      console.log(`The project with id ${data} does not exist`)
+    }
   }).catch((err) => { console.log('FETCH PROJECT NAME ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
 
+// FUNCTION TO FETCH A SPECIFIC BLOCK
+ipcMain.on('fetchBlock', (event, data) => {
+  console.log('Fetching BLOCK', data)
+  const knex = getDbConnection()
+  knex('Block').where({ id: data }).then((block) => {
+    if(block[0]) {
+      console.log("FETCHING BLOCK", block[0])
+      event.reply('fetchedBlock', block[0])
+    } else {
+      console.log("FETCHING BLOCK", block[0])
+    }
+  }).catch((err) => { console.log('FETCH BLOCK NAME ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH A SPECIFIC LOT
+ipcMain.on('fetchLot', (event, data) => {
+  console.log('Fetching LOT', data)
+  const knex = getDbConnection()
+  knex('Lot').where({ id: data }).then((lot) => {
+    if(lot[0]) {
+      console.log('FETCHING LOT', lot[0])
+      event.reply('fetchedLot', lot[0])
+    } else {
+      console.log("FETCHING LOT", lot[0])
+    }
+  }).catch((err) => { console.log('FETCH LOT NAME ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH A SPECIFIC BUYER
+ipcMain.on('fetchBuyer', (event, data) => {
+  console.log('Fetching buyer id', data)
+  const knex = getDbConnection()
+  knex('Buyer').where({ id: data }).then((buyer) => {
+    if(buyer[0]) {
+      console.log("FETCHING BUYER", buyer[0])
+      event.reply('fetchedBuyer', buyer[0])
+    } else {
+      console.log(`The buyer with id ${data} does not exist`)
+    }
+  }).catch((err) => { console.log('FETCH BUYER NAME ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO CONNECT TO DB
 function getDbConnection() {
   const knex = require('knex')({
     client: 'sqlite3',

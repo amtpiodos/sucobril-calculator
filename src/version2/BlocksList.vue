@@ -33,7 +33,7 @@
         },
         methods: {
             fetchBlocks() {
-                console.log('store project', this.$store.state.project_id)
+                console.log('store project', this.$store.state.unit.project.project_id)
                 ipcRenderer.send('fetchBlocksList', this.project_id)
                 ipcRenderer.once('fetchedBlocksList', (event, data) => {
                     this.blocks = data

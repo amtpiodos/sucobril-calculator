@@ -6,6 +6,7 @@
 </template>
 
 <script>
+    import { ipcRenderer } from 'electron'
     export default ({
         props: ['lot_name',
                 'lot_status',
@@ -17,8 +18,15 @@
         },
         methods: {
             fetchLot(lot_id, lot_name) {
-                console.log('fetching lot_id', lot_id)
-                this.$store.dispatch('buyer_info/setLotId', lot_name)
+                const lot = { lot_id, lot_name }
+                this.$store.dispatch('unit/setLot', lot)
+                ipcRenderer.send('fetchLot', lot_id)
+                ipcRenderer.once('fetchedLot', (event, data) => {
+                    const { lot_area, lot_type, price_per_sqm } = data
+                    const unit_details = { lot_area, lot_type, price_per_sqm }
+                    this.$store.dispatch('unit/setUnitDetails', unit_details)
+                })
+
                 // this.$router.replace({ name: "AddBuyerForm", params: { id: lot_id }})
                 this.$router.push('/addbuyerform')
             }
