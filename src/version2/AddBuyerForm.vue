@@ -5,9 +5,9 @@
             <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> RA - FORM 2A - LO </p> </div>
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 p-1">
                 <div class="flex px-4 gap-4">
-                     <div class="w-2/5"> <input-form label="Last Name" v-model="buyer.lastname" /> </div>
-                    <div class="w-2/5"> <input-form label="First Name" v-model="buyer.firstname" /> </div>
-                    <div clsass="w-1/5"> <input-form label="M.I." v-model="buyer.middle_initial" /> </div>
+                     <div class="w-2/5"> <input-form label="Last Name" v-model="buyer.last_name" /> </div>
+                    <div class="w-2/5"> <input-form label="First Name" v-model="buyer.first_name" /> </div>
+                    <div class="w-1/5"> <input-form label="M.I." v-model="buyer.middle_initial" /> </div>
                 </div>
                 <div class="full px-4"> <readonly-form label="Reservation Date" v-bind:value="getDate()" /> </div>
                 <div class="full px-4"> <readonly-form label="Project Name" :value="unit.project_name" /> </div>
@@ -22,13 +22,13 @@
                     <div class="full"> <readonly-form label="Price/Sq.M" v-bind:value="unit.price_per_sqm" /> </div>
                     <div class="full"> <readonly-form label="Type of Lot" v-bind:value="unit.lot_type" /> </div>
                 </div>
-                <div class="full px-4"> <input-form label="Home Address" v-bind:value="buyer.home_address" /> </div>
+                <div class="full px-4"> <input-form label="Home Address" v-model="buyer.home_address" /> </div>
                 <div class="flex px-4 gap-4">
                     <div class="w-1/2"> <input-form label="Contact No." v-model="buyer.contact_number" /> </div>
                     <div class="w-1/2"> <input-form label="Email Address" v-model="buyer.email_address" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Realty's Name" v-model="unit.realty_name" /> </div>
-                <div class="full px-4"> <input-form label="Agent's Name" v-bind:value="unit.agent_name" /> </div>
+                <div class="full px-4"> <input-form label="Agent's Name" v-model="unit.agent_name" /> </div>
             </div>
 
             <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION / STRAIGHT MONTHLY </p> </div>
@@ -36,7 +36,7 @@
             <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                 <div class="flex px-4 gap-4 my-4">
                     <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-bind:value="payment_details.total_contract_price" /> </div> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.total_contract_price" /> </div> </div>
                 </div>
                 <div class="flex px-4 gap-4 my-4">
                     <div class="w-1/4 items-center py-2">
@@ -47,11 +47,11 @@
                             > months:
                         </p>
                     </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-bind:value="payment_details.monthly_installment" /> </div> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.monthly_installment" /> </div> </div>
                 </div>
                 <div class="flex px-4 gap-4 my-4">
                     <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">FIRST MONTHLY INSALLMENT <br> FEE / RESERVATION FEE: </p> </div>
-                    <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <input-form v-bind:value="payment_details.reservation_fee" /> </div> </div>
+                    <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.reservation_fee" /> </div> </div>
                 </div>
             </div>
 
@@ -69,7 +69,8 @@
 </template>
 
 <script>
-    import Header from '../components/v2/Header'
+    import { ipcRenderer } from 'electron'
+import Header from '../components/v2/Header'
     import InputForm from '../components/v2/InputForm'
     import ReadOnlyForm from '../components/v2/ReadonlyInput'
 
@@ -82,8 +83,8 @@
         data() {
             return {
                 buyer: {
-                    lastname: '',
-                    firstname: '',
+                    last_name: '',
+                    first_name: '',
                     middle_initial: '',
                     contact_number: '',
                     email_address: '',
@@ -93,6 +94,7 @@
                     project_name: this.$store.state.unit.project.project_name,
                     block: this.$store.state.unit.block.block_name,
                     lot: this.$store.state.unit.lot.lot_name,
+                    lot_id: this.$store.state.unit.lot.lot_id,
                     phase: '',
                     project_address: this.$store.state.unit.project.project_location,
                     price_per_sqm: `PHP ${this.$store.state.unit.unit_details.price_per_sqm}`,
@@ -127,7 +129,12 @@
             submitForm() {
 
                 // insert error validation here
-
+                console.log('submitForm')
+                const dataToSubmit = {  buyer: this.buyer,
+                                        unit: this.unit,
+                                        payment_details: this.payment_details }
+                console.log({dataToSubmit})
+                ipcRenderer.send('addBuyer', dataToSubmit)
                 this.$router.push('/')
 
             }

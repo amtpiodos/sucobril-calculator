@@ -91,11 +91,43 @@ ipcMain.on('sample', (event, args) => {
   })
 })
 
+// FUNCTION TO ADD NEW BUYER IN DB
 ipcMain.on('addBuyer', (event, data) => {
+  const { buyer, payment_details, unit } = data
+  console.log({buyer}, {payment_details}, {unit})
   const knex = getDbConnection()
-  knex('Buyer').insert(data).then(() => {
+  knex('Buyer').insert(
+    { last_name: buyer.last_name,
+      first_name: buyer.first_name,
+      middle_initial: buyer.middle_initial,
+      contact_number: buyer.contact_number,
+      email_address: buyer.email_address,
+      home_address: buyer.home_address
+    }
+  ).then(() => {
       console.log('INSERTED', data)
-      event.reply('isBuyerAdded', 1)
+      // event.reply('isBuyerAdded', 1)
+  }).catch((err) => { console.log('INSERT ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+  knex('Buyer').insert(
+    { last_name: buyer.last_name,
+      first_name: buyer.first_name,
+      middle_initial: buyer.middle_initial,
+      contact_number: buyer.contact_number,
+      email_address: buyer.email_address,
+      home_address: buyer.home_address,
+      lot_id: unit.lot_id,
+      realty: unit.realty_name,
+      agent: unit.agent_name,
+      // reservation_date: payment_details.date,
+      total_contract_price: payment_details.total_contract_price,
+      installment_months: payment_details.installment_months,
+      monthly_installment: payment_details.monthly_installment,
+      reservation_fee: payment_details.reservation_fee
+    }
+  ).then(() => {
+      console.log('INSERTED', data)
+      // event.reply('isBuyerAdded', 1)
   }).catch((err) => { console.log('INSERT ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
@@ -103,7 +135,7 @@ ipcMain.on('addBuyer', (event, data) => {
 // FUNCTION TO FETCH ALL BUYERS FOR BUYERS LIST
 ipcMain.on('fetchAllBuyers', (event, data) => {
   const knex = getDbConnection()
-  knex.from('Buyer').select('id', 'lastname', 'firstname', 'middlename').then((buyers) => {
+  knex.from('Buyer').select('id', 'last_name', 'first_name', 'middle_initial').then((buyers) => {
     event.reply('fetchedAllBuyers', buyers)
   }).catch((err) => { console.log('FETCH BUYERS LIST ERROR', err) ; throw err
   }).finally(() => knex.destroy())
@@ -203,25 +235,23 @@ ipcMain.on('fetchBuyer', (event, data) => {
       event.reply('fetchedBuyer', buyer[0])
     } else {
       console.log(`The buyer with id ${data} does not exist`)
+      event.reply(`The buyer with id ${data} does not exist`)
     }
   }).catch((err) => { console.log('FETCH BUYER NAME ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
 
-// FUNCTION TO CONNECT TO DB
+// FUNCTION TO CONNECT DB mysql
 function getDbConnection() {
   const knex = require('knex')({
-    client: 'sqlite3',
+    client: 'mysql',
     connection: {
-      filename: './dbconfig/database.db',
-      useNullAsDefault: true
+      host: '127.0.0.1',
+      user: 'root',
+      password: '',
+      database: 'tumabini_db'
     }
   })
-
-
-
-
-
 
   return knex
 }
