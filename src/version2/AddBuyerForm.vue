@@ -5,7 +5,7 @@
             <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> RA - FORM 2A - LO </p> </div>
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 p-1">
                 <div class="flex px-4 gap-4">
-                     <div class="w-2/5"> <input-form label="Last Name" v-model="buyer.last_name" /> </div>
+                    <div class="w-2/5"> <input-form label="Last Name" v-model="buyer.last_name" /> </div>
                     <div class="w-2/5"> <input-form label="First Name" v-model="buyer.first_name" /> </div>
                     <div class="w-1/5"> <input-form label="M.I." v-model="buyer.middle_initial" /> </div>
                 </div>
@@ -70,7 +70,7 @@
 
 <script>
     import { ipcRenderer } from 'electron'
-import Header from '../components/v2/Header'
+    import Header from '../components/v2/Header'
     import InputForm from '../components/v2/InputForm'
     import ReadOnlyForm from '../components/v2/ReadonlyInput'
 
@@ -120,6 +120,7 @@ import Header from '../components/v2/Header'
                 const today = new Date()
                 this.payment_details.date = today
                 return this.payment_details.date
+
             },
             getPhase() {
                 return  this.$store.state.unit.phase.phase_name &&
@@ -129,6 +130,9 @@ import Header from '../components/v2/Header'
             submitForm() {
 
                 // insert error validation here
+                // user should only click here once
+                // add loading screen
+
                 console.log('submitForm')
                 const dataToSubmit = {  buyer: this.buyer,
                                         unit: this.unit,

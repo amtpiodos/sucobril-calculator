@@ -1,9 +1,6 @@
 <template>
     <div>
-        <label for="text" 
-            class="block text-sm font-bold uppercase leading-5 text-black px-1">
-            {{ label }}
-        </label>
+        <label-component :label="label"/>
         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
             <input type="text"
                 v-model="input_value"
@@ -14,7 +11,11 @@
 </template>
 
 <script>
+    import Label from './Label.vue'
     export default ({
+        components: {
+            'label-component': Label
+        },
         props: ['label', 'value'],
         data() {
             return {

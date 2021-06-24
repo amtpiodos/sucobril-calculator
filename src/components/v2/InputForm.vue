@@ -1,10 +1,7 @@
 <template>
     <div>
         <div v-if="hasLabel">
-        <label for="text" 
-            class="block text-sm font-bold uppercase leading-5 text-black px-1">
-            {{ label }}
-        </label>
+            <label-component :label="label"/>
         </div>
 
         <div class="mt-1 relative rounded-md shadow-sm">
@@ -16,7 +13,11 @@
 </template>
 
 <script>
+    import Label from './Label.vue'
     export default ({
+        components: {
+            'label-component': Label
+        },
         props: ['label', 'value'],
         data() {
             return {
