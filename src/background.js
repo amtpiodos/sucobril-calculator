@@ -195,6 +195,21 @@ ipcMain.on('fetchProject', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+// FUNCTION TO FETCH A SPECIFIC PHASE
+ipcMain.on('fetchPhase', (event, data) => {
+  console.log('Fetching PHASE', data)
+  const knex = getDbConnection()
+  knex('Phase').where({ id: data }).then((phase) => {
+    if(phase[0]) {
+      console.log("FETCHING PHASE", phase[0])
+      event.reply('fetchedPhase', phase[0])
+    } else {
+      console.log("FETCHING PHASE", phase[0])
+    }
+  }).catch((err) => { console.log('FETCH PHASE NAME ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
 // FUNCTION TO FETCH A SPECIFIC BLOCK
 ipcMain.on('fetchBlock', (event, data) => {
   console.log('Fetching BLOCK', data)
@@ -240,6 +255,7 @@ ipcMain.on('fetchBuyer', (event, data) => {
   }).catch((err) => { console.log('FETCH BUYER NAME ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
+
 
 // FUNCTION TO CONNECT DB mysql
 function getDbConnection() {

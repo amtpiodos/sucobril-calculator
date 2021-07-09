@@ -33,6 +33,13 @@ const routes = [
     path: '/addbuyerform',
     name: "Add Buyer Form",
     component: () => import('../version2/AddBuyerForm')
+  },
+
+  {
+    path: '/viewbuyer/:id',
+    name: "View Buyer",
+    component: () => import('../version2/ViewBuyerDetails'),
+    props: true
   }
 
   // {
