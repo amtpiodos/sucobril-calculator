@@ -17,7 +17,6 @@
                 </div>
 
                 <div class="h-96 w-3/4 bg-white items-center content-center space-y-3">
-                    <!-- <p class="text-xl leading-tight font-bold text-center mx-4 my-2" v-if="hasClickedBuyer"> Buyer's Information </p> -->
                     <div class="mx-auto h-full content-center grid grid-cols-1 space-y-6">
                         <div v-if="!hasClickedBuyer">
                             <p class="text-xl leading-tight font-bold text-center mx-4"> Buyer's Information </p>
@@ -96,35 +95,10 @@
             },
             fetchBuyerDetails(id) {
                 console.log('id', id)
-                ipcRenderer.send('fetchBuyer', id)
-                ipcRenderer.once('fetchedBuyer', (event, data) => {
-                    this.buyer_details = data
-                    ipcRenderer.send('fetchLot', this.buyer_details.lot_id)
-                    ipcRenderer.once('fetchedLot', (event, data) => {
-                        this.buyer_details.lot = data
-                        ipcRenderer.send('fetchBlock', this.buyer_details.lot.block_id)
-                        ipcRenderer.once('fetchedBlock', (event, data) => {
-                            this.buyer_details.block = data
-                            if(this.buyer_details.block.phase_id) {
-                               ipcRenderer.send('fetchPhase', this.buyer_details.block.phase_id)
-                               ipcRenderer.once('fetchedPhase', (event, data) => {
-                                   this.buyer_details.phase = data.name
-                               })
-                            } else {
-                                this.buyer_details.phase = "N/A"
-                            }
-                            ipcRenderer.send('fetchProject', this.buyer_details.block.id)
-                            ipcRenderer.once('fetchedProject', (event, data) => {
-                                this.buyer_details.project = data
-                            })
-                        })
-                    })
-                })
-                return this.buyer_details
             },
             viewFullDetails() {
                 console.log('VIEW DETAILS this.id', this.id, this.buyer_details)
-                this.$router.push({ name: 'View Buyer', params: { id: this.id, buyer: this.buyer_details } })
+                this.$router.push({ name: 'View Buyer', params: { id: this.id } })
             }
         }
     })

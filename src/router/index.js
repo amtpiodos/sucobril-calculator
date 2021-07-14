@@ -40,6 +40,13 @@ const routes = [
     name: "View Buyer",
     component: () => import('../version2/ViewBuyerDetails'),
     props: true
+  },
+
+  {
+    path: '/editbuyer/:id',
+    name: "Edit Buyer",
+    component: () => import('../version2/EditBuyerDetails'),
+    props: true
   }
 
   // {
