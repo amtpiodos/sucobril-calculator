@@ -2,7 +2,7 @@
     <div class="h-screen">
         <main-header />
         <div class="my-5 mx-24 px-5">
-            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> VIEW BUYER'S INFORMATION </p> </div>
+            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> EDIT BUYER'S INFORMATION </p> </div>
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 p-1">
                 <div class="flex px-4 gap-4">
                     <div class="w-2/5">

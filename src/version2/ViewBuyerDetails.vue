@@ -71,7 +71,7 @@
 
             </div>
             <div v-if="isFetchingData">
-                LOAIDNGGGGG
+                LOADING
             </div>
         </div>
 
@@ -84,6 +84,8 @@
     import Label from '../components/v2/Label.vue'
     import InputForm from '../components/v2/InputForm'
     import ReadOnlyForm from '../components/v2/ReadonlyInput'
+    // import XLSX from 'xlsx'
+    import excel4node from 'excel4node'
 
     export default ({
         components: {
@@ -94,10 +96,16 @@
         },
         data() {
             return {
-                // buyer: this.$route.params.buyer,
                 buyer: {},
                 isFetchingData: true,
-                isEditing: false
+                isEditing: false,
+
+                items: [
+                    { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
+                    { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
+                    { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
+                    { age: 38, first_name: 'Jami', last_name: 'Carney' }
+                ]
             }
         },
         created() {
@@ -141,6 +149,130 @@
                 this.$router.push({ name: 'Edit Buyer', params: { id: this.buyer.id, buyer: this.buyer } })
             },
             exportDetails() {
+                const reservationType = 'REGULAR RESERVATION'
+                const php = ` Php `
+                const buyer_name = `${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}`
+                const block_name = `${this.buyer.block.name}`
+                const project_name = `${this.buyer.project.name}`
+                const lot_name = `${this.buyer.lot.name}`
+                const price_per_sqm = `${this.buyer.lot.price_per_sqm}`
+                const phase = `${this.buyer.phase}`
+                const lot_area = this.buyer.lot.lot_area
+                const lot_type = this.buyer.lot.lot_type
+                const realty = this.buyer.realty
+                const agent = this.buyer.agent
+                const project_address = this.buyer.project.location
+                const home_address = this.buyer.home_address
+                const email_address = this.buyer.email_address
+                const contact_number = this.buyer.contact_number
+                const total_contract_price = this.buyer.total_contract_price
+                const installment_months = this.buyer.installment_months
+                const monthly_installment = this.buyer.monthly_installment
+                const reservation_fee = this.buyer.reservation_fee
+
+                var wb = new excel4node.Workbook();
+                var ws = wb.addWorksheet(reservationType);
+
+                let r = 1   // row
+                const s = 4 // initial size
+                const col = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9 }
+
+                ws.column(col['A']).setWidth(s*4)
+                ws.column(col['B']).setWidth(s*2)
+                ws.column(col['C']).setWidth(s*3)
+                ws.column(col['D']).setWidth(s*2)
+                ws.column(col['E']).setWidth(s*2)
+                ws.column(col['F']).setWidth(s*2)
+                ws.column(col['G']).setWidth(s*2)
+                ws.column(col['H']).setWidth(s*4)
+                ws.column(col['I']).setWidth(s*4)
+
+                const bold_header_style = wb.createStyle({ font: { color: '#000000', size: 13, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const bordered_style = wb.createStyle({ border: { left: { style: 'thin', color: '#000000' }, right: { style: 'thin', color: '#000000' }, top: { style: 'thin', color: '#000000' }, bottom: { style: 'thin', color: '#000000' }} })
+                const aligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const header_style = wb.createStyle({ font: { color: '#000000', size: 11, bold: true } })
+                const bold_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true } })
+                const regular_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: false } })
+                const center_bold = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' }, font: { color: '#000000', size: 11, bold: true } })
+                const italic_rightaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'right', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
+                const italic_leftaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'left', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
+
+                ws.cell(r, col['A'], r, col['H'], true).string('TUMABINI REAL ESTATE DEVELOPMENT').style(bold_header_style)
+                ws.cell(r, col['I']).string('LO-RA - FORM 2A').style(bold_header_style).style({font: {size: 12}, alignment: {horizontal: 'right'}})
+
+                ws.cell(++r, col['A'], ++r, col['H'], true).string('133 MC Briones St., Hi-way Bakilid, Mandaue City 6014 Tel#: 032 414-5103, 09564791879 Email: tumabinidevelopment@gmail.com').style(regular_style).style(aligned_style).style({font: {size: 8}})
+                ws.cell(r-1, col['I']).string('ANNEX A').style(bold_header_style).style({font: {size: 10}, alignment: {horizontal: 'right'}})
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET').style(bordered_style).style(aligned_style).style(header_style)
+
+                ws.cell(++r, col['A']).string(` BUYER'S NAME: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(buyer_name).style(regular_style)
+                ws.cell(r, col['E']).string(` BLOCK: `).style(bold_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(regular_style)
+                ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
+
+                ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)
+                ws.cell(r, col['E']).string(` LOT: `).style(bold_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(lot_name).style(regular_style)
+                ws.cell(r, col['H']).string(` PRICE PER SQ.M: `).style(bold_style)
+                ws.cell(r, col['I']).string(price_per_sqm).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` PHASE: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(phase).style(regular_style)
+                ws.cell(r, col['E']).string(` LOT AREA: `).style(bold_style)
+                ws.cell(r, col['F'], r, col['G'], true).number(lot_area).style(regular_style)
+                ws.cell(r, col['H']).string(` TYPE OF LOT: `).style(bold_style)
+                ws.cell(r, col['I']).string(lot_type).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` PROJECT ADDRESS: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(project_address).style(regular_style)
+                ws.cell(r, col['E'], r, col['F'], true).string(` HOME ADDRESS: `).style(bold_style)
+                ws.cell(r, col['G'], r, col['I'], true).string(home_address).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` EMAIL ADDRESS: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(email_address).style(regular_style)
+                ws.cell(r, col['E'], r, col['F'], true).string(` CONTACT NUMBER: `).style(bold_style)
+                ws.cell(r, col['G'], r, col['I'], true).number(contact_number).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` REALTY: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(realty).style(regular_style)
+                ws.cell(r, col['E'], r, col['F'], true).string(` AGENT: `).style(bold_style)
+                ws.cell(r, col['G'], r, col['I'], true).string(agent).style(regular_style)
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+                ws.cell(++r, col['A'], r, col['I'], true).string('REGULAR RESERVATION / STRAIGHT MONTHLY').style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+
+                ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (includes transfer fee): `).style(italic_rightaligned_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
+
+                ws.cell(++r, col['A'], r, col['D'], true).string(` Monthly Installment for: `).style(italic_rightaligned_style)
+                ws.cell(r, col['E']).number(installment_months).style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(r, col['F']).string(` months: `).style(italic_rightaligned_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).number(monthly_installment).style(center_bold)
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+
+                ws.cell(++r, col['A'], r, col['F'], true).string(` First Monthly Installment Fee / Reservation Fee: `).style(italic_rightaligned_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_bold)
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+                ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Starts: `).style(italic_rightaligned_style)
+                ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Ends: `).style(italic_rightaligned_style)
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+                ws.cell(++r, col['A'], r, col['I'], true).string('REQUIREMENTS').style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of 2 valid ID:  government issued with 3 specimen signature FOR BUYER `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of 2 valid ID:  government issued with 3 specimen signature FOR SPOUSE IF MARRIED `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` TIN number/TIN ID `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` RESERVATION FEE / First Monthly `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Marriage contract if married `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
+
+                wb.write(`./outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
             }
         }
     })
