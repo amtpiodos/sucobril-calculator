@@ -52,7 +52,7 @@
                         <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.monthly_installment" /> </div> </div>
                     </div>
                     <div class="flex px-4 gap-4 my-4">
-                        <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">FIRST MONTHLY INSALLMENT <br> FEE / RESERVATION FEE: </p> </div>
+                        <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">FIRST MONTHLY INSTALLMENT <br> FEE / RESERVATION FEE: </p> </div>
                         <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.reservation_fee" /> </div> </div>
                     </div>
                 </div>

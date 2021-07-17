@@ -95,6 +95,10 @@
             },
             fetchBuyerDetails(id) {
                 console.log('id', id)
+                ipcRenderer.send('fetchBuyer', id)
+                ipcRenderer.once('fetchedBuyer', (event, data) => {
+                    this.buyer_details = data
+                })
             },
             viewFullDetails() {
                 console.log('VIEW DETAILS this.id', this.id, this.buyer_details)
