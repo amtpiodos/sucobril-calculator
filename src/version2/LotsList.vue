@@ -1,6 +1,9 @@
 <template>
     <div>
         <main-header />
+        <div class="my-5 mx-24">
+            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> {{ project_name }} - {{ block_name }} </p> </div>
+        </div>
         <div class="my-8 mx-24 grid grid-cols-2 gap-4 lg:grid-cols-5 md:gap-8">
             <div v-for="lot in lots" :key="lot.id">
                 <single-lot v-bind:lot_name="lot.name"
@@ -24,7 +27,8 @@
         data() {
             return {
                 lots: '',
-                block_id: this.$route.params.id
+                block_id: this.$route.params.id,
+                block_name: this.$route.params.name
             }
         },
         created() {

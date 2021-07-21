@@ -32,7 +32,7 @@
                                     v-on:click="viewFullDetails"
                                     type="button"
                                     class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md">
-                                   VIEW FULL DETAILS
+                                    VIEW FULL DETAILS
                                 </button>
                                 <!-- <button
                                     v-on:click="viewFullDetails"

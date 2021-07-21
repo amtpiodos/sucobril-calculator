@@ -22,7 +22,7 @@
                     project_location
                 }
                 this.$store.dispatch('unit/setProject', project)
-                this.$router.push({ name: "Blocks", params: { id: project_id }})
+                this.$router.push({ name: "Blocks", params: { id: project_id, name: project_name, location: project_location }})
             }
         }
     })

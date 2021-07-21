@@ -96,21 +96,8 @@ ipcMain.on('addBuyer', (event, data) => {
   const { buyer, payment_details, unit } = data
   console.log({buyer}, {payment_details}, {unit})
   const knex = getDbConnection()
-  knex('Buyer').insert(
-    { last_name: buyer.last_name,
-      first_name: buyer.first_name,
-      middle_initial: buyer.middle_initial,
-      contact_number: buyer.contact_number,
-      email_address: buyer.email_address,
-      home_address: buyer.home_address
-    }
-  ).then(() => {
-      console.log('INSERTED', data)
-      // event.reply('isBuyerAdded', 1)
-  }).catch((err) => { console.log('INSERT ERROR', err) ; throw err
-  }).finally(() => knex.destroy())
-  knex('Buyer').insert(
-    { last_name: buyer.last_name,
+  knex.insert({
+      last_name: buyer.last_name,
       first_name: buyer.first_name,
       middle_initial: buyer.middle_initial,
       contact_number: buyer.contact_number,
@@ -124,9 +111,22 @@ ipcMain.on('addBuyer', (event, data) => {
       installment_months: payment_details.installment_months,
       monthly_installment: payment_details.monthly_installment,
       reservation_fee: payment_details.reservation_fee
-    }
-  ).then(() => {
-      console.log('INSERTED', data)
+    })
+    .returning('id')
+    .into('Buyer')
+    .then((id) => {
+      console.log('INSERTED', id)
+      const buyer_id = id
+      const knex2 = getDbConnection()
+      // edit to only one lot updated (where statement)
+      knex2('Lot').where({ id: unit.lot_id  })
+        .update({
+          'status': 1,
+          'owner_id': buyer_id
+        }).then(() => {
+          console.log('LOT STATUS UPDATED', unit.lot_id)
+      }).catch((err) => { console.log('LOT STATUS UPDATE ERROR', err) ; throw err
+      }).finally(() => knex2.destroy())
       // event.reply('isBuyerAdded', 1)
   }).catch((err) => { console.log('INSERT ERROR', err) ; throw err
   }).finally(() => knex.destroy())
