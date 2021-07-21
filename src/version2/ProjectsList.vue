@@ -6,6 +6,7 @@
                 <single-project v-bind:project_name="project.name"
                             v-bind:project_location="project.location"
                             v-bind:project_id="project.id"
+                            v-bind:project_type="project.type"
                             project_logo="../../assets/img/p2.jpeg"/>
             </div>
         </div>
@@ -20,7 +21,8 @@
     export default({
         data() {
             return {
-                projects: ''
+                projects: '',
+                // to refactor: fetch project type via db
             }
         },
         components: {
@@ -36,7 +38,6 @@
                 ipcRenderer.send('fetchProjectsList')
                 ipcRenderer.once('fetchedProjectsList', (event, data) => {
                     this.projects = data
-                    console.log('fetchedProjects', typeof(this.projects), this.projects)
                 })
             }
         }

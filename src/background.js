@@ -3,6 +3,7 @@
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import knex from 'knex'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
@@ -253,6 +254,23 @@ ipcMain.on('fetchBuyer', (event, data) => {
       event.reply(`The buyer with id ${data} does not exist`)
     }
   }).catch((err) => { console.log('FETCH BUYER NAME ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH PROJECT TYPE ( House & Lot / Lot Only )
+ipcMain.on('fetchProjectType', (event, data) => {
+  const knex = getDbConnection()
+  knex('project_types')
+    .where({ id: data })
+    .then((type) => {
+      if(type[0]) {
+        console.log('FETCHING PROJECT TYPE', type[0])
+        event.reply('fetchedProjectType', type[0])
+      } else {
+        console.log(`Project Type with id ${data} does not exist`)
+        event.reply('fetchedProjectType', `Project Type with id ${data} does not exist`)
+      }
+    }).catch((err) => { console.log('FETCH PROJECT TYPE ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
 
