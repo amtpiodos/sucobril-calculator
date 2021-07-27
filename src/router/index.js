@@ -18,13 +18,25 @@ const routes = [
   },
 
   {
-    path: '/project/:id',
-    name: 'Blocks',
+    path: '/project/:project_id/phases/:id/blocks   ',
+    name: 'Blocks-With-Phase',
     component: () => import('../version2/BlocksList.vue')
   },
 
   {
-    path: '/blocks/:id',
+    path: '/project/:id/blocks',
+    name: 'Blocks-Without-Phase',
+    component: () => import('../version2/BlocksList.vue')
+  },
+
+  {
+    path: '/project/:id/phases',
+    name: 'Phases',
+    component: () => import('../version2/PhasesList.vue')
+  },
+
+  {
+    path: '/project/:project_id/block/:id/lots',
     name: 'Lots',
     component: () => import('../version2/LotsList.vue')
   },

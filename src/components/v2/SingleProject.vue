@@ -23,23 +23,28 @@
                 'project_location',
                 'project_logo',
                 'project_id',
-                'project_type'],
+                'project_type',
+                'project_hasPhases'],
         
         methods: {
             fetchProject(project_id, project_name, project_location) {
-                console.log('PROJECT LOCATION', project_location)
                 const project = {
                     project_id,
                     project_name,
                     project_location
                 }
+
                 this.$store.dispatch('unit/setProject', project)
-                this.$router.push({ name: "Blocks", params: { id: project_id, name: project_name, location: project_location }})
+                this.project_hasPhases
+                    ? this.$router.push({ name: "Phases", params: { id: project_id, name: project_name, location: project_location }})
+                    : this.$router.push({ name: "Blocks-Without-Phase", params: {
+                                                                            project_id: project_id,
+                                                                            name: project_name,
+                                                                            location: project_location,
+                                                                            has_phase: false }})
             },
 
-            fetchProjectType(project_type) {
-
-            }
+            fetchProjectType(project_type) {}
         }
     })
 </script>

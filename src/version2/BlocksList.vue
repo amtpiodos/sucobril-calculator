@@ -9,6 +9,8 @@
                 <single-block v-bind:block_name="block.name"
                             v-bind:block_id="block.id"
                             v-bind:block_status="block.status"
+                            v-bind:project_id="project_id"
+                            v-bind:has_phase="has_phase"
                             project_logo="../../assets/img/p2.jpeg"/>
             </div>
         </div>
@@ -28,18 +30,23 @@
         data() {
             return {
                 blocks: '',
-                project_id: this.$route.params.id,
+                project_id: this.$route.params.project_id,
+                phase_id: this.$route.params.phase_id,
                 project_name: this.$route.params.name,
-                project_location: this.$route.params.location
+                project_location: this.$route.params.location,
+                has_phase: this.$route.params.has_phase
             }
         },
         created() {
             this.fetchBlocks()
+            console.log('ROUTE', this.$route.fullPath)
         },
         methods: {
             fetchBlocks() {
                 console.log('store project', this.$store.state.unit.project.project_id)
-                ipcRenderer.send('fetchBlocksList', this.project_id)
+                const id = this.has_phase ? this.phase_id : this.project_id
+                const block_data = { id, has_phase: this.has_phase}
+                ipcRenderer.send('fetchBlocksList', block_data)
                 ipcRenderer.once('fetchedBlocksList', (event, data) => {
                     this.blocks = data
                     console.log('fetchedBlocksList', typeof(this.blocks), this.blocks)

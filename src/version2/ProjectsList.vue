@@ -7,6 +7,7 @@
                             v-bind:project_location="project.location"
                             v-bind:project_id="project.id"
                             v-bind:project_type="project.type"
+                            v-bind:project_hasPhases="project.has_phases"
                             project_logo="../../assets/img/p2.jpeg"/>
             </div>
         </div>

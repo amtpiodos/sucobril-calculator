@@ -152,14 +152,32 @@ ipcMain.on('fetchProjectsList', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+// FUNCTION TO FETCH ALL PHASES
+ipcMain.on('fetchPhasesList', (event, data) => {
+  console.log('Fetching all PHASES under Project ID', data)
+  const knex = getDbConnection()
+  knex('Phase').where({ project_id: data }).then((phases) => {
+    event.reply('fetchedPhasesList', phases)
+  }).catch((err) => { console.log('FETCH PHASES LIST ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
 // FUNCTION TO FETCH ALL BLOCKS
 ipcMain.on('fetchBlocksList', (event, data) => {
   console.log('Fetching all BLOCKS under Project ID', data)
+  const { id, has_phase } = data
   const knex = getDbConnection()
-  knex('Block').where({ project_id: data }).then((blocks) => {
-    event.reply('fetchedBlocksList', blocks)
-  }).catch((err) => { console.log('FETCH BLOCKS LIST ERROR', err) ; throw err
-  }).finally(() => knex.destroy())
+  if(has_phase) {
+    knex('Block').where({ phase_id: id }).then((blocks) => {
+      event.reply('fetchedBlocksList', blocks)
+    }).catch((err) => { console.log('FETCH BLOCKS LIST ERROR', err) ; throw err
+    }).finally(() => knex.destroy())
+  } else {
+    knex('Block').where({ project_id: data.id }).then((blocks) => {
+      event.reply('fetchedBlocksList', blocks)
+    }).catch((err) => { console.log('FETCH BLOCKS LIST ERROR', err) ; throw err
+    }).finally(() => knex.destroy())
+  }
 })
 
 // FUNCTION TO FETCH ALL LOTS
