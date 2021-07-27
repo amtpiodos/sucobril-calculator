@@ -24,7 +24,7 @@ const routes = [
   },
 
   {
-    path: '/project/:id/blocks',
+    path: '/project/:project_id/blocks',
     name: 'Blocks-Without-Phase',
     component: () => import('../version2/BlocksList.vue')
   },
