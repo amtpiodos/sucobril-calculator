@@ -5,7 +5,8 @@ const buyer_info = {
         block: {},
         lot: {},
         phase: {},
-        unit_details: {}
+        unit_details: {},
+        reservation_type: ''
 
     },
     mutations: {
@@ -24,6 +25,9 @@ const buyer_info = {
         },
         SET_UNIT_DETAILS(state, data) {
             state.unit_details = data
+        },
+        SET_RESERVATION_TYPE(state, data) {
+            state.reservation_type = data
         }
     },
     actions: {
@@ -41,6 +45,9 @@ const buyer_info = {
         },
         setUnitDetails(context, data) {
             context.commit('SET_UNIT_DETAILS', data)
+        },
+        setReservationType(context, data) {
+            context.commit('SET_RESERVATION_TYPE', data)
         }
     }
 }

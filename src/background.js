@@ -92,8 +92,8 @@ ipcMain.on('sample', (event, args) => {
   })
 })
 
-// FUNCTION TO ADD NEW BUYER IN DB
-ipcMain.on('addBuyer', (event, data) => {
+// FUNCTION TO ADD NEW LOT ONLY BUYER IN DB
+ipcMain.on('addLotOnlyBuyer', (event, data) => {
   const { buyer, payment_details, unit } = data
   console.log({buyer}, {payment_details}, {unit})
   const knex = getDbConnection()
@@ -106,12 +106,7 @@ ipcMain.on('addBuyer', (event, data) => {
       home_address: buyer.home_address,
       lot_id: unit.lot_id,
       realty: unit.realty_name,
-      agent: unit.agent_name,
-      // reservation_date: payment_details.date,
-      total_contract_price: payment_details.total_contract_price,
-      installment_months: payment_details.installment_months,
-      monthly_installment: payment_details.monthly_installment,
-      reservation_fee: payment_details.reservation_fee
+      agent: unit.agent_name
     })
     .returning('id')
     .into('Buyer')
@@ -119,13 +114,34 @@ ipcMain.on('addBuyer', (event, data) => {
       console.log('INSERTED', id)
       const buyer_id = id
       const knex2 = getDbConnection()
-      // edit to only one lot updated (where statement)
-      knex2('Lot').where({ id: unit.lot_id  })
+      knex2.insert({
+        buyer_id: buyer_id,
+        total_contract_price: payment_details.total_contract_price,
+        installment_months: payment_details.installment_months,
+        monthly_installment: payment_details.monthly_installment,
+        reservation_fee: payment_details.reservation_fee,
+        reservation_type: payment_details.reservation_type,
+        spot_downpayment: payment_details.spot_downpayment,
+        new_tcp_less_downpayment: payment_details.new_tcp_less_downpayment,
+        spot_cash_discount_percentage: payment_details.spot_cash_discount_percentage,
+        spot_cash_discount_amount: payment_details.spot_cash_discount_amount,
+        new_tcp_less_discount: payment_details.new_tcp_less_discount,
+        monthly_start_date: payment_details.monthly_start_date,
+        monthly_end_date: payment_details.monthly_end_date
+
+      })
+      .into('lot_payment')
+      .then(() => {
+        const knex3 = getDbConnection()
+        knex3('Lot').where({ id: unit.lot_id  })
         .update({
           'status': 1,
           'owner_id': buyer_id
         }).then(() => {
           console.log('LOT STATUS UPDATED', unit.lot_id)
+        }).catch((err) => { console.log('ADDING OF PAYMENT ERROR', err) ; throw err
+        }).finally(() => knex3.destroy())
+      // edit to only one lot updated (where statement)
       }).catch((err) => { console.log('LOT STATUS UPDATE ERROR', err) ; throw err
       }).finally(() => knex2.destroy())
       // event.reply('isBuyerAdded', 1)

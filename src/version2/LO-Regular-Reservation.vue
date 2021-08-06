@@ -107,7 +107,15 @@
                     total_contract_price: '',
                     installment_months: '',
                     monthly_installment: '',
-                    reservation_fee: ''
+                    reservation_fee: '',
+                    reservation_type: 5,
+                    spot_downpayment: null,
+                    new_tcp_less_downpayment: null,
+                    spot_cash_discount_percentage: null,
+                    spot_cash_discount_amount: null,
+                    new_tcp_less_discount: null,
+                    monthly_start_date: null,
+                    monthly_end_date: null
                 }
             }
         },
@@ -137,9 +145,8 @@
                                         unit: this.unit,
                                         payment_details: this.payment_details }
                 console.log({dataToSubmit})
-                ipcRenderer.send('addBuyer', dataToSubmit)
+                ipcRenderer.send('addLotOnlyBuyer', dataToSubmit)
                 this.$router.push('/')
-
             }
         }
     })

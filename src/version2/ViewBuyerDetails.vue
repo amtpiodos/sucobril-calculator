@@ -131,7 +131,7 @@
                             } else {
                                 this.buyer.phase = "N/A"
                             }
-                            ipcRenderer.send('fetchProject', this.buyer.block.id)
+                            ipcRenderer.send('fetchProject', this.buyer.block.project_id)
                             ipcRenderer.once('fetchedProject', (event, data) => {
                                 this.buyer.project = data
                                 console.log('this.buyer in view details', this.buyer)

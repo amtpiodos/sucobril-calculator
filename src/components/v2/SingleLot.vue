@@ -29,7 +29,8 @@
                         const { lot_area, lot_type, price_per_sqm } = data
                         const unit_details = { lot_area, lot_type, price_per_sqm }
                         this.$store.dispatch('unit/setUnitDetails', unit_details)
-                        this.$router.push('/addbuyerform')
+                        this.$router.push({ name: "Choose-Reservation-Type" })
+                        // this.$router.push('/addbuyerform')
                     })
                 } else if(this.lot_status === 1) {
                     alert(`${this.lot_name} is already unavailable.`)

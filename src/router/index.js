@@ -59,7 +59,42 @@ const routes = [
     name: "Edit Buyer",
     component: () => import('../version2/EditBuyerDetails'),
     props: true
+  },
+
+  {
+    path: '/choose-reservation-type',
+    name: 'Choose-Reservation-Type',
+    component: () => import('../version2/ChooseReservationType')
+  },
+
+  {
+    path: '/ra-form-2a-LO-regular-reservation',
+    name: 'RA-Form-2A-LO-Regular-Reservation',
+    component: () => import('../version2/LO-Regular-Reservation')
+  },
+
+  {
+    path: '/ra-form-2a-LO-spot-downpayment',
+    name: 'RA-Form-2A-LO-Spot-Downpayment',
+    component: () => import('../version2/LO-Spot-Downpayment')
+  },
+
+  {
+    path: '/ra-form-2a-LO-spot-cash',
+    name: 'RA-Form-2A-LO-Spot-Cash',
+    component: () => import('../version2/LO-Spot-Cash')
   }
+
+
+
+
+
+
+
+
+
+
+
 
   // {
   //   path: '/projects',

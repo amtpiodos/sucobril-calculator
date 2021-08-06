@@ -2,7 +2,7 @@
     <div>
         <main-header />
         <div class="my-5 mx-24 px-5">
-            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> RA - FORM 2A - LO </p> </div>
+            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> RA - FORM 2A - LO</p> </div>
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 p-1">
                 <div class="flex px-4 gap-4">
                     <div class="w-2/5"> <input-form label="Last Name" v-model="buyer.last_name" /> </div>
@@ -31,26 +31,28 @@
                 <div class="full px-4"> <input-form label="Agent's Name" v-model="unit.agent_name" /> </div>
             </div>
 
-            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION / STRAIGHT MONTHLY </p> </div>
+            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> SPOT CASH </p> </div>
             <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
-                <div class="flex px-4 gap-4 my-4">
+                <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.total_contract_price" /> </div> </div>
                 </div>
-                <div class="flex px-4 gap-4 my-4">
+                
+                <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2">
-                        <p class="align-middle text-right text-xs font-bold">MONTHLY INSTALLMENT for <br />
+                        <p class="align-middle text-right text-xs font-bold">SPOT CASH Discount <br />
                             <input type="text"
-                                v-model="payment_details.installment_months"
+                                v-model="payment_details.spot_cash_discount_percentage"
                                 class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                            > months:
+                            > percent:
                         </p>
                     </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.monthly_installment" /> </div> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.spot_cash_discount_amount" /> </div> </div>
                 </div>
-                <div class="flex px-4 gap-4 my-4">
-                    <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">FIRST MONTHLY INSALLMENT <br> FEE / RESERVATION FEE: </p> </div>
-                    <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.reservation_fee" /> </div> </div>
+
+                <div class="flex px-4 gap-4 my-2">
+                    <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">NEW TCP Less Discount</p> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.new_tcp_less_discount" /> </div> </div>
                 </div>
             </div>
 
@@ -105,9 +107,17 @@
                 payment_details: {
                     date: '',
                     total_contract_price: '',
-                    installment_months: '',
-                    monthly_installment: '',
-                    reservation_fee: ''
+                    installment_months: null,
+                    monthly_installment: null,
+                    reservation_fee: null,
+                    reservation_type: 7,
+                    spot_downpayment: null,
+                    new_tcp_less_downpayment: null,
+                    spot_cash_discount_percentage: '',
+                    spot_cash_discount_amount: '',
+                    new_tcp_less_discount: '',
+                    monthly_start_date: null,
+                    monthly_end_date: null
                 }
             }
         },
@@ -137,9 +147,8 @@
                                         unit: this.unit,
                                         payment_details: this.payment_details }
                 console.log({dataToSubmit})
-                ipcRenderer.send('addBuyer', dataToSubmit)
+                ipcRenderer.send('addLotOnlyBuyer', dataToSubmit)
                 this.$router.push('/')
-
             }
         }
     })

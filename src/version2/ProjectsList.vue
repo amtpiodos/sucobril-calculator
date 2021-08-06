@@ -31,6 +31,10 @@
             'single-project': Project
         },
         created() {
+            // reset vuex store
+            this.$store.dispatch('unit/setPhase', {})
+            this.$store.dispatch('unit/setBlock', {})
+            this.$store.dispatch('unit/setLot', {})
             this.fetchProjectsList()
         },
         methods: {

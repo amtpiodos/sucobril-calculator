@@ -2,7 +2,7 @@
     <div>
         <main-header />
         <div class="my-5 mx-24">
-            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> {{ project_name }} </p> </div>
+            <div class="full my-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> {{ project_name }} {{ phase }} </p> </div>
         </div>
         <div class="my-8 mx-24 grid grid-cols-2 gap-4 lg:grid-cols-5 md:gap-8">
             <div v-for="block in blocks" :key="block.id">
@@ -32,12 +32,17 @@
                 blocks: '',
                 project_id: this.$route.params.project_id,
                 phase_id: this.$route.params.phase_id,
-                project_name: this.$route.params.name,
+                // project_name: this.$route.params.name,
                 project_location: this.$route.params.location,
-                has_phase: this.$route.params.has_phase
+                has_phase: this.$route.params.has_phase,
+
+                project_name: this.$store.state.unit.project.project_name,
+                phase: this.$store.state.unit.phase.phase_name
             }
         },
         created() {
+            this.$store.dispatch('unit/setBlock', {})
+            this.$store.dispatch('unit/setLot', {})
             this.fetchBlocks()
             console.log('ROUTE', this.$route.fullPath)
         },

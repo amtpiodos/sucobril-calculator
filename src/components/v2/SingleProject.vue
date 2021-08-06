@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-gray-500 p-3 rounded-md" v-on:click="fetchProject(project_id, project_name, project_location)">
+    <div class="bg-gray-500 p-3 rounded-md" v-on:click="fetchProject(project_id, project_name, project_location, project_type)">
         
         <p class="text-center text-white font-bold"> {{ project_name }}</p>
         <p class="text-center text-white text-xs mb-2">( {{ proj_type }} )</p>
@@ -27,11 +27,12 @@
                 'project_hasPhases'],
         
         methods: {
-            fetchProject(project_id, project_name, project_location) {
+            fetchProject(project_id, project_name, project_location, project_type) {
                 const project = {
                     project_id,
                     project_name,
-                    project_location
+                    project_location,
+                    project_type
                 }
 
                 this.$store.dispatch('unit/setProject', project)
