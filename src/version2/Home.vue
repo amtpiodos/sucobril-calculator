@@ -26,6 +26,8 @@
                             <div class="my-32">
                                 <p class="my-2 text-center align-center font-semibold uppercase text-xl"> {{ buyer_details.last_name }}, {{ buyer_details.first_name }} </p>
                                 <p class="my-2 text-center align-center font-regular uppercase text-lg"> {{ buyer_details.home_address }} </p>
+                                <p class="my-2 text-center align-center font-bold uppercase text-sm" v-if="buyer_details.status"> Status: Active</p>
+                                <p class="my-2 text-center align-center font-bold uppercase text-sm" v-else> Status: Inactive </p>
                             </div>
                             <div class="flex items-center mx-auto justify-center gap-4 mt-36">
                                 <button

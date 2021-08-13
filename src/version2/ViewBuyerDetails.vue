@@ -66,6 +66,10 @@
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                         EXPORT INFORMATION
                     </button>
+                    <button type="button" v-on:click="forefeitBuyer"
+                        class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                        FOREFEIT BUYER
+                    </button>
                 </div>
 
 
@@ -147,6 +151,13 @@
             },
             editDetails() {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
                 this.$router.push({ name: 'Edit Buyer', params: { id: this.buyer.id, buyer: this.buyer } })
+            },
+            forefeitBuyer() {
+                const data = {  id: this.buyer.id,
+                                lot_id: this.buyer.lot.id }
+                console.log('Forefeiting Buyer', data)
+                ipcRenderer.send('forefeitBuyer', data)
+                // refresh page
             },
             exportDetails() {
                 const reservationType = 'REGULAR RESERVATION'

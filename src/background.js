@@ -106,7 +106,8 @@ ipcMain.on('addLotOnlyBuyer', (event, data) => {
       home_address: buyer.home_address,
       lot_id: unit.lot_id,
       realty: unit.realty_name,
-      agent: unit.agent_name
+      agent: unit.agent_name,
+      status: 1
     })
     .returning('id')
     .into('Buyer')
@@ -306,6 +307,32 @@ ipcMain.on('fetchProjectType', (event, data) => {
       }
     }).catch((err) => { console.log('FETCH PROJECT TYPE ERROR', err) ; throw err
   }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FOREFEIT BUYER AND REOPEN LOT
+ipcMain.on('forefeitBuyer', (event, data) => {
+  const { id, lot_id } = data
+  const knex = getDbConnection()
+  knex('Buyer')
+    .where({ id: id  })
+    .update({
+      'status': 0
+    }).then(() => {
+      console.log('BUYER STATUS UPDATED: Buyer now INACTIVE', id)
+      // Reopen lot, clear owner id
+      const knex2 = getDbConnection()
+      knex2('Lot')
+        .where({ id: lot_id })
+        .update({
+          'status': 0,
+          'owner_id': null,
+          'reopened': 1
+        }).then(() => {
+          console.log(`LOT ${lot_id} IS NOW REOPENED`)
+        }).catch((err) => { console.log('UPDATING LOT AFTER FOREFEITING BUYER ERROR', err) ; throw err
+        }).finally(() => knex2.destroy())
+    }).catch((err) => { console.log('FOREFEITING OF BUYER ERROR', err) ; throw err
+    }).finally(() => knex2.destroy())
 })
 
 
