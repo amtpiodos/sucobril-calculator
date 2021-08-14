@@ -329,9 +329,15 @@ ipcMain.on('forefeitBuyer', (event, data) => {
           'reopened': 1
         }).then(() => {
           console.log(`LOT ${lot_id} IS NOW REOPENED`)
-        }).catch((err) => { console.log('UPDATING LOT AFTER FOREFEITING BUYER ERROR', err) ; throw err
+          event.reply('forefeitedBuyer', 1)
+        }).catch((err) => {
+          console.log('UPDATING LOT AFTER FOREFEITING BUYER ERROR', err)
+          event.reply('forefeitedBuyer', 0)
+          // throw err
         }).finally(() => knex2.destroy())
-    }).catch((err) => { console.log('FOREFEITING OF BUYER ERROR', err) ; throw err
+    }).catch((err) => {
+      console.log('FOREFEITING OF BUYER ERROR', err)
+      throw err
     }).finally(() => knex2.destroy())
 })
 

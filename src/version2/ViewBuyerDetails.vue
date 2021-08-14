@@ -2,7 +2,12 @@
     <div class="h-screen">
         <main-header />
         <div class="my-5 mx-24 px-5">
-            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> VIEW BUYER'S INFORMATION </p> </div>
+            <div class="full m-4 bg-gray-200">
+                <p class="text-center pt-2 font-bold text-lg"> VIEW BUYER'S INFORMATION </p>
+                <p class="text-center py-2 font-bold text-sm text-red-500" v-if="!buyer.status">
+                    This buyer has been forefeited and is now inactive.
+                </p>
+            </div>
             
             <div v-if="!isFetchingData">
                 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 p-1">
@@ -58,7 +63,7 @@
                 </div>
 
                 <div class="flex items-center mx-auto justify-center gap-8 my-4">
-                    <button type="button" v-on:click="editDetails"
+                    <button type="button" v-if="buyer.status" v-on:click="editDetails"
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                         EDIT INFORMATION
                     </button>
@@ -66,7 +71,7 @@
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                         EXPORT INFORMATION
                     </button>
-                    <button type="button" v-on:click="forefeitBuyer"
+                    <button type="button" v-if="buyer.status" v-on:click="forefeitBuyer"
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                         FOREFEIT BUYER
                     </button>
@@ -157,7 +162,11 @@
                                 lot_id: this.buyer.lot.id }
                 console.log('Forefeiting Buyer', data)
                 ipcRenderer.send('forefeitBuyer', data)
-                // refresh page
+                ipcRenderer.once('forefeitedBuyer', (event, data) => {
+                    console.log('FOREFEITED BUYER REPLY', data)
+                    data ? alert(`Buyer ${this.buyer.last_name} has been forefeited`) : alert(`Forefeiting buyer ${this.buyer.last_name} failed`)
+                    // refresh page
+                })
             },
             exportDetails() {
                 const reservationType = 'REGULAR RESERVATION'

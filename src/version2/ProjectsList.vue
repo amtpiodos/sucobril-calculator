@@ -1,7 +1,7 @@
 <template>
     <div>
         <main-header />
-        <div class="my-8 mx-24 grid grid-cols-2 gap-4 lg:grid-cols-4 md:gap-8">
+        <div class="my-8 mx-24 grid grid-cols-2 gap-4 lg:grid-cols-3 md:gap-8">
             <div v-for="project in projects" :key="project.id">
                 <single-project v-bind:project_name="project.name"
                             v-bind:project_location="project.location"
