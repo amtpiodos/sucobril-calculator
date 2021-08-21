@@ -143,7 +143,12 @@
                             ipcRenderer.send('fetchProject', this.buyer.block.project_id)
                             ipcRenderer.once('fetchedProject', (event, data) => {
                                 this.buyer.project = data
+                                this.buyer.total_contract_price = 1234567
+                                this.buyer.reservation_fee = 1000
+                                this.buyer.monthly_installment = 2000
+                                this.buyer.installment_months = 99
                                 console.log('this.buyer in view details', this.buyer)
+
                                 this.isFetchingData = false
                             })
                         })
@@ -164,7 +169,8 @@
                 ipcRenderer.send('forefeitBuyer', data)
                 ipcRenderer.once('forefeitedBuyer', (event, data) => {
                     console.log('FOREFEITED BUYER REPLY', data)
-                    data ? alert(`Buyer ${this.buyer.last_name} has been forefeited`) : alert(`Forefeiting buyer ${this.buyer.last_name} failed`)
+                    data ? alert(`Buyer for ${this.buyer.project.name} ${this.buyer.block.name} ${this.buyer.lot.name} - ${this.buyer.first_name} ${this.buyer.project.name} ${this.buyer.middle_initial} ${this.buyer.lot.name} ${this.buyer.last_name} has been forefeited`)
+                         : alert(`Forefeiting buyer for ${this.buyer.project.name} ${this.buyer.block.name} ${this.buyer.lot.name} - ${this.buyer.first_name} ${this.buyer.project.name} ${this.buyer.middle_initial} ${this.buyer.lot.name} ${this.buyer.last_name} failed`)
                     // refresh page
                 })
             },
