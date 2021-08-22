@@ -107,7 +107,8 @@ ipcMain.on('addLotOnlyBuyer', (event, data) => {
       lot_id: unit.lot_id,
       realty: unit.realty_name,
       agent: unit.agent_name,
-      status: 1
+      status: 1,
+      reservation_type: payment_details.reservation_type
     })
     .returning('id')
     .into('Buyer')
@@ -309,6 +310,25 @@ ipcMain.on('fetchProjectType', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+
+// FUNCTION TO FETCH PAYMENT LOT ONLY
+ipcMain.on('fetchLotOnlyPayment', (event, data) => {
+  console.log('fetchLotOnlyPayment', data)
+  const knex = getDbConnection()
+  knex('lot_payment')
+    .where({ buyer_id: data })
+    .then((lot_payment) => {
+      if(lot_payment[0]) {
+        console.log('FETCHING LOT PAYMENT', lot_payment[0])
+        event.reply('fetchedLotOnlyPayment', lot_payment[0])
+      } else {
+        console.log(`Lot Payment with BUYER_ID ${data} does not exist`)
+        event.reply('fetchedLotOnlyPayment', `Project Type with id ${data} does not exist`)
+      }
+    }).catch((err) => { console.log('FETCH PROJECT TYPE ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
 // FUNCTION TO FOREFEIT BUYER AND REOPEN LOT
 ipcMain.on('forefeitBuyer', (event, data) => {
   const { id, lot_id } = data
@@ -338,7 +358,7 @@ ipcMain.on('forefeitBuyer', (event, data) => {
     }).catch((err) => {
       console.log('FOREFEITING OF BUYER ERROR', err)
       throw err
-    }).finally(() => knex2.destroy())
+    }).finally(() => knex.destroy())
 })
 
 

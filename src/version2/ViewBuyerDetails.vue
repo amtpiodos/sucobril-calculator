@@ -4,7 +4,7 @@
         <div class="my-5 mx-24 px-5">
             <div class="full m-4 bg-gray-200">
                 <p class="text-center pt-2 font-bold text-lg"> VIEW BUYER'S INFORMATION </p>
-                <p class="text-center py-2 font-bold text-sm text-red-500" v-if="!buyer.status">
+                <p class="text-center py-2 font-bold text-sm text-red-700" v-if="!buyer.status">
                     This buyer has been forefeited and is now inactive.
                 </p>
             </div>
@@ -38,29 +38,114 @@
                     <div class="full px-4"> <readonly-form label="Realty's Name" :value="buyer.realty" /> </div>
                     <div class="full px-4"> <readonly-form label="Agent's Name" :value="buyer.agent" /> </div>
                 </div>
-                <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION / STRAIGHT MONTHLY </p> </div>
 
-                <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
-                    <div class="flex px-4 gap-4 my-4">
-                        <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.total_contract_price" /> </div> </div>
-                    </div>
-                    <div class="flex px-4 gap-4 my-4">
-                        <div class="w-1/4 items-center py-2">
-                            <p class="align-middle text-right text-xs font-bold">MONTHLY INSTALLMENT for <br />
-                                <input type="text"
-                                    v-model="buyer.installment_months"
-                                    class=" border border-gray-300 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                                    readonly disabled> months:
-                            </p>
+                <!-- HOUSE & LOT REGULAR RESERVATION -->
+                <div v-if="buyer.reservation_type===1">
+                     <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION / STRAIGHT MONTHLY </p> </div>
+
+                </div>
+
+                <!-- LOT ONLY REGULAR RESERVATION -->
+                <div v-else-if="buyer.reservation_type==5">
+                    <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION / STRAIGHT MONTHLY </p> </div>
+                    <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                        <div class="flex px-4 gap-4 my-4">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.total_contract_price" /> </div> </div>
                         </div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.monthly_installment" /> </div> </div>
-                    </div>
-                    <div class="flex px-4 gap-4 my-4">
-                        <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">FIRST MONTHLY INSTALLMENT <br> FEE / RESERVATION FEE: </p> </div>
-                        <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.reservation_fee" /> </div> </div>
+                        <div class="flex px-4 gap-4">
+                            <div class="w-1/4 items-center py-2">
+                                <p class="align-middle text-right text-xs font-bold">MONTHLY INSTALLMENT for <br />
+                                    <input type="text"
+                                        v-model="buyer.payment.installment_months"
+                                        class=" border border-gray-300 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                        readonly disabled> months:
+                                </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.monthly_installment" /> </div> </div>
+                        </div>
+                        <div class="flex px-4 gap-4">
+                            <div class="w-1/4 items-center py-4"> <p class="align-middle text-right text-xs font-bold">FIRST MONTHLY INSTALLMENT <br> FEE / RESERVATION FEE: </p> </div>
+                            <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.reservation_fee" /> </div> </div>
+                        </div>
+                        <div class="flex px-4 gap-4">
+                            <div class="w-1/4 items-center py-4"> <p class="align-middle text-right text-xs font-bold">Monthly Installment <br> START DATE: </p> </div>
+                            <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.monthly_start_date" /> </div> </div>
+                        </div>
+                        <div class="flex px-4 gap-4 ">
+                            <div class="w-1/4 items-center py-4"> <p class="align-middle text-right text-xs font-bold">Monthly Installment <br> END DATE: </p> </div>
+                            <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.monthly_end_date" /> </div> </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- LOT ONLY WITH SPOT DOWNPAYMENT -->
+                <div v-else-if="buyer.reservation_type==6">
+                    <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> WITH SPOT DOWNPAYMENT / ADVANCE PAYMENT </p> </div>
+                    <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                        <div class="flex px-4 gap-4 my-4">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.total_contract_price" /> </div> </div>
+                        </div>
+                        <div class="flex px-4 gap-4 my-4">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Spot Downpayment / <br> Advance Payment </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.spot_downpayment" /> </div> </div>
+                        </div>
+                        <div class="flex px-4 gap-4 my-4">
+                            <div class="w-1/4 items-center py-4"> <p class="align-middle text-right text-xs font-bold">NEW TCP Less Downpayment </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.new_tcp_less_downpayment" /> </div> </div>
+                        </div>
+
+                        <div class="flex px-4 gap-4 my-4">
+                            <div class="w-1/4 items-center py-2">
+                                <p class="align-middle text-right text-xs font-bold">MONTHLY INSTALLMENT for <br />
+                                    <input type="text"
+                                        v-model="buyer.payment.installment_months"
+                                        class=" border border-gray-300 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                        readonly disabled> months:
+                                </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.monthly_installment" /> </div> </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LOT ONLY WITH SPOT CASH -->
+                <div v-else-if="buyer.reservation_type==7">
+                    <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> SPOT CASH </p> </div>
+                    <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                        <div class="flex px-4 gap-4 my-4">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.total_contract_price" /> </div> </div>
+                        </div>
+
+                        <div class="flex px-4 gap-4 my-4">
+                            <div class="w-1/4 items-center py-2">
+                                <p class="align-middle text-right text-xs font-bold"> Spot Cash Discount
+                                    <input type="text"
+                                        v-model="buyer.installment_months"
+                                        class=" border border-gray-300 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                        readonly disabled> %:
+                                </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.monthly_installment" /> </div> </div>
+                        </div>
+
+                        <div class="flex px-4 gap-4 my-4">
+                            <div class="w-1/4 items-center py-4"> <p class="align-middle text-right text-xs font-bold"> NEW TCP Less Discount </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.new_tcp_less_discount" /> </div> </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-else>
+                    <div class="full m-4 bg-gray-200">
+                        <p class="text-center py-2 font-bold text-md text-red-500">
+                            ERROR Incorrect reservation type: {{ this.buyer.reservation_type }}
+                        </p>
+                    </div>
+                </div>
+
 
                 <div class="flex items-center mx-auto justify-center gap-8 my-4">
                     <button type="button" v-if="buyer.status" v-on:click="editDetails"
@@ -77,10 +162,9 @@
                     </button>
                 </div>
 
-
             </div>
             <div v-if="isFetchingData">
-                LOADING
+                LOADING...
             </div>
         </div>
 
@@ -106,6 +190,7 @@
         data() {
             return {
                 buyer: {},
+                payment: {},
                 isFetchingData: true,
                 isEditing: false,
 
@@ -143,13 +228,22 @@
                             ipcRenderer.send('fetchProject', this.buyer.block.project_id)
                             ipcRenderer.once('fetchedProject', (event, data) => {
                                 this.buyer.project = data
-                                this.buyer.total_contract_price = 1234567
-                                this.buyer.reservation_fee = 1000
-                                this.buyer.monthly_installment = 2000
-                                this.buyer.installment_months = 99
-                                console.log('this.buyer in view details', this.buyer)
 
-                                this.isFetchingData = false
+                                // getPayment
+                                if(data.type == 1) {
+                                    ipcRenderer.send('fetchHouseAndLotPayment', this.buyer.id)
+                                } else if(data.type == 2) {
+                                    ipcRenderer.send('fetchLotOnlyPayment', this.buyer.id)
+                                    ipcRenderer.once('fetchedLotOnlyPayment', (event, data) => {
+                                        // console.log('fetchedLotOnlyPayment', data)
+                                        this.buyer.payment = data
+                                        console.log('this.buyer in VIEW DETAILS BUYER', this.buyer)
+                                        console.log('this.buyer in VIEW DETAILS PAYMENT', this.payment)
+                                        this.isFetchingData = false
+                                    })
+                                } else {
+                                    alert(`ERROR Project type ${data.type}`)
+                                }
                             })
                         })
                     })
@@ -172,6 +266,10 @@
                     data ? alert(`Buyer for ${this.buyer.project.name} ${this.buyer.block.name} ${this.buyer.lot.name} - ${this.buyer.first_name} ${this.buyer.project.name} ${this.buyer.middle_initial} ${this.buyer.lot.name} ${this.buyer.last_name} has been forefeited`)
                          : alert(`Forefeiting buyer for ${this.buyer.project.name} ${this.buyer.block.name} ${this.buyer.lot.name} - ${this.buyer.first_name} ${this.buyer.project.name} ${this.buyer.middle_initial} ${this.buyer.lot.name} ${this.buyer.last_name} failed`)
                     // refresh page
+
+                    setTimeout(() =>{
+                        this.$router.push('/')
+                    }, 1000)
                 })
             },
             exportDetails() {
