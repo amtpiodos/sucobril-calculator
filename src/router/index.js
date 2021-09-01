@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+// import { createWebHashHistory, createWebHistory } from 'vue-router'
 // import Home from '../views/Home.vue'
 
 Vue.use(VueRouter)
@@ -70,19 +71,61 @@ const routes = [
   {
     path: '/ra-form-2a-LO-regular-reservation',
     name: 'RA-Form-2A-LO-Regular-Reservation',
-    component: () => import('../version2/LO-Regular-Reservation')
+    component: () => import('../version2/RA-Form-2A-LO-Regular-Reservation')
   },
 
   {
     path: '/ra-form-2a-LO-spot-downpayment',
     name: 'RA-Form-2A-LO-Spot-Downpayment',
-    component: () => import('../version2/LO-Spot-Downpayment')
+    component: () => import('../version2/RA-Form-2A-LO-Spot-Downpayment')
   },
 
   {
     path: '/ra-form-2a-LO-spot-cash',
     name: 'RA-Form-2A-LO-Spot-Cash',
-    component: () => import('../version2/LO-Spot-Cash')
+    component: () => import('../version2/RA-Form-2A-LO-Spot-Cash')
+  },
+
+  {
+    path: '/ra-form-1a-HL-regular-reservation',
+    name: 'RA-Form-1A-HL-Regular-Reservation',
+    component: () => import('../version2/RA-Form-1A-HL-Regular-Reservation')
+  },
+
+  {
+    path: '/ra-form-1a-HL-with-spot-equity',
+    name: 'RA-Form-1A-HL-With-Spot-Equity',
+    component: () => import('../version2/RA-Form-1A-HL-With-Spot-Equity')
+  },
+
+  {
+    path: '/ra-form-1a-HL-spot-cash-tcp',
+    name: 'RA-Form-1A-HL-Spot-Cash-TCP',
+    component: () => import('../version2/RA-Form-1A-HL-Spot-Cash-TCP')
+  },
+
+  {
+    path: '/ra-form-1a-HL-deferred-cash',
+    name: 'RA-Form-1A-HL-Deferred-Cash',
+    component: () => import('../version2/RA-Form-1A-HL-Deferred-Cash')
+  },
+
+  {
+    path: '/view-buyer-form-2a-LO-regular-reservation/:id',
+    name: 'View-Buyer-Form-2A-LO-Regular-Reservation',
+    component: () => import('../version2/View-Buyer-Form-2A-LO-Regular-Reservation')
+  },
+
+  {
+    path: '/view-buyer-form-2a-LO-spot-downpayment/:id',
+    name: 'View-Buyer-Form-2A-LO-Spot-Downpayment',
+    component: () => import('../version2/View-Buyer-Form-2A-LO-Spot-Downpayment')
+  },
+
+  {
+    path: '/view-buyer-form-2a-LO-spot-cash/:id',
+    name: 'View-Buyer-Form-2A-LO-Spot-Cash',
+    component: () => import('../version2/View-Buyer-Form-2A-LO-Spot-Cash')
   }
 
 
@@ -120,6 +163,8 @@ const routes = [
 
 const router = new VueRouter({
   mode: 'history',
+  // mode: process.env.IS_ELECTRON ? 'hash' : 'history',
+  // history: process.env.IS_ELECTRON ? createWebHashHistory() : createWebHistory(),
   base: process.env.BASE_URL,
   routes
 })

@@ -10,10 +10,10 @@
 
         <!-- House & Lot -->
         <div class="my-8 mx-24 grid grid-cols-1 gap-4 lg:grid-cols-2 md:gap-8" v-if="project_type==1">
-            <common-button title="Regular Reservation" description="Sample description of what a Regular Reservation is" />
-            <common-button title="With Spot Equity" description="Sample description of what a With Spot Equity is "/>
-            <common-button title="Spot Cash TCP" description="Sample description of what a Spot Cash TCP is"/>
-            <common-button title="Deferred Cash" description="Sample description of what a Deferred Cash is"/>
+            <common-button title="Regular Reservation" description="Sample description of what a Regular Reservation is" route_path="RA-Form-1A-HL-Regular-Reservation"/>
+            <common-button title="With Spot Equity" description="Sample description of what a With Spot Equity is " route_path="RA-Form-1A-HL-With-Spot-Equity"/>
+            <common-button title="Spot Cash TCP" description="Sample description of what a Spot Cash TCP is " route_path="RA-Form-1A-HL-Spot-Cash-TCP"/>
+            <common-button title="Deferred Cash" description="Sample description of what a Deferred Cash is " route_path="RA-Form-1A-HL-Deferred-Cash"/>
         </div>
 
         <!-- LOT Only -->

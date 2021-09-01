@@ -2,7 +2,7 @@
     <div>
         <main-header />
         <div class="my-5 mx-24 px-5">
-            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> RA - FORM 2A - LO</p> </div>
+            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> RA - FORM 1A - HL</p> </div>
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 p-1">
                 <div class="flex px-4 gap-4">
                     <div class="w-2/5"> <input-form label="Last Name" v-model="buyer.last_name" /> </div>
@@ -19,8 +19,8 @@
                 </div>
                 <div class="full px-4"> <readonly-form label="Project Address" v-bind:value="unit.project_address" /> </div>
                 <div class="grid grid-cols-2 gap-4 px-4">
-                    <div class="full"> <readonly-form label="Price/Sq.M" v-bind:value="unit.price_per_sqm" /> </div>
-                    <div class="full"> <readonly-form label="Type of Lot" v-bind:value="unit.lot_type" /> </div>
+                    <div class="full"> <readonly-form label="Floor Area" v-bind:value="unit.floor_area" /> </div>
+                    <div class="full"> <readonly-form label="House Type" v-bind:value="unit.house_type" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Home Address" v-model="buyer.home_address" /> </div>
                 <div class="flex px-4 gap-4">
@@ -28,37 +28,70 @@
                     <div class="w-1/2"> <input-form label="Email Address" v-model="buyer.email_address" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Realty's Name" v-model="unit.realty_name" /> </div>
-                <div class="full px-4"> <input-form label="Agent's Name" v-model="unit.agent_name" /> </div>
+                <div class="full px-4"> <input-form label= "Agent's Name" v-model="unit.agent_name" /> </div>
             </div>
 
-            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> WIH SPOT DOWNPAYMENT / ADVANCE DOWNPAYMENT </p> </div>
+            <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION </p> </div>
             <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                 <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
+                    <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.total_contract_price" /> </div> </div>
                 </div>
                 <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Spot Downpayment / <br> Advance Payment</p> </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.spot_downpayment" /> </div> </div>
-                </div>
-                <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">NEW TCP Less <br> Downpayment</p> </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.new_tcp_less_downpayment" /> </div> </div>
-                </div>
-                <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2">
-                        <p class="align-middle text-right text-xs font-bold">MONTHLY INSTALLMENT for <br />
+                    <div class="w-1/4 items-center py-2 mt-1">
+                        <p class="align-middle text-right text-xs font-bold">Required Equity 
                             <input type="text"
-                                v-model="payment_details.installment_months"
+                                v-model="payment_details.required_equity_percentage"
+                                class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                            > %:
+                        </p>
+                    </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.required_equity_amount" /> </div> </div>
+                </div>
+                <div class="flex px-4 gap-4 my-2">
+                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p></div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.reservation_fee" /> </div> </div>
+                </div>
+                <div class="flex px-4 gap-4 my-2">
+                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee: </p></div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.equity_net_of_reservation_fee" /> </div> </div>
+                </div>
+                <div class="flex px-4 gap-4 my-2">
+                    <div class="w-1/4 items-center py-2 mt-1">
+                        <p class="align-middle text-right text-xs font-bold">Required Monthly Equity <br/> for 
+                            <input type="text"
+                                v-model="payment_details.equity_months"
                                 class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                             > months:
                         </p>
                     </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.monthly_installment" /> </div> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.monthly_equity_amount" /> </div> </div>
                 </div>
+
+                <div class="flex px-4 gap-4 my-2">
+                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Starts: </p></div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.equity_start_date" /> </div> </div>
+                </div>
+                <div class="flex px-4 gap-4 my-2">
+                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.equity_end_date" /> </div> </div>
+                </div>
+
+                <div class="flex px-4 gap-4 my-2">
+                    <div class="w-1/4 items-center py-2">
+                        <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity: 
+                            <input type="text"
+                                v-model="payment_details.balance_loanable_percentage"
+                                class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                            > months:
+                        </p>
+                    </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.balance_loanable_amount" /> </div> </div>
+                </div>
+
             </div>
 
-            <div class="flex items-center">
+            <div class="flex items-center my-4">
                 <button
                     type="button"
                     v-on:click="submitForm"
@@ -103,23 +136,23 @@
                     price_per_sqm: `PHP ${this.$store.state.unit.unit_details.price_per_sqm}`,
                     realty_name: '',
                     agent_name: '',
-                    lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
-                    lot_type: this.$store.state.unit.unit_details.lot_type,
+                    floor_area: `${this.$store.state.unit.unit_details.floor_area} SQ. M`,
+                    house_type: this.$store.state.unit.unit_details.house_type
                 },
                 payment_details: {
                     date: '',
                     total_contract_price: '',
-                    installment_months: '',
-                    monthly_installment: '',
-                    reservation_fee: null,
-                    reservation_type: 6,
-                    spot_downpayment: '',
-                    new_tcp_less_downpayment: '',
-                    spot_cash_discount_percentage: null,
-                    spot_cash_discount_amount: null,
-                    new_tcp_less_discount: null,
-                    monthly_start_date: null,
-                    monthly_end_date: null
+                    required_equity_percentage: '',
+                    required_equity_amount: '',
+                    reservation_fee: '',
+                    equity_net_of_reservation_fee: '',
+                    equity_months: '',
+                    monthly_equity_amount: '',
+                    equity_start_date: '',
+                    equity_end_date: '',
+                    balance_loanable_percentage: '',
+                    balance_loanable_amount: '',
+                    reservation_type: 1,
                 }
             }
         },
