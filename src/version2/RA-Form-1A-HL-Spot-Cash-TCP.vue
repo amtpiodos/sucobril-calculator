@@ -149,7 +149,7 @@
                                         unit: this.unit,
                                         payment_details: this.payment_details }
                 console.log({dataToSubmit})
-                ipcRenderer.send('addLotOnlyBuyer', dataToSubmit)
+                ipcRenderer.send('addHouseAndLotBuyer', dataToSubmit)
                 this.$router.push('/')
             }
         }

@@ -29,7 +29,7 @@
                 </div>
                 <div class="full px-4"> <input-form label="Realty's Name" v-model="unit.realty_name" /> </div>
                 <div class="full px-4"> <input-form label= "Agent's Name" v-model="unit.agent_name" /> </div>
-            </div>
+            </div>s
 
             <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> WIH SPOT DOWNPAYMENT / ADVANCE DOWNPAYMENT </p> </div>
             <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
@@ -172,7 +172,7 @@
                                         unit: this.unit,
                                         payment_details: this.payment_details }
                 console.log({dataToSubmit})
-                ipcRenderer.send('addLotOnlyBuyer', dataToSubmit)
+                ipcRenderer.send('addHouseAndLotBuyer', dataToSubmit)
                 this.$router.push('/')
             }
         }

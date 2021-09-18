@@ -15,12 +15,12 @@
                     <div class="full px-1"> <readonly-form label="Block" v-bind:value="unit.block" /> </div>
                     <div class="full px-1"> <readonly-form label="Lot" v-bind:value="unit.lot" /> </div>
                     <div class="full px-1"> <readonly-form label="Phase" v-bind:value="getPhase()" /> </div>
-                    <div class="full px-1"> <readonly-form label="Lot Area" v-bind:value="unit.lot_area" /> </div>
+                    <div class="full px-1"> <readonly-form label="Floor Area" v-bind:value="unit.lot_area" /> </div>
                 </div>
                 <div class="full px-4"> <readonly-form label="Project Address" v-bind:value="unit.project_address" /> </div>
                 <div class="grid grid-cols-2 gap-4 px-4">
-                    <div class="full"> <readonly-form label="Floor Area" v-bind:value="unit.floor_area" /> </div>
-                    <div class="full"> <readonly-form label="House Type" v-bind:value="unit.house_type" /> </div>
+                    <div class="full"> <readonly-form label="Price/Sq.M" v-bind:value="unit.price_per_sqm" /> </div>
+                    <div class="full"> <readonly-form label="House Type" v-bind:value="unit.lot_type" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Home Address" v-model="buyer.home_address" /> </div>
                 <div class="flex px-4 gap-4">
@@ -136,8 +136,8 @@
                     price_per_sqm: `PHP ${this.$store.state.unit.unit_details.price_per_sqm}`,
                     realty_name: '',
                     agent_name: '',
-                    floor_area: `${this.$store.state.unit.unit_details.floor_area} SQ. M`,
-                    house_type: this.$store.state.unit.unit_details.house_type
+                    lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
+                    lot_type: this.$store.state.unit.unit_details.lot_type
                 },
                 payment_details: {
                     date: '',
@@ -182,7 +182,7 @@
                                         unit: this.unit,
                                         payment_details: this.payment_details }
                 console.log({dataToSubmit})
-                ipcRenderer.send('addLotOnlyBuyer', dataToSubmit)
+                ipcRenderer.send('addHouseAndLotBuyer', dataToSubmit)
                 this.$router.push('/')
             }
         }

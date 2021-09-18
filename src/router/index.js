@@ -111,22 +111,20 @@ const routes = [
   },
 
   {
-    path: '/view-buyer-form-2a-LO-regular-reservation/:id',
-    name: 'View-Buyer-Form-2A-LO-Regular-Reservation',
-    component: () => import('../version2/View-Buyer-Form-2A-LO-Regular-Reservation')
+    path: '/view-buyer-LO/:id',
+    name: 'View-Buyer-LO',
+    component: () => import('../version2/View-Buyer-LO'),
+    props: true
   },
 
   {
-    path: '/view-buyer-form-2a-LO-spot-downpayment/:id',
-    name: 'View-Buyer-Form-2A-LO-Spot-Downpayment',
-    component: () => import('../version2/View-Buyer-Form-2A-LO-Spot-Downpayment')
+    path: '/view-buyer-HL/:id',
+    name: 'View-Buyer-HL',
+    component: () => import('../version2/View-Buyer-HL'),
+    props: true
   },
 
-  {
-    path: '/view-buyer-form-2a-LO-spot-cash/:id',
-    name: 'View-Buyer-Form-2A-LO-Spot-Cash',
-    component: () => import('../version2/View-Buyer-Form-2A-LO-Spot-Cash')
-  }
+
 
 
 
@@ -162,10 +160,10 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   // mode: process.env.IS_ELECTRON ? 'hash' : 'history',
   // history: process.env.IS_ELECTRON ? createWebHashHistory() : createWebHistory(),
-  base: process.env.BASE_URL,
+  // base: process.env.BASE_URL,
   routes
 })
 

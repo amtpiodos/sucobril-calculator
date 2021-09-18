@@ -45,9 +45,7 @@
                     <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Balance Amount after Reservation Fee: </p> </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.balance_amount_after_reservation" /> </div> </div>
                 </div>
-
-
-
+                
                 <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2">
                         <p class="align-middle text-right text-xs font-bold">Monthly Installment Amount <br /> payable in
@@ -156,7 +154,7 @@
                                         unit: this.unit,
                                         payment_details: this.payment_details }
                 console.log({dataToSubmit})
-                ipcRenderer.send('addLotOnlyBuyer', dataToSubmit)
+                ipcRenderer.send('addHouseAndLotBuyer', dataToSubmit)
                 this.$router.push('/')
             }
         }

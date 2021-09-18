@@ -1,9 +1,17 @@
 'use strict'
 
+// const { app, protocol, BrowserWindow, ipcMain } = require("electron")
+// // const { createProtocol } = require('vue-cli-plugin-electron-builder/lib')
+// // const installExtension = require('electron-devtools-installer')
+// // const { VUEJS_DEVTOOLS } = require('electron-devtools-installer')
+// const knex = require('knex')
+
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib/createProtocol'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import knex from 'knex'
+
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
@@ -29,9 +37,11 @@ async function createWindow() {
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
+    // alert('not in dev mode')
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
+    // win.loadURL('../public/index.html');
   }
 }
 
@@ -133,6 +143,74 @@ ipcMain.on('addLotOnlyBuyer', (event, data) => {
 
       })
       .into('lot_payment')
+      .then(() => {
+        const knex3 = getDbConnection()
+        knex3('Lot').where({ id: unit.lot_id  })
+        .update({
+          'status': 1,
+          'owner_id': buyer_id
+        }).then(() => {
+          console.log('LOT STATUS UPDATED', unit.lot_id)
+        }).catch((err) => { console.log('ADDING OF PAYMENT ERROR', err) ; throw err
+        }).finally(() => knex3.destroy())
+      // edit to only one lot updated (where statement)
+      }).catch((err) => { console.log('LOT STATUS UPDATE ERROR', err) ; throw err
+      }).finally(() => knex2.destroy())
+      // event.reply('isBuyerAdded', 1)
+  }).catch((err) => { console.log('INSERT ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO ADD NEW HOUSE AND LOTrequired_equity_amount BUYER IN DB
+ipcMain.on('addHouseAndLotBuyer', (event, data) => {
+  const { buyer, payment_details, unit } = data
+  console.log({buyer}, {payment_details}, {unit})
+  const knex = getDbConnection()
+  knex.insert({
+      last_name: buyer.last_name,
+      first_name: buyer.first_name,
+      middle_initial: buyer.middle_initial,
+      contact_number: buyer.contact_number,
+      email_address: buyer.email_address,
+      home_address: buyer.home_address,
+      lot_id: unit.lot_id,
+      realty: unit.realty_name,
+      agent: unit.agent_name,
+      status: 1,
+      reservation_type: payment_details.reservation_type
+    })
+    .returning('id')
+    .into('Buyer')
+    .then((id) => {
+      console.log('INSERTED', id)
+      const buyer_id = id
+      const knex2 = getDbConnection()
+      knex2.insert({
+        buyer_id: buyer_id,
+        total_contract_price: payment_details.total_contract_price,
+        reservation_type: payment_details.reservation_type,
+        reservation_fee: payment_details.reservation_fee,
+        required_equity_percentage: payment_details.required_equity_percentage,
+        required_equity_amount: payment_details.required_equity_amount,
+        equity_net_of_reservation_fee: payment_details.equity_net_of_reservation_fee,
+        equity_months: payment_details.equity_months,
+        monthly_equity_amount: payment_details.monthly_equity_amount,
+        equity_start_date: payment_details.equity_start_date,
+        equity_end_date: payment_details.equity_end_date,
+        balance_loanable_percentage: payment_details.balance_loanable_percentage,
+        balance_loanable_amount: payment_details.balance_loanable_amount,
+        spot_cash_equity_less_percentage: payment_details.spot_cash_equity_less_percentage,
+        spot_cash_equity_less_amount: payment_details.spot_cash_equity_less_amount,
+        net_equity_less_discount: payment_details.net_equity_less_discount,
+        spot_cash_discount_less_percentage: payment_details.spot_cash_discount_less_percentage,
+        spot_cash_discount_less_amount: payment_details.spot_cash_discount_less_amount,
+        net_total_contract_price: payment_details.net_total_contract_price,
+        balance_total_contract_price: payment_details.balance_total_contract_price,
+        balance_amount_after_reservation: payment_details.balance_amount_after_reservation,
+        installment_months: payment_details.installment_months,
+        monthly_installment: payment_details.monthly_installment,
+      })
+      .into('hl_payment')
       .then(() => {
         const knex3 = getDbConnection()
         knex3('Lot').where({ id: unit.lot_id  })
@@ -324,6 +402,24 @@ ipcMain.on('fetchLotOnlyPayment', (event, data) => {
       } else {
         console.log(`Lot Payment with BUYER_ID ${data} does not exist`)
         event.reply('fetchedLotOnlyPayment', `Project Type with id ${data} does not exist`)
+      }
+    }).catch((err) => { console.log('FETCH PROJECT TYPE ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH PAYMENT HOUSE AND LOT
+ipcMain.on('fetchHouseAndLotPayment', (event, data) => {
+  console.log('fetchHouseAndLotPayment', data)
+  const knex = getDbConnection()
+  knex('hl_payment')
+    .where({ buyer_id: data })
+    .then((hl_payment) => {
+      if(hl_payment[0]) {
+        console.log('FETCHING HOUSE AND LOT PAYMENT', hl_payment[0])
+        event.reply('fetchedHouseAndLotPayment', hl_payment[0])
+      } else {
+        console.log(`HOUSE AND LOT Payment with BUYER_ID ${data} does not exist`)
+        event.reply('fetchedHouseAndLotPayment', `Project Type with id ${data} does not exist`)
       }
     }).catch((err) => { console.log('FETCH PROJECT TYPE ERROR', err) ; throw err
   }).finally(() => knex.destroy())

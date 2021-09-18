@@ -2,14 +2,16 @@
     <div class="h-screen">
         <main-header />
         <div class="my-5 mx-24 px-5">
-            <div class="full m-4 bg-gray-200">
-                <p class="text-center pt-2 font-bold text-lg"> VIEW BUYER'S INFORMATION </p>
-                <p class="text-center py-2 font-bold text-sm text-red-700" v-if="!buyer.status">
-                    This buyer has been forefeited and is now inactive.
-                </p>
-            </div>
+            
             
             <div v-if="!isFetchingData">
+                <div class="full m-4 bg-gray-200">
+                    <p class="text-center pt-2 font-bold text-lg"> VIEW BUYER'S INFORMATION </p>
+                    <p class="text-center py-2 font-bold text-sm text-red-700" v-if="!buyer.status">
+                        This buyer has been forefeited and is now inactive.
+                    </p>
+                </div>
+
                 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 p-1">
                     <div class="flex px-4 gap-4">
                         <div class="w-2/5"> <readonly-form label="Last Name" :value="buyer.last_name" /> </div>
@@ -39,14 +41,8 @@
                     <div class="full px-4"> <readonly-form label="Agent's Name" :value="buyer.agent" /> </div>
                 </div>
 
-                <!-- HOUSE & LOT REGULAR RESERVATION -->
-                <div v-if="buyer.reservation_type===1">
-                     <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION / STRAIGHT MONTHLY </p> </div>
-
-                </div>
-
                 <!-- LOT ONLY REGULAR RESERVATION -->
-                <div v-else-if="buyer.reservation_type==5">
+                <div v-if="buyer.reservation_type==5">
                     <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION / STRAIGHT MONTHLY </p> </div>
                     <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                         <div class="flex px-4 gap-4 my-4">
@@ -116,24 +112,24 @@
                     <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                         <div class="flex px-4 gap-4 my-4">
                             <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.total_contract_price" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.total_contract_price" /> </div> </div>
                         </div>
 
                         <div class="flex px-4 gap-4 my-4">
                             <div class="w-1/4 items-center py-2">
                                 <p class="align-middle text-right text-xs font-bold"> Spot Cash Discount
                                     <input type="text"
-                                        v-model="buyer.installment_months"
+                                        v-model="buyer.payment.spot_cash_discount_percentage"
                                         class=" border border-gray-300 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                         readonly disabled> %:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.monthly_installment" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.spot_cash_discount_amount" /> </div> </div>
                         </div>
 
                         <div class="flex px-4 gap-4 my-4">
                             <div class="w-1/4 items-center py-4"> <p class="align-middle text-right text-xs font-bold"> NEW TCP Less Discount </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.new_tcp_less_discount" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.new_tcp_less_discount" /> </div> </div>
                         </div>
                     </div>
                 </div>
@@ -225,25 +221,17 @@
                             } else {
                                 this.buyer.phase = "N/A"
                             }
+                            
                             ipcRenderer.send('fetchProject', this.buyer.block.project_id)
                             ipcRenderer.once('fetchedProject', (event, data) => {
                                 this.buyer.project = data
-
-                                // getPayment
-                                if(data.type == 1) {
-                                    ipcRenderer.send('fetchHouseAndLotPayment', this.buyer.id)
-                                } else if(data.type == 2) {
-                                    ipcRenderer.send('fetchLotOnlyPayment', this.buyer.id)
-                                    ipcRenderer.once('fetchedLotOnlyPayment', (event, data) => {
-                                        // console.log('fetchedLotOnlyPayment', data)
-                                        this.buyer.payment = data
-                                        console.log('this.buyer in VIEW DETAILS BUYER', this.buyer)
-                                        console.log('this.buyer in VIEW DETAILS PAYMENT', this.payment)
-                                        this.isFetchingData = false
-                                    })
-                                } else {
-                                    alert(`ERROR Project type ${data.type}`)
-                                }
+                                ipcRenderer.send('fetchLotOnlyPayment', this.buyer.id)
+                                ipcRenderer.once('fetchedLotOnlyPayment', (event, data) => {
+                                    this.buyer.payment = data
+                                    console.log('this.buyer in VIEW DETAILS LOT ONLY BUYER', this.buyer)
+                                    console.log('this.buyer in VIEW DETAILS LOT ONLY PAYMENT', this.payment)
+                                    this.isFetchingData = false
+                                })
                             })
                         })
                     })
@@ -253,7 +241,7 @@
                 console.log('this.buyer.lot.lot_area', this.buyer.lot.lot_area)
                 return `${this.buyer.lot.lot_area} sq.m`
             },
-            editDetails() {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+            editDetails() {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
                 this.$router.push({ name: 'Edit Buyer', params: { id: this.buyer.id, buyer: this.buyer } })
             },
             forefeitBuyer() {
@@ -273,7 +261,8 @@
                 })
             },
             exportDetails() {
-                const reservationType = 'REGULAR RESERVATION'
+                console.log('exporting details')
+                const reservationType = this.buyer.reservation_type
                 const php = ` Php `
                 const buyer_name = `${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}`
                 const block_name = `${this.buyer.block.name}`
@@ -289,13 +278,42 @@
                 const home_address = this.buyer.home_address
                 const email_address = this.buyer.email_address
                 const contact_number = this.buyer.contact_number
-                const total_contract_price = this.buyer.total_contract_price
-                const installment_months = this.buyer.installment_months
-                const monthly_installment = this.buyer.monthly_installment
-                const reservation_fee = this.buyer.reservation_fee
+                const total_contract_price = this.buyer.payment.total_contract_price
+                const installment_months = this.buyer.payment.installment_months
+                const monthly_installment = this.buyer.payment.monthly_installment
+                const reservation_fee = this.buyer.payment.reservation_fee
+                const spot_downpayment = this.buyer.payment.spot_downpayment
+                const new_tcp_less_downpayment = this.buyer.payment.new_tcp_less_downpayment
+                const spot_cash_discount_percentage = this.buyer.payment.spot_cash_discount_percentage
+                const spot_cash_discount_amount = this.buyer.payment.spot_cash_discount_amount
+                const new_tcp_less_discount = this.buyer.payment.new_tcp_less_discount
 
-                var wb = new excel4node.Workbook();
-                var ws = wb.addWorksheet(reservationType);
+                // const sheet_title = ''
+                // if(reservationType == 5) {
+                //     sheet_title = 'REGULAR RESERVATION'
+                // } else if(reservationType == 6) {
+                //     sheet_title = 'WITH SPOT DOWNPAYMENT'
+                // } else if(reservationType == 7) {
+                //     sheet_title = 'SPOT CASH'
+                // } else {
+                //     sheet_title = 'ERROR'
+                // }
+                // switch(reservationType) {
+                //     case 5:
+                //         sheet_title = 'REGULAR RESERVATION'
+                //         break;
+                //     case 6:
+                //         sheet_title = 'WITH SPOT DOWNPAYMENT'
+                //         break;
+                //     case 7:
+                //         sheet_title = 'SPOT CASH'
+                //         break;
+                //     default:
+                //         sheet_title = 'ERROR'
+                // }
+                
+                var wb = new excel4node.Workbook()
+                var ws = wb.addWorksheet('RA - FORM 2A LO')
 
                 let r = 1   // row
                 const s = 4 // initial size
@@ -365,28 +383,76 @@
                 ws.cell(r, col['G'], r, col['I'], true).string(agent).style(regular_style)
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
-                ws.cell(++r, col['A'], r, col['I'], true).string('REGULAR RESERVATION / STRAIGHT MONTHLY').style(bordered_style).style(aligned_style).style(header_style)
-                ws.cell(++r, col['A'], r, col['I'], true).string('')
 
-                ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (includes transfer fee): `).style(italic_rightaligned_style)
-                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
+                if(reservationType == 5) {
+                    ws.cell(++r, col['A'], r, col['I'], true).string('REGULAR RESERVATION / STRAIGHT MONTHLY').style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(++r, col['A'], r, col['I'], true).string('')
 
-                ws.cell(++r, col['A'], r, col['D'], true).string(` Monthly Installment for: `).style(italic_rightaligned_style)
-                ws.cell(r, col['E']).number(installment_months).style(bordered_style).style(aligned_style).style(header_style)
-                ws.cell(r, col['F']).string(` months: `).style(italic_rightaligned_style)
-                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).number(monthly_installment).style(center_bold)
-                ws.cell(++r, col['A'], r, col['I'], true).string('')
+                    ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (includes transfer fee): `).style(italic_rightaligned_style)
+                    ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
 
-                ws.cell(++r, col['A'], r, col['F'], true).string(` First Monthly Installment Fee / Reservation Fee: `).style(italic_rightaligned_style)
-                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_bold)
+                    ws.cell(++r, col['A'], r, col['D'], true).string(` Monthly Installment for: `).style(italic_rightaligned_style)
+                    ws.cell(r, col['E']).number(installment_months).style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(r, col['F']).string(` months: `).style(italic_rightaligned_style)
+                    ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                    ws.cell(r, col['H'], r, col['I'], true).number(monthly_installment).style(center_bold)
+                    ws.cell(++r, col['A'], r, col['I'], true).string('')
 
-                ws.cell(++r, col['A'], r, col['I'], true).string('')
-                ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Starts: `).style(italic_rightaligned_style)
-                ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Ends: `).style(italic_rightaligned_style)
+                    ws.cell(++r, col['A'], r, col['F'], true).string(` First Monthly Installment Fee / Reservation Fee: `).style(italic_rightaligned_style)
+                    ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_bold)
 
+                    ws.cell(++r, col['A'], r, col['I'], true).string('')
+                    ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Starts: `).style(italic_rightaligned_style)
+                    ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Ends: `).style(italic_rightaligned_style)
+                
+                } else if(reservationType == 6) {
+                    ws.cell(++r, col['A'], r, col['I'], true).string('WITH SPOT DOWNPAYMENT / ADVANCE PAYMENT').style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(++r, col['A'], r, col['I'], true).string('')
+
+                    ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (includes transfer fee): `).style(italic_rightaligned_style)
+                    ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
+
+                    ws.cell(++r, col['A'], r, col['F'], true).string(` Spot Downpayment / Advance Downpayment: `).style(italic_rightaligned_style)
+                    ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                    ws.cell(r, col['H'], r, col['I'], true).number(spot_downpayment).style(center_bold)
+
+                    ws.cell(++r, col['A'], r, col['F'], true).string(` NEW TCP Less Downpayment `).style(italic_rightaligned_style)
+                    ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                    ws.cell(r, col['H'], r, col['I'], true).number(new_tcp_less_downpayment).style(center_bold)
+                    
+                    ws.cell(++r, col['A'], r, col['D'], true).string(` Monthly Installment for: `).style(italic_rightaligned_style)
+                    ws.cell(r, col['E']).number(installment_months).style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(r, col['F']).string(` months: `).style(italic_rightaligned_style)
+                    ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                    ws.cell(r, col['H'], r, col['I'], true).number(monthly_installment).style(center_bold)
+
+                    ws.cell(++r, col['A'], r, col['I'], true).string('')
+                    ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Starts: `).style(italic_rightaligned_style)
+                    ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Ends: `).style(italic_rightaligned_style)
+
+                } else if(reservationType == 7) {
+                    ws.cell(++r, col['A'], r, col['I'], true).string('SPOT CASH').style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(++r, col['A'], r, col['I'], true).string('')
+
+                    ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (includes transfer fee): `).style(italic_rightaligned_style)
+                    ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
+
+                    ws.cell(++r, col['A'], r, col['E'], true).string(` Spot Cash Discount: `).style(italic_rightaligned_style)
+                    ws.cell(r, col['F']).string(`${spot_cash_discount_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                    ws.cell(r, col['H'], r, col['I'], true).number(spot_cash_discount_amount).style(center_bold)
+
+                    ws.cell(++r, col['A'], r, col['F'], true).string(` NEW TCP Less Discount`).style(italic_rightaligned_style)
+                    ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                    ws.cell(r, col['H'], r, col['I'], true).number(new_tcp_less_discount).style(center_bold)
+                } else {
+                    
+                }
+                
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
                 ws.cell(++r, col['A'], r, col['I'], true).string('REQUIREMENTS').style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of 2 valid ID:  government issued with 3 specimen signature FOR BUYER `).style(italic_leftaligned_style)
@@ -397,6 +463,7 @@
                 ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
 
                 wb.write(`./outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
+                // wb.write(`../../outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
             }
         }
     })

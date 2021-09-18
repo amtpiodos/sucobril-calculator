@@ -111,8 +111,6 @@
                     monthly_installment: null,
                     reservation_fee: null,
                     reservation_type: 7,
-                    spot_downpayment: null,
-                    new_tcp_less_downpayment: null,
                     spot_cash_discount_percentage: '',
                     spot_cash_discount_amount: '',
                     new_tcp_less_discount: '',

@@ -104,7 +104,18 @@
             },
             viewFullDetails() {
                 console.log('VIEW DETAILS this.id', this.id, this.buyer_details)
-                this.$router.push({ name: 'View Buyer', params: { id: this.id } })
+                if(this.buyer_details.reservation_type == 5
+                    || this.buyer_details.reservation_type == 6
+                    || this.buyer_details.reservation_type == 7) {
+                        this.$router.push({name: 'View-Buyer-LO', params: { id: this.id }})
+                } else if(this.buyer_details.reservation_type == 1
+                    || this.buyer_details.reservation_type == 2
+                    || this.buyer_details.reservation_type == 3
+                    || this.buyer_details.reservation_type == 4) {
+                        this.$router.push({name: 'View-Buyer-HL', params: { id: this.id }})
+                } else {
+                    alert(`VIEW BUYER ERROR: Incorrect reservation type ${this.buyer_details.reservation_type}`)
+                }
             }
         }
     })

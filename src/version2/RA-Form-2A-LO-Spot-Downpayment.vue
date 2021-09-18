@@ -57,12 +57,12 @@
                     <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.monthly_installment" /> </div> </div>
                 </div>
                 <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Starts: </p></div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.equity_start_date" /> </div> </div>
+                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Monthly Installment Starts: </p></div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.monthly_start_date" /> </div> </div>
                 </div>
                 <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.equity_end_date" /> </div> </div>
+                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Monthly Installment Ends: </p></div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.monthly_end_date" /> </div> </div>
                 </div>
             </div>
 
@@ -121,8 +121,8 @@
                     monthly_installment: '',
                     spot_downpayment: '',
                     new_tcp_less_downpayment: '',
-                    equity_start_date: '',
-                    equity_end_date: '',
+                    monthly_start_date: '',
+                    monthly_end_date: '',
                     reservation_type: 6,
                 }
             }
