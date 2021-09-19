@@ -47,58 +47,61 @@
                     <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 mt-1">
                                 <p class="align-middle text-right text-xs font-bold">Required Equity 
                                     <input type="text"
+                                        readonly disabled
                                         v-model="buyer.payment.required_equity_percentage"
                                         class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                     > %:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.required_equity_amount" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.required_equity_amount" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p></div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee: </p></div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.equity_net_of_reservation_fee" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_net_of_reservation_fee" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 mt-1">
                                 <p class="align-middle text-right text-xs font-bold">Required Monthly Equity <br/> for 
                                     <input type="text"
+                                        readonly disabled
                                         v-model="buyer.payment.equity_months"
                                         class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                     > months:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.monthly_equity_amount" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.monthly_equity_amount" /> </div> </div>
                         </div>
 
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Starts: </p></div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.equity_start_date" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_start_date" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.equity_end_date" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_end_date" /> </div> </div>
                         </div>
 
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2">
                                 <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity: 
                                     <input type="text"
+                                        readonly disabled
                                         v-model="buyer.payment.balance_loanable_percentage"
                                         class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                     > months:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.balance_loanable_amount" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_loanable_amount" /> </div> </div>
                         </div>
                     </div>
                 </div>
@@ -109,7 +112,7 @@
                     <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 mt-1">
@@ -120,43 +123,45 @@
                                     > %:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.required_equity_amount" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.required_equity_amount" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 mt-1">
                                 <p class="align-middle text-right text-xs font-bold">Spot Cash Equity Less 
                                     <input type="text"
+                                        readonly disabled
                                         v-model="buyer.payment.spot_cash_equity_less_percentage"
                                         class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                     > %:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.spot_cash_equity_less_amount" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.spot_cash_equity_less_amount" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Net Equity Less Discount: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.net_equity_less_discount" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.net_equity_less_discount" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2">
                                 <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee <br/>(shall be paid on or before 30 days from reservation): </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.equity_net_of_reservation_fee" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_net_of_reservation_fee" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 mt-1">
                                 <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> after Equity
                                     <input type="text"
+                                        readonly disabled
                                         v-model="buyer.payment.balance_loanable_percentage"
                                         class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                     > %:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.balance_loanable_amount" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_loanable_amount" /> </div> </div>
                         </div>
                     </div>
                 </div>
@@ -167,32 +172,33 @@
                     <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2">
                                 <p class="align-middle text-right text-xs font-bold">SPOT CASH Discount <br /> Less
                                     <input type="text"
+                                        readonly disabled
                                         v-model="buyer.payment.spot_cash_discount_less_percentage"
                                         class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                     > %:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.spot_cash_discount_less_amount" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.spot_cash_discount_less_amount" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Net Total Contact Price: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.net_total_contract_price" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.net_total_contract_price" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2">
                                 <p class="align-middle text-right text-xs font-bold">Balance TCP (shall be paid on or <br/> before 30 days from reservation): </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.balance_total_contract_price" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_total_contract_price" /> </div> </div>
                         </div>
                     </div>
                 </div>
@@ -203,15 +209,15 @@
                     <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Balance Amount after Reservation Fee: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.balance_amount_after_reservation" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_amount_after_reservation" /> </div> </div>
                         </div>
                         
                         <div class="flex px-4 gap-4 my-2">
@@ -220,20 +226,21 @@
                                     <input type="text"
                                         v-model="buyer.payment.installment_months"
                                         class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                        readonly disabled
                                     > months:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.monthly_installment" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.monthly_installment" /> </div> </div>
                         </div>
                     </div>
 
                     <div class="flex px-4 gap-4 my-2">
                         <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Starts: </p></div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.equity_start_date" /> </div> </div>
+                        <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_start_date" /> </div> </div>
                     </div>
                     <div class="flex px-4 gap-4 my-2">
                         <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="buyer.payment.equity_end_date" /> </div> </div>
+                        <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_end_date" /> </div> </div>
                     </div>
                 </div>
 

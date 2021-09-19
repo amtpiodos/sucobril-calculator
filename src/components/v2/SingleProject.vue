@@ -3,11 +3,11 @@
         
         <p class="text-center text-white font-bold"> {{ project_name }}</p>
         <p class="text-center text-white text-xs mb-2">( {{ proj_type }} )</p>
-        <img class="mb-2 object-scale-down h-48 w-full" src="../../assets/img/p2.jpeg">
+        <!-- <img class="mb-2 object-scale-down h-48 w-full" src="../../assets/img/p2.jpeg"> -->
         <p class="text-center text-white text-sm font-bold"> {{ project_location }} </p>
         <!-- temporary: to retrieve data from db -->
-        <p class="text-center text-white text-xs"> x available units </p>
-        <p class="text-center text-white text-xs"> Price Range: Php 1M - 3M</p>
+        <!-- <p class="text-center text-white text-xs"> x available units </p>
+        <p class="text-center text-white text-xs"> Price Range: Php 1M - 3M</p> -->
 
     </div>
 </template>

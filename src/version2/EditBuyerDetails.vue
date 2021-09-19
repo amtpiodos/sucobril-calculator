@@ -67,9 +67,12 @@
             </div>
 
             <div class="flex items-center mx-auto justify-center gap-8 my-4">
-                <button type="button" v-on:click="saveUpdates" class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                <button type="button" class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                     SAVE UPDATES
                 </button>
+                <!-- <button type="button" v-on:click="saveUpdates" class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                    SAVE UPDATES
+                </button> -->
                 <button type="button" v-on:click="cancelUpdates" class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                     CANCEL
                 </button>
@@ -108,7 +111,22 @@
 
             },
             cancelUpdates() {
-                this.$router.push({ name: 'View Buyer', params: { id: this.buyer.id, buyer: this.buyer} })
+                // check payment type
+                const reservation_type = this.buyer.reservation_type
+                id = this.buyer.id
+                if(reservation_type == 5
+                    || reservation_type == 6
+                    || reservation_type == 7) {
+                        this.$router.push({name: 'View-Buyer-LO', params: { id: this.id }})
+                } else if(reservation_type == 1
+                    || reservation_type == 2
+                    || reservation_type == 3
+                    || reservation_type == 4) {
+                        this.$router.push({name: 'View-Buyer-HL', params: { id: this.id }})
+                } else {
+                    alert(`VIEW BUYER ERROR: Incorrect reservation type ${reservation_type}`)
+                }
+                // this.$router.push({ name: 'View Buyer', params: { id: this.buyer.id, buyer: this.buyer} })
             }
         }
     })
