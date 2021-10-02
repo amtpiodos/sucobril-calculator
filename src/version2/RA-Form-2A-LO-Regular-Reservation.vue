@@ -67,7 +67,7 @@
             <div class="flex items-center">
                 <button
                     type="button"
-                    v-on:click="submitForm"
+                    v-on:click="submitForm()"
                     class="bg-gray-600 py-4 mx-auto w-1/4 align-middle text-white font-bold border rounded-md">
                     SUBMIT RESERVATION
                 </button>

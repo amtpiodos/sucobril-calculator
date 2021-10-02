@@ -113,16 +113,16 @@
             cancelUpdates() {
                 // check payment type
                 const reservation_type = this.buyer.reservation_type
-                id = this.buyer.id
+                // const id = this.buyer.id
                 if(reservation_type == 5
                     || reservation_type == 6
                     || reservation_type == 7) {
-                        this.$router.push({name: 'View-Buyer-LO', params: { id: this.id }})
+                        this.$router.push({name: 'View-Buyer-LO', params: { id: this.buyer.id }})
                 } else if(reservation_type == 1
                     || reservation_type == 2
                     || reservation_type == 3
                     || reservation_type == 4) {
-                        this.$router.push({name: 'View-Buyer-HL', params: { id: this.id }})
+                        this.$router.push({name: 'View-Buyer-HL', params: { id: this.buyer.id }})
                 } else {
                     alert(`VIEW BUYER ERROR: Incorrect reservation type ${reservation_type}`)
                 }

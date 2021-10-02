@@ -94,7 +94,7 @@
             <div class="flex items-center my-4">
                 <button
                     type="button"
-                    v-on:click="submitForm"
+                    v-on:click="submitForm()"
                     class="bg-gray-600 py-4 mx-auto w-1/4 align-middle text-white font-bold border rounded-md">
                     SUBMIT RESERVATION
                 </button>
@@ -164,7 +164,6 @@
                 const today = new Date()
                 this.payment_details.date = today
                 return this.payment_details.date
-
             },
             getPhase() {
                 return  this.$store.state.unit.phase.phase_name &&
@@ -172,7 +171,6 @@
                         this.$store.state.unit.phase.phase_name : 'N/A'
             },
             submitForm() {
-
                 // insert error validation here
                 // user should only click here once
                 // add loading screen
@@ -183,6 +181,8 @@
                                         payment_details: this.payment_details }
                 console.log({dataToSubmit})
                 ipcRenderer.send('addHouseAndLotBuyer', dataToSubmit)
+
+                // push after ipc once
                 this.$router.push('/')
             }
         }

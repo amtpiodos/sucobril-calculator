@@ -7,9 +7,9 @@
 // const knex = require('knex')
 
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib/createProtocol'
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
-import knex from 'knex'
+import { knex } from 'knex'
 
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
