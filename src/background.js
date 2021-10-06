@@ -148,7 +148,9 @@ ipcMain.on('addLotOnlyBuyer', (event, data) => {
         knex3('Lot').where({ id: unit.lot_id  })
         .update({
           'status': 1,
-          'owner_id': buyer_id
+          'owner_id': buyer_id,
+          'price_per_sqm': unit.price_per_sqm,
+          'lot_type': unit.lot_type
         }).then(() => {
           console.log('LOT STATUS UPDATED', unit.lot_id)
         }).catch((err) => { console.log('ADDING OF PAYMENT ERROR', err) ; throw err
@@ -216,7 +218,9 @@ ipcMain.on('addHouseAndLotBuyer', (event, data) => {
         knex3('Lot').where({ id: unit.lot_id  })
         .update({
           'status': 1,
-          'owner_id': buyer_id
+          'owner_id': buyer_id,
+          'price_per_sqm': unit.price_per_sqm,
+          'lot_type': unit.lot_type
         }).then(() => {
           console.log('LOT STATUS UPDATED', unit.lot_id)
         }).catch((err) => { console.log('ADDING OF PAYMENT ERROR', err) ; throw err
