@@ -9,7 +9,7 @@
                     <div class="w-2/5"> <input-form label="First Name" v-model="buyer.first_name" /> </div>
                     <div class="w-1/5"> <input-form label="M.I." v-model="buyer.middle_initial" /> </div>
                 </div>
-                <div class="full px-4"> <readonly-form label="Reservation Date" v-bind:value="getDate()" /> </div>
+                <div class="full px-4"> <readonly-form label="Reservation Date" v-bind:value="payment_details.date" /> </div>
                 <div class="full px-4"> <readonly-form label="Project Name" :value="unit.project_name" /> </div>
                 <div class="grid grid-cols-4 gap-4 px-4">
                     <div class="full px-1"> <readonly-form label="Block" v-bind:value="unit.block" /> </div>
@@ -19,8 +19,8 @@
                 </div>
                 <div class="full px-4"> <readonly-form label="Project Address" v-bind:value="unit.project_address" /> </div>
                 <div class="grid grid-cols-2 gap-4 px-4">
-                    <div class="full"> <readonly-form label="Floor Area" v-bind:value="unit.floor_area" /> </div>
-                    <div class="full"> <readonly-form label="House Type" v-bind:value="unit.house_type" /> </div>
+                    <div class="full"> <input-form label="Price/Sq.M (PHP)" v-model="unit.price_per_sqm" /> </div>
+                    <div class="full"> <input-form label="House Type" v-model="unit.lot_type" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Home Address" v-model="buyer.home_address" /> </div>
                 <div class="flex px-4 gap-4">
@@ -33,34 +33,74 @@
 
             <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> SPOT CASH TCP </p> </div>
             <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                <!-- TOTAL CONTRACT PRICE -->
                 <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.total_contract_price" /> </div> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4">
+                        <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                            <input type="numbers"
+                                :value="payment_details.total_contract_price"
+                                @change="updateTCP"
+                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                        </div>
+                    </div> </div>
                 </div>
+
+                <!-- SPOT CASH DISCOUNT -->
                 <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2">
-                        <p class="align-middle text-right text-xs font-bold">SPOT CASH Discount <br /> Less
-                            <input type="text"
-                                v-model="payment_details.spot_cash_discount_less_percentage"
+                    <div class="w-1/4 items-center py-2 mt-1">
+                        <p class="align-middle text-right text-xs font-bold">Required Equity
+                            <input type="number"
+                                :value="payment_details.spot_cash_discount_less_percentage" @change="updateSCD"
                                 class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                             > %:
                         </p>
                     </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.spot_cash_discount_less_amount" /> </div> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4">
+                        <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                            <input type="text"
+                                :value="payment_details.spot_cash_discount_less_amount"
+                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                readonly disabled>
+                        </div>
+                    </div> </div>
                 </div>
+
+                <!-- NET TOTAL CONTRACT PRICE -->
                 <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Net Total Contact Price: </p> </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.net_total_contract_price" /> </div> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4">
+                        <input type="text"
+                                :value="payment_details.net_total_contract_price"
+                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                readonly disabled>
+                    </div> </div>
                 </div>
+
+                <!-- RESERVATION FEE -->
                 <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.reservation_fee" /> </div> </div>
+                    <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4">
+                        <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                            <input type="numbers"
+                                :value="payment_details.reservation_fee"
+                                @change="updateREF"
+                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                        </div>
+                    </div> </div>
                 </div>
+
+                <!-- BALANCE TCP -->
                 <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2">
                         <p class="align-middle text-right text-xs font-bold">Balance TCP (shall be paid on or <br/> before 30 days from reservation): </p>
                     </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.balance_total_contract_price" /> </div> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4">
+                        <input type="text"
+                                :value="payment_details.balance_total_contract_price"
+                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                readonly disabled>
+                    </div> </div>
                 </div>
             </div>
 
@@ -106,11 +146,11 @@
                     lot_id: this.$store.state.unit.lot.lot_id,
                     phase: '',
                     project_address: this.$store.state.unit.project.project_location,
-                    price_per_sqm: `PHP ${this.$store.state.unit.unit_details.price_per_sqm}`,
+                    price_per_sqm: '',
                     realty_name: '',
                     agent_name: '',
-                    floor_area: `${this.$store.state.unit.unit_details.floor_area} SQ. M`,
-                    house_type: this.$store.state.unit.unit_details.house_type
+                    lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
+                    lot_type: ''
                 },
                 payment_details: {
                     date: '',
@@ -127,11 +167,31 @@
         mounted() {
             console.log('ADD BUYER FORM mounted STATE.UNIT', this.$store.state.unit)
         },
-        methods: {
-            getDate() {
-                const today = new Date()
+        created() {
+                let today = new Date()
                 this.payment_details.date = today
                 return this.payment_details.date
+        },
+        methods: {
+            updateTCP(event) {
+                this.payment_details.total_contract_price = event.target.value
+                console.log('UpdateTCP', this.payment_details.total_contract_price)
+                this.updateCalculations()
+            },
+            updateREF(event) {
+                this.payment_details.reservation_fee = event.target.value
+                console.log('UpdateREF', this.payment_details.reservation_fee)
+                this.updateCalculations()
+            },
+            updateSCD(event) {
+                this.payment_details.spot_cash_discount_less_percentage = event.target.value
+                console.log('UpdateSCD', this.payment_details.spot_cash_discount_less_percentage)
+                this.updateCalculations()
+            },
+            updateCalculations() {
+                this.payment_details.spot_cash_discount_less_amount = this.payment_details.total_contract_price * (this.payment_details.spot_cash_discount_less_percentage * 0.01)
+                this.payment_details.net_total_contract_price = this.payment_details.total_contract_price - this.payment_details.spot_cash_discount_less_amount
+                this.payment_details.balance_total_contract_price = this.payment_details.net_total_contract_price - this.payment_details.reservation_fee
             },
             getPhase() {
                 return  this.$store.state.unit.phase.phase_name &&
