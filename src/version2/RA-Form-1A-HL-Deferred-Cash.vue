@@ -9,7 +9,7 @@
                     <div class="w-2/5"> <input-form label="First Name" v-model="buyer.first_name" /> </div>
                     <div class="w-1/5"> <input-form label="M.I." v-model="buyer.middle_initial" /> </div>
                 </div>
-                <div class="full px-4"> <readonly-form label="Reservation Date" v-bind:value="getDate()" /> </div>
+                <div class="full px-4"> <readonly-form label="Reservation Date" v-bind:value="payment_details.date" /> </div>
                 <div class="full px-4"> <readonly-form label="Project Name" :value="unit.project_name" /> </div>
                 <div class="grid grid-cols-4 gap-4 px-4">
                     <div class="full px-1"> <readonly-form label="Block" v-bind:value="unit.block" /> </div>
@@ -19,8 +19,8 @@
                 </div>
                 <div class="full px-4"> <readonly-form label="Project Address" v-bind:value="unit.project_address" /> </div>
                 <div class="grid grid-cols-2 gap-4 px-4">
-                    <div class="full"> <readonly-form label="Floor Area" v-bind:value="unit.floor_area" /> </div>
-                    <div class="full"> <readonly-form label="House Type" v-bind:value="unit.house_type" /> </div>
+                    <div class="full"> <input-form label="Price/Sq.M (PHP)" v-model="unit.price_per_sqm" /> </div>
+                    <div class="full"> <input-form label="House Type" v-model="unit.lot_type" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Home Address" v-model="buyer.home_address" /> </div>
                 <div class="flex px-4 gap-4">
@@ -33,50 +33,80 @@
 
             <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> DEFERRED CASH </p> </div>
             <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                 <!-- TOTAL CONTRACT PRICE -->
                 <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.total_contract_price" /> </div> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4">
+                        <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                            <input type="numbers"
+                                :value="payment_details.total_contract_price"
+                                @change="updateTCP"
+                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                        </div>
+                    </div> </div>
                 </div>
+
+                <!-- RESERVATION FEE -->
                 <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.reservation_fee" /> </div> </div>
+                    <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4">
+                        <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                            <input type="numbers"
+                                :value="payment_details.reservation_fee"
+                                @change="updateREF"
+                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                        </div>
+                    </div> </div>
                 </div>
+
+                <!-- BALANCE AMONT AFTER RESERVATION -->
                 <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Balance Amount after Reservation Fee: </p> </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.balance_amount_after_reservation" /> </div> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4">
+                        <input type="text"
+                            :value="payment_details.balance_amount_after_reservation"
+                            class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                            readonly disabled>
+                    </div> </div>
                 </div>
                 
+                <!-- MONTHLY INSTALLMENT -->
                 <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2">
-                        <p class="align-middle text-right text-xs font-bold">Monthly Installment Amount <br /> payable in
+                    <div class="w-1/4 items-center py-2 mt-1">
+                        <p class="align-middle text-right text-xs font-bold">Required Monthly Equity <br/> for
                             <input type="text"
-                                v-model="payment_details.installment_months"
+                                v-model="payment_details.installment_months" @change="updateIM"
                                 class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                             > months:
                         </p>
                     </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.monthly_installment" /> </div> </div>
+                    <div class="w-3/4"> <div class="items-starts w-3/4">
+                        <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                            <input type="text"
+                                :value="payment_details.monthly_installment"
+                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                readonly disabled>
+                        </div>
+                    </div> </div>
+                </div>
+
+                <!-- EQUITY START AND END DATES -->
+                <div class="flex px-4 gap-4 my-2">
+                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity (Start - End): </p></div>
+                    <div class="w-3/4"> <div class="items-starts border border-gray-200 w-3/4 rounded-md ">
+                        <vue-date-picker class="border border-white" @confirm="upDate($event)"/>
+                    </div> </div>
+                </div>
+
+                <div class="flex items-center my-4">
+                    <button
+                        type="button"
+                        v-on:click="submitForm()"
+                        class="bg-gray-600 py-4 mx-auto w-1/4 align-middle text-white font-bold border rounded-md">
+                        SUBMIT RESERVATION
+                    </button>
                 </div>
             </div>
-
-            <div class="flex px-4 gap-4 my-2">
-                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Starts: </p></div>
-                <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.equity_start_date" /> </div> </div>
-            </div>
-            <div class="flex px-4 gap-4 my-2">
-                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
-                <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.equity_end_date" /> </div> </div>
-            </div>
-
-            <div class="flex items-center my-4">
-                <button
-                    type="button"
-                    v-on:click="submitForm()"
-                    class="bg-gray-600 py-4 mx-auto w-1/4 align-middle text-white font-bold border rounded-md">
-                    SUBMIT RESERVATION
-                </button>
-            </div>
-
         </div>
     </div>
 </template>
@@ -86,12 +116,14 @@
     import Header from '../components/v2/Header'
     import InputForm from '../components/v2/InputForm'
     import ReadOnlyForm from '../components/v2/ReadonlyInput'
+    import VueHotelDatepicker from '@northwalker/vue-hotel-datepicker'
 
     export default({
         components: {
             'main-header': Header,
             'input-form': InputForm,
-            'readonly-form': ReadOnlyForm
+            'readonly-form': ReadOnlyForm,
+            'vue-date-picker': VueHotelDatepicker
         },
         data() {
             return {
@@ -113,8 +145,8 @@
                     price_per_sqm: `PHP ${this.$store.state.unit.unit_details.price_per_sqm}`,
                     realty_name: '',
                     agent_name: '',
-                    floor_area: `${this.$store.state.unit.unit_details.floor_area} SQ. M`,
-                    house_type: this.$store.state.unit.unit_details.house_type
+                    lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
+                    lot_type: this.$store.state.unit.unit_details.lot_type
                 },
                 payment_details: {
                     date: '',
@@ -132,7 +164,37 @@
         mounted() {
             console.log('ADD BUYER FORM mounted STATE.UNIT', this.$store.state.unit)
         },
+        created() {
+            let today = new Date()
+            this.payment_details.date = today
+            return this.payment_details.date
+        },
         methods: {
+            upDate(event) {
+                console.log('Updating dates', event)
+                this.payment_details.equity_start_date = event.start
+                this.payment_details.equity_end_date = event.end
+                console.log('Updated dates', this.payment_details)
+            },
+            updateTCP(event) {
+                this.payment_details.total_contract_price = event.target.value
+                console.log('UpdateTCP', this.payment_details.total_contract_price)
+                this.updateCalculations()
+            },
+            updateREF(event) {
+                this.payment_details.reservation_fee = event.target.value
+                console.log('UpdateREF', this.payment_details.reservation_fee)
+                this.updateCalculations()
+            },
+            updateIM(event) {
+                this.payment_details.installment_months = event.target.value
+                console.log('updateIM', this.payment_details.installment_months)
+                this.updateCalculations()
+            },
+            updateCalculations() {
+                this.payment_details.balance_amount_after_reservation = this.payment_details.total_contract_price - this.payment_details.reservation_fee
+                this.payment_details.monthly_installment = this.payment_details.installment_months ? (this.payment_details.balance_amount_after_reservation / this.payment_details.installment_months) : 0
+            },
             getDate() {
                 const today = new Date()
                 this.payment_details.date = today

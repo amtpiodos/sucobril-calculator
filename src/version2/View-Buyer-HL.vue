@@ -18,7 +18,7 @@
                         <div class="w-2/5"> <readonly-form label="First Name" :value="buyer.first_name" /> </div>
                         <div class="w-1/5"> <readonly-form label="M.I." :value="buyer.middle_initial" /> </div>
                     </div>
-                    <div class="full px-4"> <readonly-form label="Reservation Date" value="" /> </div>
+                    <div class="full px-4"> <readonly-form label="Reservation Date" :value="buyer.payment.date" /> </div>
                     <div class="full px-4"> <readonly-form label="Project Name" :value="buyer.project.name" /> </div>
                     <div class="grid grid-cols-4 gap-4 px-4">
                         <div class="full px-1"> <readonly-form label="Block" :value="buyer.block.name" /> </div>
@@ -120,6 +120,7 @@
                                     <input type="text"
                                         v-model="buyer.payment.required_equity_percentage"
                                         class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                        readonly disabled
                                     > %:
                                 </p>
                             </div>

@@ -19,12 +19,8 @@
                 </div>
                 <div class="full px-4"> <readonly-form label="Project Address" v-bind:value="unit.project_address" /> </div>
                 <div class="grid grid-cols-2 gap-4 px-4">
-                    <div class="full">
-                        <input-form label="Price/Sq.M (PHP)" v-model="unit.price_per_sqm" />
-                    </div>
-                    <div class="full">
-                        <input-form label="House Type" v-model="unit.lot_type" />
-                    </div>
+                    <div class="full"> <input-form label="Price/Sq.M (PHP)" v-model="unit.price_per_sqm" /> </div>
+                    <div class="full"> <input-form label="House Type" v-model="unit.lot_type" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Home Address" v-model="buyer.home_address" /> </div>
                 <div class="flex px-4 gap-4">
@@ -78,7 +74,7 @@
                             <input type="numbers"
                                 :value="payment_details.reservation_fee"
                                 @change="updateReservationFee"
-                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase"></div>
+                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
                         </div>
                     </div> </div>
                 </div>
@@ -120,7 +116,7 @@
                 <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity (Start - End): </p></div>
                     <div class="w-3/4"> <div class="items-starts border border-gray-200 w-3/4 rounded-md ">
-                        <vue-date-picker class="border border-white " @confirm="upDate($event)"/>
+                        <vue-date-picker class="border border-white" @confirm="upDate($event)"/>
                     </div> </div>
                 </div>
 
@@ -142,18 +138,18 @@
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                 readonly disabled>
                         </div>
-                    </div>
+                    </div></div>
+                </div>
+
+                <div class="flex items-center my-4">
+                    <button
+                        type="button"
+                        v-on:click="submitForm()"
+                        class="bg-gray-600 py-4 mx-auto w-1/4 align-middle text-white font-bold border rounded-md">
+                        SUBMIT RESERVATION
+                    </button>
                 </div>
             </div>
-        </div>
-
-        <div class="flex items-center my-4">
-            <button
-                type="button"
-                v-on:click="submitForm()"
-                class="bg-gray-600 py-4 mx-auto w-1/4 align-middle text-white font-bold border rounded-md">
-                SUBMIT RESERVATION
-            </button>
         </div>
     </div>
 </template>
@@ -234,17 +230,17 @@
             },
             updateREP(event) {
                 this.payment_details.required_equity_percentage = event.target.value
-                console.log('UpdateREP')
+                console.log('UpdateREP', this.payment_details.required_equity_percentage)
                 this.updateCalculations()
             },
             updateReservationFee(event) {
                 this.payment_details.reservation_fee = event.target.value
-                console.log(`UpdateReservationFee`)
+                console.log('UpdateReservationFee')
                 this.updateCalculations()
             },
             updateEquityMonths(event) {
                 this.payment_details.equity_months = event.target.value
-                console.log(`UpdateEquityMonths`)
+                console.log('UpdateEquityMonths')
                 this.updateCalculations()
             },
             updateCalculations() {
@@ -265,7 +261,7 @@
                 // user should only click here once
                 // add loading screen
 
-                console.log('submitForm', this.payment_details.equity_start_date, this.payment_details.equity_end_date)
+                console.log('SubmitForm LO-Regular Reservation', this.payment_details.equity_start_date, this.payment_details.equity_end_date)
                 const dataToSubmit = {  buyer: this.buyer,
                                         unit: this.unit,
                                         payment_details: this.payment_details }

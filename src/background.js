@@ -128,6 +128,7 @@ ipcMain.on('addLotOnlyBuyer', (event, data) => {
       const knex2 = getDbConnection()
       knex2.insert({
         buyer_id: buyer_id,
+        date: payment_details.date,
         total_contract_price: payment_details.total_contract_price,
         installment_months: payment_details.installment_months,
         monthly_installment: payment_details.monthly_installment,
@@ -189,6 +190,7 @@ ipcMain.on('addHouseAndLotBuyer', (event, data) => {
       const knex2 = getDbConnection()
       knex2.insert({
         buyer_id: buyer_id,
+        date: payment_details.date,
         total_contract_price: payment_details.total_contract_price,
         reservation_type: payment_details.reservation_type,
         reservation_fee: payment_details.reservation_fee,

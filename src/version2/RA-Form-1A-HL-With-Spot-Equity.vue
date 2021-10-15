@@ -186,7 +186,7 @@
                     price_per_sqm: '',
                     realty_name: '',
                     agent_name: '',
-                    lot_area: `${this.$store.state.unit.unit_details.floor_area} SQ. M`,
+                    lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
                     lot_type: ''
                 },
                 payment_details: {
@@ -239,8 +239,6 @@
                 this.payment_details.equity_net_of_reservation_fee = this.payment_details.required_equity_amount - this.payment_details.reservation_fee
                 this.payment_details.balance_loanable_percentage = 100 - this.payment_details.required_equity_percentage
                 this.payment_details.balance_loanable_amount = this.payment_details.total_contract_price * (this.payment_details.balance_loanable_percentage * 0.01)
-                // this.payment_details.equity_net_of_reservation_fee = this.payment_details.required_equity_amount - this.payment_details.reservation_fee
-                // this.payment_details.monthly_equity_amount = this.payment_details.equity_months ? this.payment_details.equity_net_of_reservation_fee / this.payment_details.equity_months : 0
             },
             getPhase() {
                 return  this.$store.state.unit.phase.phase_name &&
