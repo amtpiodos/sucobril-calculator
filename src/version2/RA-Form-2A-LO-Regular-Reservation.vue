@@ -20,7 +20,7 @@
                 <div class="full px-4"> <readonly-form label="Project Address" v-bind:value="unit.project_address" /> </div>
                 <div class="grid grid-cols-2 gap-4 px-4">
                     <div class="full"> <input-form label="Price/Sq.M (PHP)" v-model="unit.price_per_sqm" /> </div>
-                    <div class="full"> <input-form label="House Type" v-model="unit.lot_type" /> </div>
+                    <div class="full"> <input-form label="Lot Type" v-model="unit.lot_type" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Home Address" v-model="buyer.home_address" /> </div>
                 <div class="flex px-4 gap-4">
@@ -43,10 +43,6 @@
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
                         </div>
                     </div> </div>
-                    <!-- <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4">
-                        <input-form v-model="payment_details.total_contract_price" />
-                    </div> </div> -->
                 </div>
 
                 <!-- MONTHLY INSTALLMENT -->
@@ -72,9 +68,8 @@
                 <div class="flex px-4 gap-4 my-4">
                     <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">FIRST MONTHLY INSALLMENT <br> FEE / RESERVATION FEE: </p> </div>
                     <div class="w-3/4 py-2"> <div class="items-starts w-3/4">
-                        <!-- <input-form v-model="payment_details.reservation_fee" /> -->
                         <input type="text"
-                                :value="payment_details.monthly_installment"
+                                :value="payment_details.reservation_fee"
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                 readonly disabled>
                     </div> </div>

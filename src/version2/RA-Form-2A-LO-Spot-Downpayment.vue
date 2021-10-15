@@ -20,7 +20,7 @@
                 <div class="full px-4"> <readonly-form label="Project Address" v-bind:value="unit.project_address" /> </div>
                 <div class="grid grid-cols-2 gap-4 px-4">
                     <div class="full"> <input-form label="Price/Sq.M (PHP)" v-model="unit.price_per_sqm" /> </div>
-                    <div class="full"> <input-form label="House Type" v-model="unit.lot_type" /> </div>
+                    <div class="full"> <input-form label="Lot Type" v-model="unit.lot_type" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Home Address" v-model="buyer.home_address" /> </div>
                 <div class="flex px-4 gap-4">
@@ -43,7 +43,7 @@
                                 @change="updateTCP"
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
                         </div>
-                    </div>
+                    </div> </div>
                 </div>
 
                 <!-- SPOT DOWNPAYMENT / ADVANCE PAYMENT -->
@@ -55,7 +55,7 @@
                             <input type="numbers"
                                 :value="payment_details.spot_downpayment"
                                 @change="updateSpotDownpayment"
-                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase"></div>
+                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
                         </div>
                     </div> </div>
                 </div>

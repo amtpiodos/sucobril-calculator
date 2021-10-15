@@ -18,7 +18,7 @@
                         <div class="w-2/5"> <readonly-form label="First Name" :value="buyer.first_name" /> </div>
                         <div class="w-1/5"> <readonly-form label="M.I." :value="buyer.middle_initial" /> </div>
                     </div>
-                    <div class="full px-4"> <readonly-form label="Reservation Date" value="" /> </div>
+                    <div class="full px-4"> <readonly-form label="Reservation Date" :value="buyer.payment.date" /> </div>
                     <div class="full px-4"> <readonly-form label="Project Name" :value="buyer.project.name" /> </div>
                     <div class="grid grid-cols-4 gap-4 px-4">
                         <div class="full px-1"> <readonly-form label="Block" :value="buyer.block.name" /> </div>
@@ -287,30 +287,6 @@
                 const spot_cash_discount_percentage = this.buyer.payment.spot_cash_discount_percentage
                 const spot_cash_discount_amount = this.buyer.payment.spot_cash_discount_amount
                 const new_tcp_less_discount = this.buyer.payment.new_tcp_less_discount
-
-                // const sheet_title = ''
-                // if(reservationType == 5) {
-                //     sheet_title = 'REGULAR RESERVATION'
-                // } else if(reservationType == 6) {
-                //     sheet_title = 'WITH SPOT DOWNPAYMENT'
-                // } else if(reservationType == 7) {
-                //     sheet_title = 'SPOT CASH'
-                // } else {
-                //     sheet_title = 'ERROR'
-                // }
-                // switch(reservationType) {
-                //     case 5:
-                //         sheet_title = 'REGULAR RESERVATION'
-                //         break;
-                //     case 6:
-                //         sheet_title = 'WITH SPOT DOWNPAYMENT'
-                //         break;
-                //     case 7:
-                //         sheet_title = 'SPOT CASH'
-                //         break;
-                //     default:
-                //         sheet_title = 'ERROR'
-                // }
                 
                 var wb = new excel4node.Workbook()
                 var ws = wb.addWorksheet('RA - FORM 2A LO')
@@ -462,7 +438,9 @@
                 ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Marriage contract if married `).style(italic_leftaligned_style)
                 ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
 
-                wb.write(`./outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
+                wb.write(`./${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
+
+                // wb.write(`./outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
                 // wb.write(`../../outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
             }
         }
