@@ -20,11 +20,9 @@
                 <div class="full px-4"> <readonly-form label="Project Address" v-bind:value="unit.project_address" /> </div>
                 <div class="grid grid-cols-2 gap-4 px-4">
                     <div class="full">
-                        <!-- <readonly-form label="Price/Sq.M (PHP)" v-bind:value="unit.price_per_sqm" /> -->
                         <input-form label="Price/Sq.M (PHP)" v-model="unit.price_per_sqm" />
                     </div>
                     <div class="full">
-                        <!-- <readonly-form label="House Type" v-bind:value="unit.lot_type" /> -->
                         <input-form label="House Type" v-model="unit.lot_type" />
                     </div>
                 </div>
@@ -43,7 +41,6 @@
                 <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
-                        <!-- <input-form v-model="payment_details.total_contract_price" /> </div> -->
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                             <input type="numbers"
                                 :value="payment_details.total_contract_price"
@@ -64,8 +61,6 @@
                         </p>
                     </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
-                        <!-- <input-form v-model="payment_details.required_equity_amount" /> -->
-                        <!-- <readonly-form :value="payment_details.monthly_equity_amount" /> -->
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                             <input type="text"
                                 :value="payment_details.required_equity_amount"
@@ -79,7 +74,6 @@
                 <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p></div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
-                        <!-- <input-form v-model="payment_details.reservation_fee" /> -->
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                             <input type="numbers"
                                 :value="payment_details.reservation_fee"
@@ -93,7 +87,6 @@
                 <div class="flex px-4 gap-4 my-2">
                     <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee: </p></div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
-                        <!-- <input-form v-model="payment_details.equity_net_of_reservation_fee" /> -->
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                             <input type="text"
                                 :value="payment_details.equity_net_of_reservation_fee"
@@ -114,7 +107,6 @@
                         </p>
                     </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
-                        <!-- <input-form v-model="payment_details.monthly_equity_amount" /> -->
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                             <input type="text"
                                 :value="payment_details.monthly_equity_amount"
@@ -126,12 +118,10 @@
 
                 <!-- EQUITY START AND END DATES -->
                 <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Starts: </p></div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.equity_start_date" /> </div> </div>
-                </div>
-                <div class="flex px-4 gap-4 my-2">
-                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
-                    <div class="w-3/4"> <div class="items-starts w-3/4"> <input-form v-model="payment_details.equity_end_date" /> </div> </div>
+                    <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity (Start - End): </p></div>
+                    <div class="w-3/4"> <div class="items-starts border border-gray-200 w-3/4 rounded-md ">
+                        <vue-date-picker class="border border-white " @confirm="upDate($event)"/>
+                    </div> </div>
                 </div>
 
                 <!-- BALANCE LOANABLE  -->
@@ -146,29 +136,26 @@
                         </p>
                     </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
-                        <!-- <input-form v-model="payment_details.balance_loanable_amount" /> -->
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                             <input type="text"
                                 :value="payment_details.balance_loanable_amount"
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                 readonly disabled>
                         </div>
-                    </div> </div>
+                    </div>
                 </div>
-
             </div>
+        </div>
 
-            <div class="flex items-center my-4">
-                <button
-                    type="button"
-                    v-on:click="submitForm()"
-                    class="bg-gray-600 py-4 mx-auto w-1/4 align-middle text-white font-bold border rounded-md">
-                    SUBMIT RESERVATION
-                </button>
-            </div>
-
+        <div class="flex items-center my-4">
+            <button
+                type="button"
+                v-on:click="submitForm()"
+                class="bg-gray-600 py-4 mx-auto w-1/4 align-middle text-white font-bold border rounded-md">
+                SUBMIT RESERVATION
+            </button>
+        </div>
     </div>
-    
 </template>
 
 <script>
@@ -176,12 +163,14 @@
     import Header from '../components/v2/Header'
     import InputForm from '../components/v2/InputForm'
     import ReadOnlyForm from '../components/v2/ReadonlyInput'
+    import VueHotelDatepicker from '@northwalker/vue-hotel-datepicker'
 
     export default({
         components: {
             'main-header': Header,
             'input-form': InputForm,
-            'readonly-form': ReadOnlyForm
+            'readonly-form': ReadOnlyForm,
+            'vue-date-picker': VueHotelDatepicker
         },
         data() {
             return {
@@ -232,28 +221,34 @@
             console.log('ADD BUYER FORM mounted STATE.UNIT', this.$store.state.unit)
         },
         methods: {
+            upDate(event) {
+                console.log('Updating dates', event)
+                this.payment_details.equity_start_date = event.start
+                this.payment_details.equity_end_date = event.end
+                console.log('Updated dates', this.payment_details)
+            },
             updateTCP(event) {
                 this.payment_details.total_contract_price = event.target.value
-                console.log('updateTCP', this.payment_details.total_contract_price)
+                console.log('UpdateTCP', this.payment_details.total_contract_price)
                 this.updateCalculations()
             },
             updateREP(event) {
                 this.payment_details.required_equity_percentage = event.target.value
-                console.log('updateREP')
+                console.log('UpdateREP')
                 this.updateCalculations()
             },
             updateReservationFee(event) {
                 this.payment_details.reservation_fee = event.target.value
-                console.log(`updateReservationFee`)
+                console.log(`UpdateReservationFee`)
                 this.updateCalculations()
             },
             updateEquityMonths(event) {
                 this.payment_details.equity_months = event.target.value
-                console.log(`updateEquityMonths`)
+                console.log(`UpdateEquityMonths`)
                 this.updateCalculations()
             },
             updateCalculations() {
-                console.log('updating calculations')
+                console.log('Updating calculations')
                 this.payment_details.required_equity_amount = this.payment_details.total_contract_price * (this.payment_details.required_equity_percentage * 0.01)
                 this.payment_details.balance_loanable_percentage = 100 - this.payment_details.required_equity_percentage
                 this.payment_details.balance_loanable_amount = this.payment_details.total_contract_price * (this.payment_details.balance_loanable_percentage * 0.01)
@@ -270,7 +265,7 @@
                 // user should only click here once
                 // add loading screen
 
-                console.log('submitForm')
+                console.log('submitForm', this.payment_details.equity_start_date, this.payment_details.equity_end_date)
                 const dataToSubmit = {  buyer: this.buyer,
                                         unit: this.unit,
                                         payment_details: this.payment_details }
