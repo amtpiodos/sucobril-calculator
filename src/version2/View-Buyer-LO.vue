@@ -142,7 +142,6 @@
                     </div>
                 </div>
 
-
                 <div class="flex items-center mx-auto justify-center gap-8 my-4">
                     <button type="button" v-if="buyer.status" v-on:click="editDetails"
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
@@ -188,14 +187,7 @@
                 buyer: {},
                 payment: {},
                 isFetchingData: true,
-                isEditing: false,
-
-                items: [
-                    { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-                    { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-                    { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-                    { age: 38, first_name: 'Jami', last_name: 'Carney' }
-                ]
+                isEditing: false
             }
         },
         created() {
@@ -221,7 +213,6 @@
                             } else {
                                 this.buyer.phase = "N/A"
                             }
-                            
                             ipcRenderer.send('fetchProject', this.buyer.block.project_id)
                             ipcRenderer.once('fetchedProject', (event, data) => {
                                 this.buyer.project = data
@@ -229,7 +220,7 @@
                                 ipcRenderer.once('fetchedLotOnlyPayment', (event, data) => {
                                     this.buyer.payment = data
                                     console.log('this.buyer in VIEW DETAILS LOT ONLY BUYER', this.buyer)
-                                    console.log('this.buyer in VIEW DETAILS LOT ONLY PAYMENT', this.payment)
+                                    console.log('this.payment in VIEW DETAILS LOT ONLY PAYMENT', this.payment)
                                     this.isFetchingData = false
                                 })
                             })
