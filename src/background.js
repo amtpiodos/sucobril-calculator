@@ -153,8 +153,13 @@ ipcMain.on('addLotOnlyBuyer', (event, data) => {
           'price_per_sqm': unit.price_per_sqm,
           'lot_type': unit.lot_type
         }).then(() => {
+          // ADD SUCCESS
+          event.reply('addedLotOnlyBuyer', 1)
           console.log('LOT STATUS UPDATED', unit.lot_id)
-        }).catch((err) => { console.log('ADDING OF PAYMENT ERROR', err) ; throw err
+        }).catch((err) => {
+          // ADD FAIL
+          event.reply('addedLotOnlyBuyer', 0)
+          console.log('ADDING OF PAYMENT ERROR', err) ; throw err
         }).finally(() => knex3.destroy())
       // edit to only one lot updated (where statement)
       }).catch((err) => { console.log('LOT STATUS UPDATE ERROR', err) ; throw err
@@ -224,8 +229,11 @@ ipcMain.on('addHouseAndLotBuyer', (event, data) => {
           'price_per_sqm': unit.price_per_sqm,
           'lot_type': unit.lot_type
         }).then(() => {
+          event.reply('addedHouseAndLotBuyer', 1)
           console.log('LOT STATUS UPDATED', unit.lot_id)
-        }).catch((err) => { console.log('ADDING OF PAYMENT ERROR', err) ; throw err
+        }).catch((err) => {
+          event.reply('addedHouseAndLotBuyer', 0)
+          console.log('ADDING OF PAYMENT ERROR', err) ; throw err
         }).finally(() => knex3.destroy())
       // edit to only one lot updated (where statement)
       }).catch((err) => { console.log('LOT STATUS UPDATE ERROR', err) ; throw err
