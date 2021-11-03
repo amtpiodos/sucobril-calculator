@@ -116,12 +116,12 @@
         data() {
             return {
                 buyer: {
-                    last_name: '',
-                    first_name: '',
-                    middle_initial: '',
-                    contact_number: '',
-                    email_address: '',
-                    home_address: '',
+                    last_name: 'LO Regular',
+                    first_name: 'Reservation',
+                    middle_initial: 'T',
+                    contact_number: '12312312',
+                    email_address: 'dasdas@gmail.com',
+                    home_address: 'Tuyom',
                 },
                 unit: {
                     project_name: this.$store.state.unit.project.project_name,
@@ -130,18 +130,18 @@
                     lot_id: this.$store.state.unit.lot.lot_id,
                     phase: '',
                     project_address: this.$store.state.unit.project.project_location,
-                    price_per_sqm: '',
-                    realty_name: '',
-                    agent_name: '',
+                    price_per_sqm: '321311',
+                    realty_name: 'Realty name',
+                    agent_name: 'Agent name',
                     lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
-                    lot_type: '',
+                    lot_type: 'Regular',
                 },
                 payment_details: {
                     date: '',
-                    total_contract_price: '',
-                    installment_months: '',
-                    monthly_installment: '',
-                    reservation_fee: '',
+                    total_contract_price: '1009999',
+                    installment_months: '10',
+                    monthly_installment: '20000',
+                    reservation_fee: '1000',
                     monthly_start_date: '',
                     monthly_end_date: '',
                     reservation_type: 5
@@ -188,8 +188,6 @@
                 // insert error validation here
                 // user should only click here once
                 // add loading screen
-
-                console.log('submitForm')
                 const dataToSubmit = {  buyer: this.buyer,
                                         unit: this.unit,
                                         payment_details: this.payment_details }
@@ -212,7 +210,7 @@
                 })
             },
             autoExport() {
-                console.log('autoExport after add, LO')
+                console.log('AutoExport after Adding Buyer, LO - Reg Res')
                 const buyer_name = `${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}`
                 const home_address = this.buyer.home_address
                 const email_address = this.buyer.email_address
@@ -242,7 +240,7 @@
 
                 var xl = require('excel4node');
                 var wb = new xl.Workbook();
-                const ws = wb.addWorksheet('Sheet 1');
+                const ws = wb.addWorksheet('RA-Form 2A-LO Reg Res');
 
                 let r = 1   // row
                 const s = 4 // initial size
@@ -324,12 +322,12 @@
                 ws.cell(r, col['E']).string(installment_months).style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(r, col['F']).string(` months: `).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).number(monthly_installment).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).string(monthly_installment).style(center_bold)
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
 
                 ws.cell(++r, col['A'], r, col['F'], true).string(` First Monthly Installment Fee / Reservation Fee: `).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).string(reservation_fee).style(center_bold)
 
                 console.log('monthly_start_date', monthly_start_date, typeof(monthly_start_date))
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
@@ -348,9 +346,8 @@
                 ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
 
                 // to change destination path
-                wb.write(`./${buyer_name}.xlsx`);
+                wb.write(`./outputs/${buyer_name}.xlsx`);
                 console.log('done autoexporting')
-
             }
         }
     })

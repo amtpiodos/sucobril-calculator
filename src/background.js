@@ -162,10 +162,14 @@ ipcMain.on('addLotOnlyBuyer', (event, data) => {
           console.log('ADDING OF PAYMENT ERROR', err) ; throw err
         }).finally(() => knex3.destroy())
       // edit to only one lot updated (where statement)
-      }).catch((err) => { console.log('LOT STATUS UPDATE ERROR', err) ; throw err
+      }).catch((err) => {
+        event.reply('addedLotOnlyBuyer', 0)
+        console.log('LOT STATUS UPDATE ERROR', err) ; throw err
       }).finally(() => knex2.destroy())
       // event.reply('isBuyerAdded', 1)
-  }).catch((err) => { console.log('INSERT ERROR', err) ; throw err
+  }).catch((err) => {
+    event.reply('addedLotOnlyBuyer', 0)
+    console.log('LOT ONLY BUYER INSERT ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
 
@@ -236,10 +240,13 @@ ipcMain.on('addHouseAndLotBuyer', (event, data) => {
           console.log('ADDING OF PAYMENT ERROR', err) ; throw err
         }).finally(() => knex3.destroy())
       // edit to only one lot updated (where statement)
-      }).catch((err) => { console.log('LOT STATUS UPDATE ERROR', err) ; throw err
+      }).catch((err) => {
+        console.log('LOT STATUS UPDATE ERROR', err) ; throw err
       }).finally(() => knex2.destroy())
       // event.reply('isBuyerAdded', 1)
-  }).catch((err) => { console.log('INSERT ERROR', err) ; throw err
+  }).catch((err) => {
+    event.reply('addedHouseAndLotBuyer', 0)
+    console.log('HOUSE & LOT BUYER INSERT ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
 
@@ -486,3 +493,19 @@ function getDbConnection() {
 
   return knex
 }
+
+// function getDbConnection() {
+//   console.log('getdbconnection')
+//   const knex = require('knex')({
+//     client: 'mysql',
+//     connection: {
+//       host: '192.168.9.51',
+//       port: '3306',
+//       user: 'root',
+//       password: '',
+//       database: 'tumabini_db'
+//     }
+//   })
+
+//   return knex
+// }

@@ -169,12 +169,12 @@
         data() {
             return {
                 buyer: {
-                    last_name: '',
-                    first_name: '',
-                    middle_initial: '',
-                    contact_number: '',
-                    email_address: '',
-                    home_address: '',
+                    last_name: 'Spot Cash',
+                    first_name: 'Equity',
+                    middle_initial: 'HL',
+                    contact_number: '31231231',
+                    email_address: 'dasda@gmail.com',
+                    home_address: 'Carcar City',
                 },
                 unit: {
                     project_name: this.$store.state.unit.project.project_name,
@@ -183,22 +183,24 @@
                     lot_id: this.$store.state.unit.lot.lot_id,
                     phase: '',
                     project_address: this.$store.state.unit.project.project_location,
-                    price_per_sqm: '',
-                    realty_name: '',
-                    agent_name: '',
+                    price_per_sqm: '21331231',
+                    realty_name: 'Realty xxx',
+                    agent_name: 'Agent xxx',
                     lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
-                    lot_type: ''
+                    lot_type: 'Regular'
                 },
                 payment_details: {
                     date: '',
-                    total_contract_price: '',
-                    required_equity_percentage: '',
-                    required_equity_amount: '',
-                    spot_cash_equity_less_percentage: '',
-                    spot_cash_equity_less_amount: '',
-                    net_equity_less_discount: '',
-                    reservation_fee: '',
-                    equity_net_of_reservation_fee: '',
+                    total_contract_price: '1220000',
+                    required_equity_percentage: '10',
+                    required_equity_amount: '122000',
+                    spot_cash_equity_less_percentage: '120000',
+                    spot_cash_equity_less_amount: '10000',
+                    net_equity_less_discount: '110000',
+                    reservation_fee: '10000',
+                    equity_net_of_reservation_fee: '10000',
+                    balance_loanable_percentage: '3223',
+                    balance_loanable_amount: '3232',
                     reservation_type: 2,
                 }
             }
@@ -246,18 +248,183 @@
                         this.$store.state.unit.phase.phase_name : 'N/A'
             },
             submitForm() {
-
-                // insert error validation here
-                // user should only click here once
-                // add loading screen
-
-                console.log('submitForm, LO - With Spot Equity')
                 const dataToSubmit = {  buyer: this.buyer,
                                         unit: this.unit,
                                         payment_details: this.payment_details }
-                console.log({dataToSubmit})
+
                 ipcRenderer.send('addHouseAndLotBuyer', dataToSubmit)
-                this.$router.push('/')
+                ipcRenderer.once('addedHouseAndLotBuyer', (event, data) => {
+                    console.log('addedHouseAndLotBuyer', data)
+                    if(data == 1) {
+                        console.log('Add H&L Buyer SUCCESSFUL')
+                        this.autoExport()
+                        // add loading screen
+                        setTimeout(() => {
+                            this.$router.push('/')
+                        }, 2000)
+                    } else {
+                        alert('Add H&L Buyer error')
+                        console.log('Add H&L Buyer error')
+                    }
+                    this.isFetchingData = false
+                })
+            },
+            autoExport() {
+                console.log('AutoExport after Adding Buyer, HL - Spot Equity', this.payment_details)
+                const buyer_name = `${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}`
+                const home_address = this.buyer.home_address
+                const email_address = this.buyer.email_address
+                const contact_number = this.buyer.contact_number
+
+                const block_name = this.unit.block
+                const project_name = this.unit.project_name
+                const lot_name = this.unit.lot
+                const price_per_sqm = this.unit.price_per_sqm
+                const phase = this.unit.phase
+                const lot_area = this.unit.lot_area
+                const lot_type = this.unit.lot_type
+                const realty = this.unit.realty_name
+                const agent = this.unit.agent_name
+                const project_address = this.unit.project_address
+
+                const reservation_date = this.payment_details.date
+                const total_contract_price = this.payment_details.total_contract_price
+                const required_equity_percentage = this.payment_details.required_equity_percentage
+                const required_equity_amount = this.payment_details.required_equity_amount
+                const spot_cash_equity_less_percentage = this.payment_details.spot_cash_equity_less_percentage
+                const spot_cash_equity_less_amount = this.payment_details.spot_cash_equity_less_amount
+                const net_equity_less_discount = this.payment_details.net_equity_less_discount
+                const reservation_fee = this.payment_details.reservation_fee
+                const equity_net_of_reservation_fee = this.payment_details.equity_net_of_reservation_fee
+                const balance_loanable_percentage = this.payment_details.balance_loanable_percentage
+                const balance_loanable_amount = this.payment_details.balance_loanable_amount
+                const php = 'PHP'
+
+                var xl = require('excel4node');
+                var wb = new xl.Workbook();
+                const ws = wb.addWorksheet('RA-Form 1A-HL With Spot Equity');
+
+                let r = 1   // row
+                const s = 4 // initial size
+                const col = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9 }
+
+                ws.column(col['A']).setWidth(s*4)
+                ws.column(col['B']).setWidth(s*2)
+                ws.column(col['C']).setWidth(s*3)
+                ws.column(col['D']).setWidth(s*2)
+                ws.column(col['E']).setWidth(s*2)
+                ws.column(col['F']).setWidth(s*2)
+                ws.column(col['G']).setWidth(s*2)
+                ws.column(col['H']).setWidth(s*4)
+                ws.column(col['I']).setWidth(s*4)
+
+                const bold_header_style = wb.createStyle({ font: { color: '#000000', size: 13, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const bordered_style = wb.createStyle({ border: { left: { style: 'thin', color: '#000000' }, right: { style: 'thin', color: '#000000' }, top: { style: 'thin', color: '#000000' }, bottom: { style: 'thin', color: '#000000' }} })
+                const aligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const header_style = wb.createStyle({ font: { color: '#000000', size: 11, bold: true } })
+                const bold_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true } })
+                const regular_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: false } })
+                const center_bold = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' }, font: { color: '#000000', size: 11, bold: true } })
+                const italic_rightaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'right', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
+                const italic_leftaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'left', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
+
+                ws.cell(r, col['A'], r, col['H'], true).string('TUMABINI REAL ESTATE DEVELOPMENT').style(bold_header_style)
+                ws.cell(r, col['I']).string('LO-RA - FORM 2A').style(bold_header_style).style({font: {size: 12}, alignment: {horizontal: 'right'}})
+                ws.cell(++r, col['A'], ++r, col['H'], true).string('133 MC Briones St., Hi-way Bakilid, Mandaue City 6014 Tel#: 032 414-5103, 09564791879 Email: tumabinidevelopment@gmail.com').style(regular_style).style(aligned_style).style({font: {size: 8}})
+                ws.cell(r-1, col['I']).string('ANNEX A').style(bold_header_style).style({font: {size: 10}, alignment: {horizontal: 'right'}})
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET').style(bordered_style).style(aligned_style).style(header_style)
+
+                ws.cell(++r, col['A']).string(` BUYER'S NAME: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(buyer_name).style(regular_style)
+                ws.cell(r, col['E']).string(` BLOCK: `).style(bold_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(regular_style)
+                ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
+                ws.cell(r, col['I']).date(reservation_date).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)
+                ws.cell(r, col['E']).string(` LOT: `).style(bold_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(lot_name).style(regular_style)
+                ws.cell(r, col['H']).string(` PRICE PER SQ.M: `).style(bold_style)
+                ws.cell(r, col['I']).string(price_per_sqm).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` PHASE: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(phase).style(regular_style)
+                ws.cell(r, col['E']).string(` FLOOR AREA: `).style(bold_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(lot_area).style(regular_style)
+                ws.cell(r, col['H']).string(` HOUSE TYPE: `).style(bold_style)
+                ws.cell(r, col['I']).string(lot_type).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` PROJECT ADDRESS: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(project_address).style(regular_style)
+                ws.cell(r, col['E'], r, col['F'], true).string(` HOME ADDRESS: `).style(bold_style)
+                ws.cell(r, col['G'], r, col['I'], true).string(home_address).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` EMAIL ADDRESS: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(email_address).style(regular_style)
+                ws.cell(r, col['E'], r, col['F'], true).string(` CONTACT NUMBER: `).style(bold_style)
+                ws.cell(r, col['G'], r, col['I'], true).string(contact_number).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` REALTY: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(realty).style(regular_style)
+                ws.cell(r, col['E'], r, col['F'], true).string(` AGENT: `).style(bold_style)
+                ws.cell(r, col['G'], r, col['I'], true).string(agent).style(regular_style)
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET with SPOT CASH EQUITY').style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+
+                ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (inclusive of transfer fee charges and move-in fee): `).style(italic_rightaligned_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).string(total_contract_price).style(center_bold)
+
+                ws.cell(++r, col['A'], r, col['E'], true).string(` REQUIRED EQUITY: `).style(italic_rightaligned_style)
+                ws.cell(r, col['F']).string(`${required_equity_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).string(required_equity_amount).style(center_bold)
+
+                ws.cell(++r, col['A'], r, col['E'], true).string(` SPOT CASH Equity Less: `).style(italic_rightaligned_style)
+                ws.cell(r, col['F']).string(`${spot_cash_equity_less_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).string(spot_cash_equity_less_amount).style(center_bold)
+                    
+                ws.cell(++r, col['A'], r, col['F'], true).string(` Net Equity Less Discount:`).style(italic_rightaligned_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).string(net_equity_less_discount).style(center_bold)
+
+                ws.cell(++r, col['A'], r, col['F'], true).string(` Reservation Fee:`).style(italic_rightaligned_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).string(reservation_fee).style(center_bold)
+
+                ws.cell(++r, col['A'], r+1, col['F'], true).string(` Equity Net of Reservation Fee (shall be paid on or before thirty (30) days from reservation date):`).style(italic_rightaligned_style)
+                ws.cell(r, col['G'], r+1, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r++, col['H'], r, col['I'], true).string(equity_net_of_reservation_fee).style(center_bold)
+
+                ws.cell(++r, col['A'], r, col['E'], true).string(` Balance Loanable Amount after Equity: `).style(italic_rightaligned_style)
+                ws.cell(r, col['F']).string(`${balance_loanable_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).string(balance_loanable_amount).style(center_bold)
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+                ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(aligned_style).style(header_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string(` 1. Failure to pay the first monthly equity after 30 days after reservation date shall mean cancelled & forefeited reservation. `).style(italic_leftaligned_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string(` 2. The balance amount shall be loanable to bank / PAG-IBIG financinng.`).style(italic_leftaligned_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string(` 3. For cash payment of balance amount, it shall be paid on or before 30 days after last payment of monthly equity.`).style(italic_leftaligned_style)
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+                ws.cell(++r, col['A'], r, col['I'], true).string('REQUIREMENTS').style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of 2 valid ID:  government issued with 3 specimen signature FOR BUYER `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of 2 valid ID:  government issued with 3 specimen signature FOR SPOUSE IF MARRIED `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` TIN number/TIN ID `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` RESERVATION FEE / First Monthly `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Marriage contract if married `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
+
+                // to change destination path
+                wb.write(`./${buyer_name}.xlsx`);
+                console.log('done autoexporting')
             }
         }
     })

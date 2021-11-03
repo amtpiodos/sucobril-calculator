@@ -128,12 +128,12 @@
         data() {
             return {
                 buyer: {
-                    last_name: '',
-                    first_name: '',
-                    middle_initial: '',
-                    contact_number: '',
-                    email_address: '',
-                    home_address: '',
+                    last_name: 'Spot',
+                    first_name: 'Downpayment',
+                    middle_initial: 'LO',
+                    contact_number: '123109',
+                    email_address: 'askdj@gmail.com',
+                    home_address: 'Tuyom Perrelos',
                 },
                 unit: {
                     project_name: this.$store.state.unit.project.project_name,
@@ -142,19 +142,19 @@
                     lot_id: this.$store.state.unit.lot.lot_id,
                     phase: '',
                     project_address: this.$store.state.unit.project.project_location,
-                    price_per_sqm: '',
-                    realty_name: '',
-                    agent_name: '',
+                    price_per_sqm: '213123',
+                    realty_name: 'RR',
+                    agent_name: 'AA',
                     lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
-                    lot_type: '',
+                    lot_type: 'Regular',
                 },
                 payment_details: {
                     date: '',
-                    total_contract_price: '',
-                    installment_months: '',
-                    monthly_installment: '',
-                    spot_downpayment: '',
-                    new_tcp_less_downpayment: '',
+                    total_contract_price: '120000',
+                    installment_months: '12',
+                    monthly_installment: '10000',
+                    spot_downpayment: '1000',
+                    new_tcp_less_downpayment: '9000',
                     monthly_start_date: '',
                     monthly_end_date: '',
                     reservation_type: 6,
@@ -206,14 +206,166 @@
                 // insert error validation here
                 // user should only click here once
                 // add loading screen
-
-                console.log('submitForm')
                 const dataToSubmit = {  buyer: this.buyer,
                                         unit: this.unit,
                                         payment_details: this.payment_details }
                 console.log({dataToSubmit})
                 ipcRenderer.send('addLotOnlyBuyer', dataToSubmit)
-                this.$router.push('/')
+                ipcRenderer.once('addedLotOnlyBuyer', (event, data) => {
+                    console.log('addedLotOnlyBuyer', data)
+                    if(data == 1) {
+                        console.log('Add Buyer SUCCESSFUL')
+                        this.autoExport()
+                        // add loading screen
+                        setTimeout(() => {
+                            this.$router.push('/')
+                        }, 2000)
+                    } else {
+                        console.log('Add Lot only buyer error')
+                    }
+                    console.log('this.payment in VIEW DETAILS LOT ONLY PAYMENT', this.payment)
+                    this.isFetchingData = false
+                })
+            },
+            autoExport() {
+                console.log('AutoExport after Adding Buyer, LO - Spot Cash')
+                const buyer_name = `${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}`
+                const home_address = this.buyer.home_address
+                const email_address = this.buyer.email_address
+                const contact_number = this.buyer.contact_number
+
+                const block_name = this.unit.block
+                const project_name = this.unit.project_name
+                const lot_name = this.unit.lot
+                const price_per_sqm = this.unit.price_per_sqm
+                const phase = this.unit.phase
+                const lot_area = this.unit.lot_area
+                const lot_type = this.unit.lot_type
+                const realty = this.unit.realty_name
+                const agent = this.unit.agent_name
+                const project_address = this.unit.project_address
+
+                const reservation_date = this.payment_details.date
+                const total_contract_price = this.payment_details.total_contract_price
+                const installment_months = this.payment_details.installment_months
+                const monthly_installment = this.payment_details.monthly_installment
+                const spot_downpayment = this.payment_details.spot_downpayment
+                const new_tcp_less_downpayment = this.payment_details.new_tcp_less_downpayment
+                const monthly_start_date = this.payment_details.monthly_start_date
+                const monthly_end_date = this.payment_details.monthly_end_date
+
+                const php = 'PHP'
+
+                var xl = require('excel4node');
+                var wb = new xl.Workbook();
+                const ws = wb.addWorksheet('RA-Form 2A-LO Spot DP');
+
+                let r = 1   // row
+                const s = 4 // initial size
+                const col = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9 }
+
+                ws.column(col['A']).setWidth(s*4)
+                ws.column(col['B']).setWidth(s*2)
+                ws.column(col['C']).setWidth(s*3)
+                ws.column(col['D']).setWidth(s*2)
+                ws.column(col['E']).setWidth(s*2)
+                ws.column(col['F']).setWidth(s*2)
+                ws.column(col['G']).setWidth(s*2)
+                ws.column(col['H']).setWidth(s*4)
+                ws.column(col['I']).setWidth(s*4)
+
+                const bold_header_style = wb.createStyle({ font: { color: '#000000', size: 13, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const bordered_style = wb.createStyle({ border: { left: { style: 'thin', color: '#000000' }, right: { style: 'thin', color: '#000000' }, top: { style: 'thin', color: '#000000' }, bottom: { style: 'thin', color: '#000000' }} })
+                const aligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const header_style = wb.createStyle({ font: { color: '#000000', size: 11, bold: true } })
+                const bold_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true } })
+                const regular_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: false } })
+                const center_bold = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' }, font: { color: '#000000', size: 11, bold: true } })
+                const italic_rightaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'right', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
+                const italic_leftaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'left', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
+
+                ws.cell(r, col['A'], r, col['H'], true).string('TUMABINI REAL ESTATE DEVELOPMENT').style(bold_header_style)
+                ws.cell(r, col['I']).string('LO-RA - FORM 2A').style(bold_header_style).style({font: {size: 12}, alignment: {horizontal: 'right'}})
+                ws.cell(++r, col['A'], ++r, col['H'], true).string('133 MC Briones St., Hi-way Bakilid, Mandaue City 6014 Tel#: 032 414-5103, 09564791879 Email: tumabinidevelopment@gmail.com').style(regular_style).style(aligned_style).style({font: {size: 8}})
+                ws.cell(r-1, col['I']).string('ANNEX A').style(bold_header_style).style({font: {size: 10}, alignment: {horizontal: 'right'}})
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET').style(bordered_style).style(aligned_style).style(header_style)
+
+                ws.cell(++r, col['A']).string(` BUYER'S NAME: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(buyer_name).style(regular_style)
+                ws.cell(r, col['E']).string(` BLOCK: `).style(bold_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(regular_style)
+                ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
+                ws.cell(r, col['I']).date(reservation_date).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)
+                ws.cell(r, col['E']).string(` LOT: `).style(bold_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(lot_name).style(regular_style)
+                ws.cell(r, col['H']).string(` PRICE PER SQ.M: `).style(bold_style)
+                ws.cell(r, col['I']).string(price_per_sqm).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` PHASE: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(phase).style(regular_style)
+                ws.cell(r, col['E']).string(` LOT AREA: `).style(bold_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(lot_area).style(regular_style)
+                ws.cell(r, col['H']).string(` TYPE OF LOT: `).style(bold_style)
+                ws.cell(r, col['I']).string(lot_type).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` PROJECT ADDRESS: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(project_address).style(regular_style)
+                ws.cell(r, col['E'], r, col['F'], true).string(` HOME ADDRESS: `).style(bold_style)
+                ws.cell(r, col['G'], r, col['I'], true).string(home_address).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` EMAIL ADDRESS: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(email_address).style(regular_style)
+                ws.cell(r, col['E'], r, col['F'], true).string(` CONTACT NUMBER: `).style(bold_style)
+                ws.cell(r, col['G'], r, col['I'], true).string(contact_number).style(regular_style)
+
+                ws.cell(++r, col['A']).string(` REALTY: `).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(realty).style(regular_style)
+                ws.cell(r, col['E'], r, col['F'], true).string(` AGENT: `).style(bold_style)
+                ws.cell(r, col['G'], r, col['I'], true).string(agent).style(regular_style)
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('WITH SPOT DOWNPAYMENT / ADVANCE PAYMENT').style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+
+                ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (includes transfer fee): `).style(italic_rightaligned_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).string(total_contract_price).style(center_bold)
+
+                ws.cell(++r, col['A'], r, col['F'], true).string(` Spot Downpayment / Advance Downpayment: `).style(italic_rightaligned_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).string(spot_downpayment).style(center_bold)
+
+                ws.cell(++r, col['A'], r, col['F'], true).string(` NEW TCP Less Downpayment `).style(italic_rightaligned_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).string(new_tcp_less_downpayment).style(center_bold)
+
+                ws.cell(++r, col['A'], r, col['D'], true).string(` Monthly Installment for: `).style(italic_rightaligned_style)
+                ws.cell(r, col['E']).string(installment_months).style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(r, col['F']).string(` months: `).style(italic_rightaligned_style)
+                ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                ws.cell(r, col['H'], r, col['I'], true).string(monthly_installment).style(center_bold)
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+                ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Starts: `).style(italic_rightaligned_style)
+                ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Ends: `).style(italic_rightaligned_style)
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+                ws.cell(++r, col['A'], r, col['I'], true).string('REQUIREMENTS').style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of 2 valid ID:  government issued with 3 specimen signature FOR BUYER `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of 2 valid ID:  government issued with 3 specimen signature FOR SPOUSE IF MARRIED `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` TIN number/TIN ID `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` RESERVATION FEE / First Monthly `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Marriage contract if married `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
+
+                // to change destination path
+                wb.write(`./${buyer_name}.xlsx`);
+                console.log('done autoexporting')
             }
         }
     })

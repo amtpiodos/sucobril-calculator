@@ -5,8 +5,16 @@
             
 
             <div v-if="!isFetchingData">
+
+                <div>
+                    <button type="button" v-on:click="viewPayment"
+                        class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                        View Payments
+                    </button>
+                </div>
+
                 <div class="full m-4 bg-gray-200">
-                    <p class="text-center pt-2 font-bold text-lg"> VIEW BUYER'S INFORMATION </p>
+                    <p class="text-center pt-2 font-bold text-lg"> BUYER'S INFORMATION </p>
                     <p class="text-center py-2 font-bold text-sm text-red-700" v-if="!buyer.status">
                         This buyer has been forefeited and is now inactive.
                     </p>
@@ -305,6 +313,10 @@
             this.getDetails(this.$route.params.id)
         },
         methods: {
+            viewPayment() {
+                console.log('Viewing payment for buyer ', this.buyer.id)
+                this.$router.push({ name: "View-Payment-HL", params: { id: this.buyer.id, buyer: this.buyer }})
+            },
             getDetails(id) {
                 this.isFetching = true,
                 ipcRenderer.send('fetchBuyer', id)
@@ -633,7 +645,7 @@
                 
 
               
-                wb.write(`./outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
+                wb.write(`./outputs/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
                 // wb.write(`../../outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
             }
         }

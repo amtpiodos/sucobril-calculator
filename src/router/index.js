@@ -124,6 +124,28 @@ const routes = [
     props: true
   },
 
+  {
+    path: '/view-payment-LO/:id',
+    name: 'View-Payment-LO',
+    component: () => import('../version2/View-Payment-LO'),
+    props: true
+  },
+
+  {
+    path: '/view-payment-HL/:id',
+    name: 'View-Payment-HL',
+    component: () => import('../version2/View-Payment-HL'),
+    props: true
+  },
+
+  {
+    path: '/add-payment/:id',
+    name: 'Add-Payment',
+    component: () => import('../version2/Add-Payment'),
+    props: true
+  },
+
+
 
 
 
