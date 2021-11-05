@@ -54,6 +54,7 @@
     import Header from '../components/v2/Header'
     import ReadOnlyForm from '../components/v2/ReadonlyInput'
     import InputForm from '../components/v2/InputForm'
+    import { ipcRenderer } from 'electron'
     
     export default ({
         components: {
@@ -66,10 +67,10 @@
                 buyer: {},
                 payment: {},
                 new_payment: {
-                    reference_no: '',
-                    or_ar_no: '',
-                    amount: '',
-                    penalty: ''
+                    reference_no: 'RR091239',
+                    or_ar_no: '893128',
+                    amount: '999.99',
+                    penalty: '99.90'
                 },
                 isFetchingData: false // change to true
             }
@@ -82,7 +83,25 @@
         },
         methods: {
             submitPayment() {
-                console.log('submitting payment')
+                // console.log('submitting payment', this.new_payment)
+                const dataToSubmit = { id: this.buyer.id, payment: this.new_payment}
+                console.log('submitPayment', dataToSubmit)
+                ipcRenderer.send('addPayment', dataToSubmit)
+                ipcRenderer.once('addedPayment', (event, data) => {
+                    console.log('addedPayment', data)
+                    if(data == 1) {
+                        console.log('Add Payment SUCCESSFUL')
+                        // this.autoExport()
+                        // add loading screen
+                        setTimeout(() => {
+                            this.$router.push('/')
+                        }, 2000)
+                    } else {
+                        alert('Add Payment ERROR')
+                        console.log('Add Payment ERROR')
+                    }
+                    this.isFetchingData = false
+                })
             }
         }
     })

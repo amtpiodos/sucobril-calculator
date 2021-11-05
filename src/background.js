@@ -478,6 +478,40 @@ ipcMain.on('forefeitBuyer', (event, data) => {
     }).finally(() => knex.destroy())
 })
 
+// FUNCTION TO ADD BUYER PAYMENT IN DB
+ipcMain.on('addPayment', (event, data) => {
+  console.log('addPayment', data)
+  const { id, payment } = data
+  console.log('addPayment', data)
+  console.log({id}, {payment})
+  const knex = getDbConnection()
+  knex('buyer_payment').where({ id: id  })
+  .insert({
+      reference_no: payment.reference_no,
+      or_ar_no: payment.or_ar_no,
+      amount: payment.amount,
+      penalty: payment.penalty,
+      buyer_id: id
+    })
+    .then(() => {
+      console.log('ADD buyer_payment successful')
+      event.reply('addedPayment', 1)
+    }).catch((err) => {
+      event.reply('addedPayment', 0)
+      console.log('FOREFEITING OF BUYER ERROR', err) ; throw err
+    }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH BUYER PAYMENTS IN DB
+ipcMain.on('fetchPaymentsList', (event, data) => {
+  const knex = getDbConnection()
+  knex('buyer_payment').select().then((buyer_payment) => {
+    event.reply('fetchedPaymentsList', { response: 1, buyers: buyers })
+  }).catch((err) => {
+    event.reply('fetchedPaymentsList', { response: 0 })
+    console.log('FETCH BUYER PAYMENTS ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
 
 // FUNCTION TO CONNECT DB mysql
 function getDbConnection() {
