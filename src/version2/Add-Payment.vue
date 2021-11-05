@@ -70,18 +70,25 @@
                     reference_no: 'RR091239',
                     or_ar_no: '893128',
                     amount: '999.99',
-                    penalty: '99.90'
+                    penalty: '99.90',
+                    date: ''
                 },
                 isFetchingData: false // change to true
             }
         },
         created() {
+            this.getDate()
             this.buyer = this.$route.params.buyer
             this.payment = this.$route.params.buyer.payment
             console.log('this.buyer', this.buyer)
             // this.getPaymentDetails(this.$route.params.id)
         },
         methods: {
+            getDate() {
+                let today = new Date()
+                this.new_payment.date = today
+                return this.new_payment.date
+            },
             submitPayment() {
                 // console.log('submitting payment', this.new_payment)
                 const dataToSubmit = { id: this.buyer.id, payment: this.new_payment}
@@ -94,7 +101,7 @@
                         // this.autoExport()
                         // add loading screen
                         setTimeout(() => {
-                            this.$router.push('/')
+                             this.$router.push({ name: "View-Payment-HL", params: { id: this.buyer.id, buyer: this.buyer }})
                         }, 2000)
                     } else {
                         alert('Add Payment ERROR')

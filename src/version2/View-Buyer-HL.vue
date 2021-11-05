@@ -5,12 +5,21 @@
             
 
             <div v-if="!isFetchingData">
-
-                <div>
+                <!-- <div>
                     <button type="button" v-on:click="viewPayment"
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                         View Payments
                     </button>
+                </div> -->
+                <div class="flex">
+                    <div class="w-1/2 px-4">
+                        <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
+                        <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
+                    </div>
+                    <div class="w-1/2 px-4">
+                        <div class="text-xs font-semibold"> <p class="text-right"> {{ buyer.project.name }} - {{ buyer.project.location }} </p> </div>
+                        <div class="text-xs"> <p class="text-right"> Contact: (032) 260-1522 Email: tumabinidevelopment@gmail.com </p> </div>
+                    </div>
                 </div>
 
                 <div class="full m-4 bg-gray-200">
@@ -262,16 +271,20 @@
                 </div>
 
                 <div class="flex items-center mx-auto justify-center gap-8 my-4">
-                    <button type="button" v-if="buyer.status" v-on:click="editDetails"
+                    <!-- <button type="button" v-if="buyer.status" v-on:click="editDetails"
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                         EDIT INFORMATION
+                    </button> -->
+                    <button type="button" v-on:click="viewPayment"
+                        class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                        VIEW PAYMENTS
                     </button>
                     <button type="button" v-on:click="exportDetails"
-                        class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                        class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                         EXPORT INFORMATION
                     </button>
                     <button type="button" v-if="buyer.status" v-on:click="forefeitBuyer"
-                        class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                        class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                         FOREFEIT BUYER
                     </button>
                 </div>

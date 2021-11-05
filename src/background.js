@@ -491,6 +491,7 @@ ipcMain.on('addPayment', (event, data) => {
       or_ar_no: payment.or_ar_no,
       amount: payment.amount,
       penalty: payment.penalty,
+      date: payment.date,
       buyer_id: id
     })
     .then(() => {
@@ -505,22 +506,26 @@ ipcMain.on('addPayment', (event, data) => {
 // FUNCTION TO FETCH BUYER PAYMENTS IN DB
 ipcMain.on('fetchPaymentsList', (event, data) => {
   const knex = getDbConnection()
-  knex('buyer_payment').select().then((buyer_payment) => {
-    event.reply('fetchedPaymentsList', { response: 1, buyers: buyers })
+  knex('buyer_payment').select().then((buyer_payments) => {
+    event.reply('fetchedPaymentsList', { response: 1, buyer_payments: buyer_payments })
   }).catch((err) => {
     event.reply('fetchedPaymentsList', { response: 0 })
     console.log('FETCH BUYER PAYMENTS ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
 
+
 // FUNCTION TO CONNECT DB mysql
 function getDbConnection() {
   const knex = require('knex')({
     client: 'mysql',
     connection: {
-      host: '127.0.0.1',
-      user: 'root',
-      password: '',
+      // host: '127.0.0.1',
+      // user: 'root',
+      // password: '',
+      host: '192.168.9.193',
+      user: 'sample',
+      password: 'password',
       database: 'tumabini_db'
     }
   })
