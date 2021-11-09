@@ -345,11 +345,11 @@
                 ws.cell(++r, col['A'], r, col['E'], true).string(` SPOT CASH Discount Less: `).style(italic_rightaligned_style)
                 ws.cell(r, col['F']).string(`${spot_cash_discount_less_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).string(spot_cash_discount_less_amount).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).number(spot_cash_discount_less_amount).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['F'], true).string(`NET TOTAL Contract Price: `).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).string(net_total_contract_price).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).number(net_total_contract_price).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['F'], true).string(`Reservation Fee: `).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
@@ -357,7 +357,7 @@
 
                 ws.cell(++r, col['A'], r+1, col['F'], true).string(`Balance TCP (shall be paid on or before thirty (30) days from reservation date):`).style(italic_rightaligned_style)
                 ws.cell(r, col['G'], r+1, col['G'], true).string(php).style(italic_rightaligned_style)
-                ws.cell(r++, col['H'], r, col['I'], true).string(balance_total_contract_price).style(center_bold)
+                ws.cell(r++, col['H'], r, col['I'], true).number(balance_total_contract_price).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
                 ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(aligned_style).style(header_style)
@@ -374,7 +374,7 @@
 
                 // to change destination path
                 // wb.write(`./${buyer_name}.xlsx`);
-                wb.write(`./outputs/${buyer_name}.xlsx`);
+                wb.write(`./${buyer_name}.xlsx`);
                 console.log('done autoexporting')
             }
         }

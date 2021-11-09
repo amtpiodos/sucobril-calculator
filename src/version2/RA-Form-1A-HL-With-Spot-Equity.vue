@@ -169,12 +169,12 @@
         data() {
             return {
                 buyer: {
-                    last_name: 'Spot Cash',
-                    first_name: 'Equity',
-                    middle_initial: 'HL',
-                    contact_number: '31231231',
-                    email_address: 'dasda@gmail.com',
-                    home_address: 'Carcar City',
+                    last_name: '',
+                    first_name: '',
+                    middle_initial: '',
+                    contact_number: '',
+                    email_address: '',
+                    home_address: '',
                 },
                 unit: {
                     project_name: this.$store.state.unit.project.project_name,
@@ -383,16 +383,16 @@
                 ws.cell(++r, col['A'], r, col['E'], true).string(` REQUIRED EQUITY: `).style(italic_rightaligned_style)
                 ws.cell(r, col['F']).string(`${required_equity_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).string(required_equity_amount).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).number(required_equity_amount).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['E'], true).string(` SPOT CASH Equity Less: `).style(italic_rightaligned_style)
                 ws.cell(r, col['F']).string(`${spot_cash_equity_less_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).string(spot_cash_equity_less_amount).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).number(spot_cash_equity_less_amount).style(center_bold)
                     
                 ws.cell(++r, col['A'], r, col['F'], true).string(` Net Equity Less Discount:`).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).string(net_equity_less_discount).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).number(net_equity_less_discount).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['F'], true).string(` Reservation Fee:`).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
@@ -400,12 +400,12 @@
 
                 ws.cell(++r, col['A'], r+1, col['F'], true).string(` Equity Net of Reservation Fee (shall be paid on or before thirty (30) days from reservation date):`).style(italic_rightaligned_style)
                 ws.cell(r, col['G'], r+1, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r++, col['H'], r, col['I'], true).string(equity_net_of_reservation_fee).style(center_bold)
+                ws.cell(r++, col['H'], r, col['I'], true).number(equity_net_of_reservation_fee).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['E'], true).string(` Balance Loanable Amount after Equity: `).style(italic_rightaligned_style)
                 ws.cell(r, col['F']).string(`${balance_loanable_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).string(balance_loanable_amount).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).number(balance_loanable_amount).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
                 ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(aligned_style).style(header_style)

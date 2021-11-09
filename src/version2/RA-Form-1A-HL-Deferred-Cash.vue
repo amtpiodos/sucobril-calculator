@@ -345,8 +345,8 @@
 
                 ws.cell(++r, col['A'], r, col['F'], true).string(` Balance Amount After Reservation Fee: `).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).string(balance_amount_after_reservation).style(center_bold)
-                console.log('balance_amount_after_reservation', balance_amount_after_reservation)
+                ws.cell(r, col['H'], r, col['I'], true).number(balance_amount_after_reservation).style(center_bold)
+                // console.log('balance_amount_after_reservation', balance_amount_after_reservation)
 
                 ws.cell(++r, col['A'], r, col['C'], true).string(` Balance Amount After Reservation Fee is payable in: `).style(italic_rightaligned_style)
                 ws.cell(r, col['D']).string(installment_months).style(center_bold)
@@ -354,7 +354,7 @@
 
                 ws.cell(++r, col['A'], r, col['F'], true).string(` Monthly Installment Amount: `).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).string(monthly_installment).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).number(monthly_installment).style(center_bold)
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')

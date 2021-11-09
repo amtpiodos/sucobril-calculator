@@ -395,7 +395,7 @@
                 ws.cell(++r, col['A'], r, col['E'], true).string(` REQUIRED EQUITY `).style(italic_rightaligned_style)
                 ws.cell(r, col['F']).string(`${required_equity_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).string(required_equity_amount).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).number(required_equity_amount).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['F'], true).string(` Reservation Fee:`).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
@@ -403,7 +403,7 @@
 
                 ws.cell(++r, col['A'], r, col['F'], true).string(` Equity Net of Reservation Fee:`).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).string(equity_net_of_reservation_fee).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).number(equity_net_of_reservation_fee).style(center_bold)
 
                 ws.cell(++r, col['A']).string('Equity Term: ').style(italic_leftaligned_style)
                 ws.cell(r, col['B']).string(equity_months).style(center_bold)
@@ -417,12 +417,12 @@
 
                 ws.cell(r-1, col['E'], r, col['F'], true).string('REQUIRED Monthly Equity: ').style(italic_rightaligned_style)
                 ws.cell(r-1, col['G'], r, col['G'], true).string(php).style(italic_rightaligned_style)
-                ws.cell(r-1, col['H'], r, col['I'], true).string(monthly_equity_amount).style(center_bold)
+                ws.cell(r-1, col['H'], r, col['I'], true).number(monthly_equity_amount).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['E'], true).string(` Balance Loanable Amount after Equity: `).style(italic_rightaligned_style)
                 ws.cell(r, col['F']).string(`${balance_loanable_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).string(balance_loanable_amount).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).number(balance_loanable_amount).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
                 ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(aligned_style).style(header_style)
