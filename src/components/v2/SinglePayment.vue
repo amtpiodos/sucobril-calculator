@@ -7,16 +7,19 @@
             </div>
         </div>
         <div class="w-1/5">
-            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular"> {{ buyer_payment.reference_no}} </p>
+            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular uppercase"> {{ buyer_payment.reference_no}} </p>
         </div>
         <div class="w-1/5">
-            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular"> {{ buyer_payment.or_ar_no }} </p>
+            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular uppercase"> {{ buyer_payment.or_ar_no }} </p>
         </div>
         <div class="w-1/5">
-            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular"> {{ buyer_payment.amount }} </p>
+            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular uppercase"> {{ buyer_payment.amount }} </p>
         </div>
         <div class="w-1/5">
-            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular"> {{ buyer_payment.penalty }} </p>
+            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular uppercase"> {{ buyer_payment.penalty }} </p>
+        </div>
+        <div class="w-1/5">
+            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular uppercase"> {{ buyer_payment.remarks }} </p>
         </div>
     </div>
 </template>

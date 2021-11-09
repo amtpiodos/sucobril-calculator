@@ -128,12 +128,12 @@
         data() {
             return {
                 buyer: {
-                    last_name: 'Deferred',
-                    first_name: 'Cash',
-                    middle_initial: 'HL',
-                    contact_number: '091238139',
-                    email_address: 'skadj@gmail.com',
-                    home_address: 'Perrelos',
+                    last_name: '',
+                    first_name: '',
+                    middle_initial: '',
+                    contact_number: '',
+                    email_address: '',
+                    home_address: '',
                 },
                 unit: {
                     project_name: this.$store.state.unit.project.project_name,
@@ -142,19 +142,19 @@
                     lot_id: this.$store.state.unit.lot.lot_id,
                     phase: '',
                     project_address: this.$store.state.unit.project.project_location,
-                    price_per_sqm: '900000',
-                    realty_name: 'Realty',
-                    agent_name: 'Agent',
+                    price_per_sqm: '',
+                    realty_name: '',
+                    agent_name: '',
                     lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
-                    lot_type: 'Regular'
+                    lot_type: ''
                 },
                 payment_details: {
                     date: '',
-                    total_contract_price: '1260000',
-                    reservation_fee: '15000',
-                    balance_amount_after_reservation: '120000',
-                    installment_months: '10',
-                    monthly_installment: '10000',
+                    total_contract_price: '',
+                    reservation_fee: '',
+                    balance_amount_after_reservation: '',
+                    installment_months: '',
+                    monthly_installment: '',
                     equity_start_date: '',
                     equity_end_date: '',
                     reservation_type: 4

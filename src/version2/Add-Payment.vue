@@ -37,13 +37,25 @@
                     <div class="full"> <input-form label="Penalty (Php)" v-model="new_payment.penalty" /> </div>
                 </div>
 
+                <div class="full my-2"> <input-form label="Remarks / Description" v-model="new_payment.remarks" /> </div>
+
                 <div class="flex items-center mx-auto justify-center gap-8 my-4">
                     <button type="button" v-on:click="submitPayment"
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                         SUBMIT PAYMENT
                     </button>
-                </div>
 
+                    <button type="button" v-on:click="back"
+                        class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                        BACK to PAYMENT DETAILS
+                    </button>
+                </div>
+                <!-- <div class="flex items-center mx-auto justify-center gap-8 my-4">
+                    <button type="button" v-on:click="this.$router.go(-1)"
+                        class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                        BACK to PAYMENT DETAILS
+                    </button>
+                </div> -->
 
             <!-- </div> -->
         </div>
@@ -67,11 +79,12 @@
                 buyer: {},
                 payment: {},
                 new_payment: {
-                    reference_no: 'RR091239',
-                    or_ar_no: '893128',
-                    amount: '999.99',
-                    penalty: '99.90',
-                    date: ''
+                    reference_no: '',
+                    or_ar_no: '',
+                    amount: '',
+                    penalty: '',
+                    date: '',
+                    remarks: ''
                 },
                 isFetchingData: false // change to true
             }
@@ -84,6 +97,9 @@
             // this.getPaymentDetails(this.$route.params.id)
         },
         methods: {
+            back() {
+                this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
+            },
             getDate() {
                 let today = new Date()
                 this.new_payment.date = today
@@ -101,7 +117,7 @@
                         // this.autoExport()
                         // add loading screen
                         setTimeout(() => {
-                             this.$router.push({ name: "View-Payment-HL", params: { id: this.buyer.id, buyer: this.buyer }})
+                             this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
                         }, 2000)
                     } else {
                         alert('Add Payment ERROR')

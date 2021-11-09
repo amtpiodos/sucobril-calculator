@@ -171,12 +171,12 @@
         data() {
             return {
                 buyer: {
-                    last_name: 'Regular',
-                    first_name: 'Reservation',
-                    middle_initial: 'HL',
-                    contact_number: '09123891',
-                    email_address: 'sda@gmail.com',
-                    home_address: 'Perrelos',
+                    last_name: '',
+                    first_name: '',
+                    middle_initial: '',
+                    contact_number: '',
+                    email_address: '',
+                    home_address: '',
                 },
                 unit: {
                     project_name: this.$store.state.unit.project.project_name,
@@ -185,25 +185,25 @@
                     lot_id: this.$store.state.unit.lot.lot_id,
                     phase: '',
                     project_address: this.$store.state.unit.project.project_location,
-                    price_per_sqm: '31200',
-                    realty_name: 'Realty N',
-                    agent_name: 'Agent x44',
+                    price_per_sqm: '',
+                    realty_name: '',
+                    agent_name: '',
                     lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
-                    lot_type: 'Regular'
+                    lot_type: ''
                 },
                 payment_details: {
                     date: '',
-                    total_contract_price: '90000',
-                    required_equity_percentage: '10',
-                    required_equity_amount: '1000',
-                    reservation_fee: '500',
-                    equity_net_of_reservation_fee: '500',
-                    equity_months: '5',
-                    monthly_equity_amount: '100',
+                    total_contract_price: '',
+                    required_equity_percentage: '',
+                    required_equity_amount: '',
+                    reservation_fee: '',
+                    equity_net_of_reservation_fee: '',
+                    equity_months: '',
+                    monthly_equity_amount: '',
                     equity_start_date: '',
                     equity_end_date: '',
-                    balance_loanable_percentage: '5',
-                    balance_loanable_amount: '1200',
+                    balance_loanable_percentage: '',
+                    balance_loanable_amount: '',
                     reservation_type: 1,
                 }
             }

@@ -124,17 +124,24 @@ const routes = [
     props: true
   },
 
-  {
-    path: '/view-payment-LO/:id',
-    name: 'View-Payment-LO',
-    component: () => import('../version2/View-Payment-LO'),
-    props: true
-  },
+  // {
+  //   path: '/view-payment-LO/:id',
+  //   name: 'View-Payment-LO',
+  //   component: () => import('../version2/View-Payment-LO'),
+  //   props: true
+  // },
+
+  // {
+  //   path: '/view-payment-HL/:id',
+  //   name: 'View-Payment-HL',
+  //   component: () => import('../version2/View-Payment-HL'),
+  //   props: true
+  // },
 
   {
-    path: '/view-payment-HL/:id',
-    name: 'View-Payment-HL',
-    component: () => import('../version2/View-Payment-HL'),
+    path: '/view-payment/:id',
+    name: 'View-Payment',
+    component: () => import('../version2/View-Payment'),
     props: true
   },
 

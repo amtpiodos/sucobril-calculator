@@ -328,7 +328,7 @@
         methods: {
             viewPayment() {
                 console.log('Viewing payment for buyer ', this.buyer.id)
-                this.$router.push({ name: "View-Payment-HL", params: { id: this.buyer.id, buyer: this.buyer }})
+                this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
             },
             getDetails(id) {
                 this.isFetching = true,

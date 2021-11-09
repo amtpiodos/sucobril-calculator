@@ -132,12 +132,12 @@
         data() {
             return {
                 buyer: {
-                    last_name: 'Spot Cash',
-                    first_name: 'TCP',
-                    middle_initial: 'HL',
-                    contact_number: '3123123',
-                    email_address: 'sda@gmail.com',
-                    home_address: 'Valladolid',
+                    last_name: '',
+                    first_name: '',
+                    middle_initial: '',
+                    contact_number: '',
+                    email_address: '',
+                    home_address: '',
                 },
                 unit: {
                     project_name: this.$store.state.unit.project.project_name,
@@ -146,20 +146,20 @@
                     lot_id: this.$store.state.unit.lot.lot_id,
                     phase: '',
                     project_address: this.$store.state.unit.project.project_location,
-                    price_per_sqm: '19999',
-                    realty_name: 'Realty TCP',
-                    agent_name: 'Agent TCP',
+                    price_per_sqm: '',
+                    realty_name: '',
+                    agent_name: '',
                     lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
-                    lot_type: 'Regular'
+                    lot_type: ''
                 },
                 payment_details: {
                     date: '',
-                    total_contract_price: '120000',
-                    spot_cash_discount_less_percentage: '10',
-                    spot_cash_discount_less_amount: '12000',
-                    net_total_contract_price: '98000',
-                    reservation_fee: '10000',
-                    balance_total_contract_price: '88000',
+                    total_contract_price: '',
+                    spot_cash_discount_less_percentage: '',
+                    spot_cash_discount_less_amount: '',
+                    net_total_contract_price: '',
+                    reservation_fee: '',
+                    balance_total_contract_price: '',
                     reservation_type: 3
                 }
             }

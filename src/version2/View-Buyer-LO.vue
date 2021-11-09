@@ -165,7 +165,7 @@
                     </button> -->
                     <button type="button" v-on:click="viewPayment"
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
-                        View Payments
+                        VIEW PAYMENTS
                     </button>
                     <button type="button" v-on:click="exportDetails"
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
@@ -216,7 +216,7 @@
         methods: {
             viewPayment() {
                 console.log('Viewing payment for buyer ', this.buyer.id)
-                this.$router.push({ name: "View-Payment-LO", params: { id: this.buyer.id, buyer: this.buyer }})
+                this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
             },
             getDetails(id) {
                 this.isFetching = true,

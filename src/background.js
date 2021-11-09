@@ -492,6 +492,7 @@ ipcMain.on('addPayment', (event, data) => {
       amount: payment.amount,
       penalty: payment.penalty,
       date: payment.date,
+      remarks: payment.remarks,
       buyer_id: id
     })
     .then(() => {
@@ -506,7 +507,7 @@ ipcMain.on('addPayment', (event, data) => {
 // FUNCTION TO FETCH BUYER PAYMENTS IN DB
 ipcMain.on('fetchPaymentsList', (event, data) => {
   const knex = getDbConnection()
-  knex('buyer_payment').select().then((buyer_payments) => {
+  knex('buyer_payment').where({ buyer_id: data.id  }).then((buyer_payments) => {
     event.reply('fetchedPaymentsList', { response: 1, buyer_payments: buyer_payments })
   }).catch((err) => {
     event.reply('fetchedPaymentsList', { response: 0 })
@@ -516,35 +517,32 @@ ipcMain.on('fetchPaymentsList', (event, data) => {
 
 
 // FUNCTION TO CONNECT DB mysql
-function getDbConnection() {
-  const knex = require('knex')({
-    client: 'mysql',
-    connection: {
-      // host: '127.0.0.1',
-      // user: 'root',
-      // password: '',
-      host: '192.168.9.193',
-      user: 'sample',
-      password: 'password',
-      database: 'tumabini_db'
-    }
-  })
-
-  return knex
-}
-
 // function getDbConnection() {
-//   console.log('getdbconnection')
 //   const knex = require('knex')({
 //     client: 'mysql',
 //     connection: {
-//       host: '192.168.9.51',
-//       port: '3306',
-//       user: 'root',
-//       password: '',
+//       // host: '192.168.1.29',
+//       host: '192.168.254.142',
+//       user: 'user',
+//       password: 'password',
 //       database: 'tumabini_db'
 //     }
 //   })
 
 //   return knex
 // }
+
+function getDbConnection() {
+  console.log('getdbconnection')
+  const knex = require('knex')({
+    client: 'mysql',
+    connection: {
+      host: '127.0.0.1',
+      user: 'root',
+      password: '',
+      database: 'tumabini_db'
+    }
+  })
+
+  return knex
+}
