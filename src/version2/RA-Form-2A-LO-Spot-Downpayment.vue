@@ -38,8 +38,8 @@
                     <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
-                            <input type="numbers"
-                                :value="payment_details.total_contract_price"
+                            <input type="text"
+                                :value="formatDisplay(payment_details.total_contract_price)"
                                 @change="updateTCP"
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
                         </div>
@@ -52,8 +52,8 @@
                     <div class="w-3/4"> <div class="items-starts w-3/4">
                         <!-- <input-form v-model="payment_details.spot_downpayment" /> -->
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
-                            <input type="numbers"
-                                :value="payment_details.spot_downpayment"
+                            <input type="text"
+                                :value="formatDisplay(payment_details.spot_downpayment)"
                                 @change="updateSpotDownpayment"
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
                         </div>
@@ -66,7 +66,7 @@
                     <div class="w-3/4"> <div class="items-starts w-3/4">
                         <!-- <input-form v-model="payment_details.new_tcp_less_downpayment" /> -->
                         <input type="text"
-                                :value="payment_details.new_tcp_less_downpayment"
+                                :value="formatDisplay(payment_details.new_tcp_less_downpayment)"
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                 readonly disabled>
                     </div> </div>
@@ -85,7 +85,7 @@
                     <div class="w-3/4"> <div class="items-starts w-3/4">
                         <!-- <input-form v-model="payment_details.monthly_installment" /> -->
                         <input type="text"
-                                :value="payment_details.monthly_installment"
+                                :value="formatDisplay(payment_details.monthly_installment)"
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                 readonly disabled>
                     </div> </div>
@@ -170,6 +170,15 @@
             return this.payment_details.date
         },
         methods: {
+            formatDisplay(value) {
+               return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            },
+            formatDecimal(value) {
+                return value.toFixed(2)
+            },
+            formatParsedFloat(value) {
+                return parseFloat(value.replace(/,/g, '')).toFixed(2)
+            },
             upDate(event) {
                 console.log('Updating dates', event)
                 this.payment_details.monthly_start_date = event.start
@@ -192,9 +201,12 @@
                 this.updateCalculations()
             },
             updateCalculations() {
-                this.payment_details.new_tcp_less_downpayment = this.payment_details.total_contract_price - this.payment_details.spot_downpayment
+                const formatted_total_contract_price = this.formatParsedFloat(this.payment_details.total_contract_price)
+                const formatted_spot_downpayment = this.formatParsedFloat(this.payment_details.spot_downpayment)
+
+                this.payment_details.new_tcp_less_downpayment = this.formatDecimal(formatted_total_contract_price - formatted_spot_downpayment)
                 this.payment_details.monthly_installment = this.payment_details.installment_months
-                                    ? this.payment_details.new_tcp_less_downpayment / this.payment_details.installment_months : 0
+                                    ? this.formatDecimal(this.payment_details.new_tcp_less_downpayment / this.payment_details.installment_months) : 0
             },
             getPhase() {
                 return  this.$store.state.unit.phase.phase_name &&
@@ -229,30 +241,31 @@
             },
             autoExport() {
                 console.log('AutoExport after Adding Buyer, LO - Spot Cash')
-                const buyer_name = `${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}`
-                const home_address = this.buyer.home_address
-                const email_address = this.buyer.email_address
-                const contact_number = this.buyer.contact_number
+                const buyer_name = `${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                const file_name = `${this.unit.project_name.toUpperCase()} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                const home_address = this.buyer.home_address.toUpperCase()
+                const email_address = this.buyer.email_address.toUpperCase()
+                const contact_number = this.buyer.contact_number.toUpperCase()
 
-                const block_name = this.unit.block
-                const project_name = this.unit.project_name
-                const lot_name = this.unit.lot
-                const price_per_sqm = this.unit.price_per_sqm
-                const phase = this.unit.phase
-                const lot_area = this.unit.lot_area
-                const lot_type = this.unit.lot_type
-                const realty = this.unit.realty_name
-                const agent = this.unit.agent_name
-                const project_address = this.unit.project_address
+                const block_name = this.unit.block.toUpperCase()
+                const project_name = this.unit.project_name.toUpperCase()
+                const lot_name = this.unit.lot.toUpperCase()
+                const price_per_sqm = this.unit.price_per_sqm.toUpperCase()
+                const phase = this.unit.phase.toUpperCase()
+                const lot_area = this.unit.lot_area.toUpperCase()
+                const lot_type = this.unit.lot_type.toUpperCase()
+                const realty = this.unit.realty_name.toUpperCase()
+                const agent = this.unit.agent_name.toUpperCase()
+                const project_address = this.unit.project_address.toUpperCase()
 
-                const reservation_date = this.payment_details.date
-                const total_contract_price = this.payment_details.total_contract_price
-                const installment_months = this.payment_details.installment_months
-                const monthly_installment = this.payment_details.monthly_installment
-                const spot_downpayment = this.payment_details.spot_downpayment
-                const new_tcp_less_downpayment = this.payment_details.new_tcp_less_downpayment
-                const monthly_start_date = this.payment_details.monthly_start_date
-                const monthly_end_date = this.payment_details.monthly_end_date
+                const reservation_date = this.payment_details.date.toString()
+                const total_contract_price = this.payment_details.total_contract_price.toString()
+                const installment_months = this.payment_details.installment_months.toString()
+                const monthly_installment = this.payment_details.monthly_installment.toString()
+                const spot_downpayment = this.payment_details.spot_downpayment.toString()
+                const new_tcp_less_downpayment = this.payment_details.new_tcp_less_downpayment.toString()
+                const monthly_start_date = this.payment_details.monthly_start_date.toString()
+                const monthly_end_date = this.payment_details.monthly_end_date.toString()
 
                 const php = 'PHP'
 
@@ -352,7 +365,9 @@
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
                 ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Starts: `).style(italic_rightaligned_style)
+                ws.cell(r, col['D'], r, col['F'], true).string(monthly_start_date).style(italic_leftaligned_style)
                 ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Ends: `).style(italic_rightaligned_style)
+                ws.cell(r, col['D'], r, col['F'], true).string(monthly_end_date).style(italic_leftaligned_style)
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
                 ws.cell(++r, col['A'], r, col['I'], true).string('REQUIREMENTS').style(bordered_style).style(aligned_style).style(header_style)
@@ -364,8 +379,9 @@
                 ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
 
                 // to change destination path
-                wb.write(`./${buyer_name}.xlsx`);
-                console.log('done autoexporting')
+                wb.write(`./${file_name}.xlsx`);
+                // wb.write(`./outputs/${buyer_name}.xlsx`);
+                console.log('Done Autoexporting', file_name)
             }
         }
     })

@@ -38,8 +38,8 @@
                     <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
-                            <input type="numbers"
-                                :value="payment_details.total_contract_price"
+                            <input type="text"
+                                :value="formatDisplay(payment_details.total_contract_price)"
                                 @change="updateTCP"
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
                         </div>
@@ -51,7 +51,8 @@
                     <div class="w-1/4 items-center py-2 mt-1">
                         <p class="align-middle text-right text-xs font-bold">Required Equity 
                             <input type="number"
-                                :value="payment_details.required_equity_percentage" @change="updateREP"
+                                :value="payment_details.required_equity_percentage"
+                                @change="updateREP"
                                 class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                             > %:
                         </p>
@@ -59,7 +60,7 @@
                     <div class="w-3/4"> <div class="items-starts w-3/4">
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                             <input type="text"
-                                :value="payment_details.required_equity_amount"
+                                :value="formatDisplay(payment_details.required_equity_amount)"
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                 readonly disabled>
                         </div>
@@ -78,7 +79,7 @@
                     </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
                         <input type="text"
-                            :value="payment_details.spot_cash_equity_less_amount"
+                            :value="formatDisplay(payment_details.spot_cash_equity_less_amount)"
                             class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                             readonly disabled>
                     </div> </div>
@@ -89,7 +90,7 @@
                     <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Net Equity Less Discount: </p> </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
                         <input type="text"
-                            :value="payment_details.net_equity_less_discount"
+                            :value="formatDisplay(payment_details.net_equity_less_discount)"
                             class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                             readonly disabled>
                     </div> </div>
@@ -100,8 +101,8 @@
                     <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
-                            <input type="numbers"
-                                :value="payment_details.reservation_fee"
+                            <input type="text"
+                                :value="formatDisplay(payment_details.reservation_fee)"
                                 @change="updateREF"
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
                         </div>
@@ -115,7 +116,7 @@
                     </div>
                     <div class="w-3/4"> <div class="items-starts w-3/4">
                         <input type="text"
-                            :value="payment_details.equity_net_of_reservation_fee"
+                            :value="formatDisplay(payment_details.equity_net_of_reservation_fee)"
                             class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                             readonly disabled>
                     </div> </div>
@@ -135,7 +136,7 @@
                     <div class="w-3/4"> <div class="items-starts w-3/4">
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                             <input type="text"
-                                :value="payment_details.balance_loanable_amount"
+                                :value="formatDisplay(payment_details.balance_loanable_amount)"
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                 readonly disabled>
                         </div>
@@ -168,6 +169,7 @@
         },
         data() {
             return {
+                inputType: 'text',
                 buyer: {
                     last_name: '',
                     first_name: '',
@@ -214,6 +216,15 @@
                 return this.payment_details.date
         },
         methods: {
+            formatDisplay(value) {
+               return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            },
+            formatDecimal(value) {
+                return value.toFixed(2)
+            },
+            formatParsedFloat(value) {
+                return parseFloat(value.replace(/,/g, '')).toFixed(2)
+            },
             updateTCP(event) {
                 this.payment_details.total_contract_price = event.target.value
                 console.log('UpdateTCP', this.payment_details.total_contract_price)
@@ -235,12 +246,15 @@
                 this.updateCalculations()
             },
             updateCalculations() {
-                this.payment_details.required_equity_amount = this.payment_details.total_contract_price * (this.payment_details.required_equity_percentage * 0.01)
-                this.payment_details.spot_cash_equity_less_amount = this.payment_details.required_equity_amount * (this.payment_details.spot_cash_equity_less_percentage * 0.01)
-                this.payment_details.net_equity_less_discount = this.payment_details.required_equity_amount - this.payment_details.spot_cash_equity_less_amount
-                this.payment_details.equity_net_of_reservation_fee = this.payment_details.required_equity_amount - this.payment_details.reservation_fee
+                const formatted_total_contract_price = this.formatParsedFloat(this.payment_details.total_contract_price)
+                const formatted_reservation_fee = this.formatParsedFloat(this.payment_details.reservation_fee)
+                // const formatted_total_contract_price = parseFloat(this.payment_details.total_contract_price.replace(/,/g, ''))
+                this.payment_details.required_equity_amount = this.formatDecimal(formatted_total_contract_price * (this.payment_details.required_equity_percentage * 0.01))
+                this.payment_details.spot_cash_equity_less_amount = this.formatDecimal(this.payment_details.required_equity_amount * (this.payment_details.spot_cash_equity_less_percentage * 0.01))
+                this.payment_details.net_equity_less_discount = this.formatDecimal(this.payment_details.required_equity_amount - this.payment_details.spot_cash_equity_less_amount)
+                this.payment_details.equity_net_of_reservation_fee = this.formatDecimal(this.payment_details.net_equity_less_discount - formatted_reservation_fee)
                 this.payment_details.balance_loanable_percentage = 100 - this.payment_details.required_equity_percentage
-                this.payment_details.balance_loanable_amount = this.payment_details.total_contract_price * (this.payment_details.balance_loanable_percentage * 0.01)
+                this.payment_details.balance_loanable_amount = this.formatDecimal(formatted_total_contract_price * (this.payment_details.balance_loanable_percentage * 0.01))
             },
             getPhase() {
                 return  this.$store.state.unit.phase.phase_name &&
@@ -271,33 +285,35 @@
             },
             autoExport() {
                 console.log('AutoExport after Adding Buyer, HL - Spot Equity', this.payment_details)
-                const buyer_name = `${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}`
-                const home_address = this.buyer.home_address
-                const email_address = this.buyer.email_address
-                const contact_number = this.buyer.contact_number
+                const buyer_name = `${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                const file_name = `${this.unit.project_name.toUpperCase()} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+               
+                const home_address = this.buyer.home_address.toUpperCase()
+                const email_address = this.buyer.email_address.toUpperCase()
+                const contact_number = this.buyer.contact_number.toUpperCase()
 
-                const block_name = this.unit.block
-                const project_name = this.unit.project_name
-                const lot_name = this.unit.lot
-                const price_per_sqm = this.unit.price_per_sqm
+                const block_name = this.unit.block.toUpperCase()
+                const project_name = this.unit.project_name.toUpperCase()
+                const lot_name = this.unit.lot.toUpperCase()
+                const price_per_sqm = this.unit.price_per_sqm.toUpperCase()
                 const phase = this.unit.phase
-                const lot_area = this.unit.lot_area
-                const lot_type = this.unit.lot_type
-                const realty = this.unit.realty_name
-                const agent = this.unit.agent_name
-                const project_address = this.unit.project_address
+                const lot_area = this.unit.lot_area.toUpperCase()
+                const lot_type = this.unit.lot_type.toUpperCase()
+                const realty = this.unit.realty_name.toUpperCase()
+                const agent = this.unit.agent_name.toUpperCase()
+                const project_address = this.unit.project_address.toUpperCase()
 
-                const reservation_date = this.payment_details.date
-                const total_contract_price = this.payment_details.total_contract_price
-                const required_equity_percentage = this.payment_details.required_equity_percentage
-                const required_equity_amount = this.payment_details.required_equity_amount
-                const spot_cash_equity_less_percentage = this.payment_details.spot_cash_equity_less_percentage
-                const spot_cash_equity_less_amount = this.payment_details.spot_cash_equity_less_amount
-                const net_equity_less_discount = this.payment_details.net_equity_less_discount
-                const reservation_fee = this.payment_details.reservation_fee
-                const equity_net_of_reservation_fee = this.payment_details.equity_net_of_reservation_fee
-                const balance_loanable_percentage = this.payment_details.balance_loanable_percentage
-                const balance_loanable_amount = this.payment_details.balance_loanable_amount
+                const reservation_date = this.payment_details.date.toString()
+                const total_contract_price = this.payment_details.total_contract_price.toString()
+                const required_equity_percentage = this.payment_details.required_equity_percentage.toString()
+                const required_equity_amount = this.payment_details.required_equity_amount.toString()
+                const spot_cash_equity_less_percentage = this.payment_details.spot_cash_equity_less_percentage.toString()
+                const spot_cash_equity_less_amount = this.payment_details.spot_cash_equity_less_amount.toString()
+                const net_equity_less_discount = this.payment_details.net_equity_less_discount.toString()
+                const reservation_fee = this.payment_details.reservation_fee.toString()
+                const equity_net_of_reservation_fee = this.payment_details.equity_net_of_reservation_fee.toString()
+                const balance_loanable_percentage = this.payment_details.balance_loanable_percentage.toString()
+                const balance_loanable_amount = this.payment_details.balance_loanable_amount.toString()
                 const php = 'PHP'
 
                 var xl = require('excel4node');
@@ -383,16 +399,16 @@
                 ws.cell(++r, col['A'], r, col['E'], true).string(` REQUIRED EQUITY: `).style(italic_rightaligned_style)
                 ws.cell(r, col['F']).string(`${required_equity_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).number(required_equity_amount).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).string(required_equity_amount).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['E'], true).string(` SPOT CASH Equity Less: `).style(italic_rightaligned_style)
                 ws.cell(r, col['F']).string(`${spot_cash_equity_less_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).number(spot_cash_equity_less_amount).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).string(spot_cash_equity_less_amount).style(center_bold)
                     
                 ws.cell(++r, col['A'], r, col['F'], true).string(` Net Equity Less Discount:`).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).number(net_equity_less_discount).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).string(net_equity_less_discount).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['F'], true).string(` Reservation Fee:`).style(italic_rightaligned_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
@@ -400,12 +416,12 @@
 
                 ws.cell(++r, col['A'], r+1, col['F'], true).string(` Equity Net of Reservation Fee (shall be paid on or before thirty (30) days from reservation date):`).style(italic_rightaligned_style)
                 ws.cell(r, col['G'], r+1, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r++, col['H'], r, col['I'], true).number(equity_net_of_reservation_fee).style(center_bold)
+                ws.cell(r++, col['H'], r, col['I'], true).string(equity_net_of_reservation_fee).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['E'], true).string(` Balance Loanable Amount after Equity: `).style(italic_rightaligned_style)
                 ws.cell(r, col['F']).string(`${balance_loanable_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                ws.cell(r, col['H'], r, col['I'], true).number(balance_loanable_amount).style(center_bold)
+                ws.cell(r, col['H'], r, col['I'], true).string(balance_loanable_amount).style(center_bold)
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
                 ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(aligned_style).style(header_style)
@@ -423,8 +439,9 @@
                 ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
 
                 // to change destination path
-                wb.write(`./${buyer_name}.xlsx`);
-                console.log('done autoexporting')
+                wb.write(`./${file_name}.xlsx`);
+                // wb.write(`./outputs/${buyer_name}.xlsx`);
+                console.log('Done Autoexporting', file_name)
             }
         }
     })

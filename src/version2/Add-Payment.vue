@@ -35,9 +35,8 @@
                     <div class="full"> <input-form label="OR/AR No." v-model="new_payment.or_ar_no" /> </div>
                     <div class="full"> <input-form label="Amount (Php)" v-model="new_payment.amount" /> </div>
                     <div class="full"> <input-form label="Penalty (Php)" v-model="new_payment.penalty" /> </div>
+                    <div class="full"> <input-form label="Remarks / Description" v-model="new_payment.remarks" /> </div>
                 </div>
-
-                <div class="full my-2"> <input-form label="Remarks / Description" v-model="new_payment.remarks" /> </div>
 
                 <div class="flex items-center mx-auto justify-center gap-8 my-4">
                     <button type="button" v-on:click="submitPayment"
@@ -90,7 +89,7 @@
             }
         },
         created() {
-            this.getDate()
+            // this.getDate()
             this.buyer = this.$route.params.buyer
             this.payment = this.$route.params.buyer.payment
             console.log('this.buyer', this.buyer)
@@ -100,11 +99,11 @@
             back() {
                 this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
             },
-            getDate() {
-                let today = new Date()
-                this.new_payment.date = today
-                return this.new_payment.date
-            },
+            // getDate() {
+            //     let today = new Date()
+            //     this.new_payment.date = today
+            //     return this.new_payment.date
+            // },
             submitPayment() {
                 // console.log('submitting payment', this.new_payment)
                 const dataToSubmit = { id: this.buyer.id, payment: this.new_payment}
