@@ -115,6 +115,7 @@ ipcMain.on('addLotOnlyBuyer', (event, data) => {
       email_address: buyer.email_address,
       home_address: buyer.home_address,
       lot_id: unit.lot_id,
+      project_id: unit.project_id,
       realty: unit.realty_name,
       agent: unit.agent_name,
       status: 1,
@@ -186,6 +187,7 @@ ipcMain.on('addHouseAndLotBuyer', (event, data) => {
       email_address: buyer.email_address,
       home_address: buyer.home_address,
       lot_id: unit.lot_id,
+      project_id: unit.project_id,
       realty: unit.realty_name,
       agent: unit.agent_name,
       status: 1,
@@ -312,6 +314,24 @@ ipcMain.on('fetchBuyersList', (event, data) => {
   const knex = getDbConnection()
   knex('Buyer').select().then((buyers) => {
     event.reply('fetchedBuyersList', buyers)
+  }).catch((err) => { console.log('FETCH BUYERS LIST ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH ALL ACTIVE OR INACTIVE BUYERS
+ipcMain.on('fetchActiveOrInactiveBuyersList', (event, data) => {
+  const knex = getDbConnection()
+  knex('Buyer').where({ status: data }).then((buyers) => {
+    event.reply('fetchedActiveOrInactiveBuyersList', buyers)
+  }).catch((err) => { console.log('FETCH BUYERS LIST ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH ALL BUYERS OF A SPECIFIC PROJECTS
+ipcMain.on('fetchBuyersByProjectList', (event, data) => {
+  const knex = getDbConnection()
+  knex('Buyer').where({ project_id: data }).then((buyers) => {
+    event.reply('fetchedBuyersByProjectList', buyers)
   }).catch((err) => { console.log('FETCH BUYERS LIST ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
@@ -515,7 +535,6 @@ ipcMain.on('fetchPaymentsList', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
-
 // FUNCTION TO CONNECT DB mysql
 // function getDbConnection() {
 //   const knex = require('knex')({
@@ -528,7 +547,6 @@ ipcMain.on('fetchPaymentsList', (event, data) => {
 //       database: 'tumabini_db'
 //     }
 //   })
-
 //   return knex
 // }
 
@@ -543,6 +561,5 @@ function getDbConnection() {
       database: 'tumabini_db'
     }
   })
-
   return knex
 }

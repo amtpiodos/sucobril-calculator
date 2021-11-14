@@ -180,6 +180,7 @@
                 },
                 unit: {
                     project_name: this.$store.state.unit.project.project_name,
+                    project_id: this.$store.state.unit.project.project_id,
                     block: this.$store.state.unit.block.block_name,
                     lot: this.$store.state.unit.lot.lot_name,
                     lot_id: this.$store.state.unit.lot.lot_id,
@@ -287,7 +288,6 @@
                 console.log('AutoExport after Adding Buyer, HL - Spot Equity', this.payment_details)
                 const buyer_name = `${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
                 const file_name = `${this.unit.project_name.toUpperCase()} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
-               
                 const home_address = this.buyer.home_address.toUpperCase()
                 const email_address = this.buyer.email_address.toUpperCase()
                 const contact_number = this.buyer.contact_number.toUpperCase()

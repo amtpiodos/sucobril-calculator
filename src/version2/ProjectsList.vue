@@ -1,6 +1,20 @@
 <template>
     <div>
         <main-header />
+
+        <div class="flex my-8 mx-24 ">
+            <div class="w-1/2">
+                <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
+                <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
+            </div>
+            <div class="w-1/2">
+                <div class="text-xs">
+                    <p class="text-right"> Contact No. / Landline: (032) 260-1522 </p>
+                    <p class="text-right"> Email: tumabinidevelopment@gmail.com </p>
+                </div>
+            </div>
+        </div>
+
         <div class="my-8 mx-24 grid grid-cols-2 gap-4 lg:grid-cols-3 md:gap-8">
             <div v-for="project in projects" :key="project.id">
                 <single-project v-bind:project_name="project.name"

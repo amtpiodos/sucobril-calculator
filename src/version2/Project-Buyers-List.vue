@@ -1,42 +1,23 @@
 <template>
     <div class="h-screen">
         <main-header />
-        <div class="mt-8 mb-2 mx-24">
-            <!-- <div class="flex my-8 ">
-                <div class="w-1/2">
-                    <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
-                    <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
-                </div>
-                <div class="w-1/2">
-                    <div class="text-xs">
-                        <p class="text-right"> Contact No. / Landline: (032) 260-1522 </p> 
-                        <p class="text-right"> Email: tumabinidevelopment@gmail.com </p>
-                    </div>
-                </div>
-            </div> -->
-            <div class="flex">
-                <div class="w-1/2">
-                    <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
-                    <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
-                    <div class="text-xs"> Contact: (032) 260-1522  Email: tumabinidevelopment@gmail.com </div>
-                </div>
-                <div class="w-1/2">
-                    <div class="flex items-right justify-right gap-8">
-                        <button type="button" v-on:click="fetchAllBuyers"
-                            class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
-                            All Buyers
-                        </button>
-                        <button type="button" v-on:click="fetchActiveOrInactiveBuyers(1)"
-                            class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
-                            Active Buyers
-                        </button>
-                        <button type="button" v-on:click="fetchActiveOrInactiveBuyers(0)"
-                            class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
-                            Inactive Buyers
-                        </button>
-                    </div>
-                </div>
+        <div class="my-5 mx-24">
+            <div class="full my-4 bg-gray-200">
+                <p class="text-center pt-2 font-bold text-lg"> {{ project.name }} - List of Buyers </p>
+                <p class="text-center pb-2 font-regular text-xs"> {{ project.location }} </p>
             </div>
+        </div>
+        <!-- <div class="flex my-5 mx-24 ">
+            <div class="w-1/2">
+                <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
+                <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
+                <div class="text-xs"> Contact: (032) 260-1522  Email: tumabinidevelopment@gmail.com </div>
+            </div>
+        </div> -->
+
+
+        
+        <div class="my-8 mx-24">
             <div class="flex h-screen">
                 <div class="w-1/4">
                     <div class="bg-white space-y-3 overflow-y-auto h-full">
@@ -54,7 +35,7 @@
                 <div class="h-96 w-3/4 bg-white items-center content-center space-y-3">
                     <div class="mx-auto h-full content-center grid grid-cols-1 space-y-6">
                         <div v-if="!hasClickedBuyer">
-                            <p class="text-xl leading-tight font-bold text-center mx-4"> Buyer's Information </p>
+                            <p class="text-xl leading-tight font-bold text-center mx-4">  Buyer's Information </p>
                             <p class="text-center align-center"> CLICK ON A BUYER TO VIEW BUYER DETAILS </p>
                         </div>
                         <div class="my-5 mx-5 px-5" v-if="hasClickedBuyer">
@@ -105,7 +86,8 @@
                 hasClickedBuyer: false,
                 buyers: {},
                 buyer_details: {},
-                id: 0
+                id: 0,
+                project: this.$route.params.project
             }
         },
         mounted() {
@@ -114,12 +96,12 @@
         },
         created() {
             console.log('HOME - created')
-            this.fetchAllBuyers()
+            this.fetchBuyers()
         },
         methods: {
-            fetchAllBuyers() {
-                ipcRenderer.send('fetchBuyersList')
-                ipcRenderer.once('fetchedBuyersList', (event, data) => {
+            fetchBuyers() {
+                ipcRenderer.send('fetchBuyersByProjectList', this.project.id)
+                ipcRenderer.once('fetchedBuyersByProjectList', (event, data) => {
                     this.buyers = data
                 })
                 console.log('BUYERS LIST THIS.BUYERS', this.buyers)
@@ -151,15 +133,6 @@
                 } else {
                     alert(`VIEW BUYER ERROR: Incorrect reservation type ${this.buyer_details.reservation_type}`)
                 }
-            },
-            fetchActiveOrInactiveBuyers(status) {
-                ipcRenderer.send('fetchActiveOrInactiveBuyersList', status)
-                ipcRenderer.once('fetchedActiveOrInactiveBuyersList', (event, data) => {
-                    console.log('fetchedActiveOrInactiveBuyersList', data)
-                    // add loading screen
-                    this.buyers = data
-                    this.isFetchingData = false
-                })
             }
         }
     })

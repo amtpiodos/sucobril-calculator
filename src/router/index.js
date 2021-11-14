@@ -25,6 +25,13 @@ const routes = [
   },
 
   {
+    path: '/view-project-buyers-list/:id',
+    name: "Project-Buyers-List",
+    component: () => import('../version2/Project-Buyers-List.vue'),
+    props: true
+  },
+
+  {
     path: '/project/:project_id/blocks',
     name: 'Blocks-Without-Phase',
     component: () => import('../version2/BlocksList.vue')

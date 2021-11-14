@@ -115,6 +115,7 @@
                 },
                 unit: {
                     project_name: this.$store.state.unit.project.project_name,
+                    project_id: this.$store.state.unit.project.project_id,
                     block: this.$store.state.unit.block.block_name,
                     lot: this.$store.state.unit.lot.lot_name,
                     lot_id: this.$store.state.unit.lot.lot_id,

@@ -247,6 +247,10 @@
                             class="bg-gray-500 p-4 w-1/4 align-middle text-white font-regular border rounded-md mb-4">
                             + Add Payment
                         </button>
+                        <button type="button" v-if="buyer.status" v-on:click="exportPayment"
+                            class="bg-gray-500 p-4 w-1/4 align-middle text-white font-regular border rounded-md mb-4">
+                            Export Payment
+                        </button>
                     </div>
 
                     <div> ... </div>
@@ -351,6 +355,9 @@
             addPayment() {
                 console.log('add payment', this.payment)
                 this.$router.push({ name: "Add-Payment", params: { id: this.buyer.id, buyer: this.buyer, payment: this.payment }})
+            },
+            exportPayment() {
+
             }
         }
     })
