@@ -22,12 +22,7 @@
                 </div>
                 <div class="w-1/2">
                     <div class="flex items-right justify-right gap-8">
-                        <select v-model="project_id" placeholder="Select Project"  class="p-2 w-full border-2 border-gray-400 rounded-md my-1">
-                            <option class="" value="" disabled selected><p class="text-gray-300">Select Project...</p></option>
-                            <option value=1>MyHome </option>
-                            <option value=2>MyHome Dos</option>
-                        </select>
-                        <!-- <button type="button" v-on:click="fetchAllBuyers"
+                        <button type="button" v-on:click="fetchAllBuyers"
                             class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
                             All Buyers
                         </button>
@@ -38,7 +33,7 @@
                         <button type="button" v-on:click="fetchActiveOrInactiveBuyers(0)"
                             class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
                             Inactive Buyers
-                        </button> -->
+                        </button>
                     </div>
                 </div>
             </div>
@@ -107,7 +102,6 @@
         },
         data() {
             return {
-                project_id: '',
                 hasClickedBuyer: false,
                 buyers: {},
                 buyer_details: {},
