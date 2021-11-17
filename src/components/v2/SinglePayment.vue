@@ -13,9 +13,6 @@
         <div class="w-1/5">
             <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular uppercase"> {{ buyer_payment.or_ar_no }} </p>
         </div>
-        <!-- <div class="w-1/5">
-            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular uppercase"> {{ buyer_payment.amount }} </p>
-        </div> -->
         <div class="w-1/5 flex">
             <div class="w-1/2"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular uppercase"> {{ buyer_payment.amount }} </p> </div>
             <div class="w-1/2"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-regular uppercase"> {{ buyer_payment.penalty }} </p> </div>

@@ -311,20 +311,22 @@
                         console.log('RESERVATION TYPE', this.payment.reservation_type)
                         if(this.buyer_payments.length > 0) {
                             this.buyer_payments.forEach(buyer_payment => {
-                                this.total_payments_made = this.total_payments_made + buyer_payment.amount
-                                console.log('PAYMENTS MADE', this.total_payments_made, buyer_payment)
-                                this.running_tcp_balance = this.payment.total_contract_price - this.total_payments_made
-                                if(this.payment.reservation_type == 1) {
-                                    this.running_equity_balance = this.payment.equity_net_of_reservation_fee - this.total_payments_made
-                                } else if(this.payment.reservation_type == 2) {
-                                    this.running_balance = this.payment.equity_net_of_reservation_fee - this.total_payments_made
-                                } else if(this.payment.reservation_type == 3) {
-                                    console.log('this.payment.balance_total_contract_price', this.payment.balance_total_contract_price)
-                                    this.running_balance = this.payment.balance_total_contract_price - this.total_payments_made
-                                } else if(this.payment.reservation_type == 4) {
-                                    this.running_balance = this.payment.balance_amount_after_reservation - this.total_payments_made
-                                } else {
-
+                                if(buyer_payment.isDeductible) {
+                                    this.total_payments_made = this.total_payments_made + buyer_payment.amount
+                                    console.log('PAYMENTS MADE', this.total_payments_made, buyer_payment)
+                                    this.running_tcp_balance = this.payment.total_contract_price - this.total_payments_made
+                                    if(this.payment.reservation_type == 1) {
+                                        this.running_equity_balance = this.payment.equity_net_of_reservation_fee - this.total_payments_made
+                                    } else if(this.payment.reservation_type == 2) {
+                                        this.running_balance = this.payment.equity_net_of_reservation_fee - this.total_payments_made
+                                    } else if(this.payment.reservation_type == 3) {
+                                        console.log('this.payment.balance_total_contract_price', this.payment.balance_total_contract_price)
+                                        this.running_balance = this.payment.balance_total_contract_price - this.total_payments_made
+                                    } else if(this.payment.reservation_type == 4) {
+                                        this.running_balance = this.payment.balance_amount_after_reservation - this.total_payments_made
+                                    } else {
+                                        // reservation type for lot only
+                                    }
                                 }
                             })
                         } else {

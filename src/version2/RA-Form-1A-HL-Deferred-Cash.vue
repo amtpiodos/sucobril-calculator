@@ -9,7 +9,11 @@
                     <div class="w-2/5"> <input-form label="First Name" v-model="buyer.first_name" /> </div>
                     <div class="w-1/5"> <input-form label="M.I." v-model="buyer.middle_initial" /> </div>
                 </div>
-                <div class="full px-4"> <readonly-form label="Reservation Date" v-bind:value="payment_details.date" /> </div>
+                <!-- <div class="full px-4"> <readonly-form label="Reservation Date" v-bind:value="payment_details.date" /> </div> -->
+                <div class="full px-4">
+                    <label-component label="Select Date" />
+                    <datepicker v-model="payment_details.date" placeholder="Select Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                </div>
                 <div class="full px-4"> <readonly-form label="Project Name" :value="unit.project_name" /> </div>
                 <div class="grid grid-cols-4 gap-4 px-4">
                     <div class="full px-1"> <readonly-form label="Block" v-bind:value="unit.block" /> </div>
@@ -116,6 +120,8 @@
     import Header from '../components/v2/Header'
     import InputForm from '../components/v2/InputForm'
     import ReadOnlyForm from '../components/v2/ReadonlyInput'
+    import Label from '../components/v2/Label'
+    import Datepicker from 'vuejs-datepicker'
     import VueHotelDatepicker from '@northwalker/vue-hotel-datepicker'
 
     export default({
@@ -123,6 +129,8 @@
             'main-header': Header,
             'input-form': InputForm,
             'readonly-form': ReadOnlyForm,
+            'label-component': Label,
+            'datepicker': Datepicker,
             'vue-date-picker': VueHotelDatepicker
         },
         data() {
@@ -207,11 +215,6 @@
 
                 this.payment_details.balance_amount_after_reservation = this.formatDecimal(formatted_total_contract_price - formatted_reservation_fee)
                 this.payment_details.monthly_installment = this.payment_details.installment_months ? this.formatDecimal((this.payment_details.balance_amount_after_reservation / this.payment_details.installment_months)) : 0
-            },
-            getDate() {
-                const today = new Date()
-                this.payment_details.date = today
-                return this.payment_details.date
             },
             getPhase() {
                 return  this.$store.state.unit.phase.phase_name &&

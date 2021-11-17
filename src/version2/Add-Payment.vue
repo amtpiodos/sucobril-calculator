@@ -31,11 +31,32 @@
                         <div class="w-1/2"> <readonly-form label="Lot" :value="buyer.lot.name" /> </div>
                     </div>
 
+                    <div class="full flex">
+                        <div class="w-1/2 mr-2">
+                            <label-component label="Payment Date" />
+                            <datepicker v-model="new_payment.date" placeholder="Select Payment Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                        </div>
+                        <div class="w-1/2 ml-2">
+                            <label-component label="A.R. Date" />
+                            <datepicker v-model="new_payment.date" placeholder="Select A.R. Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                        </div>
+                    </div>
                     <div class="full"> <input-form label="Reference No." v-model="new_payment.reference_no" /> </div>
                     <div class="full"> <input-form label="OR/AR No." v-model="new_payment.or_ar_no" /> </div>
-                    <div class="full"> <input-form label="Amount (Php)" v-model="new_payment.amount" /> </div>
-                    <div class="full"> <input-form label="Penalty (Php)" v-model="new_payment.penalty" /> </div>
-                    <div class="full"> <input-form label="Remarks / Description" v-model="new_payment.remarks" /> </div>
+                    <div class="full flex">
+                        <input-form label="Amount (Php)" v-model="new_payment.amount" class="w-1/2 mr-2"/>
+                        <input-form label="Penalty (Php)" v-model="new_payment.penalty" class="w-1/2 ml-2"/>
+                    </div>
+
+                    <!-- <div class="full"> <input-form label="Remarks / Description" v-model="new_payment.remarks" /> </div> -->
+                </div>
+
+                <div class="full my-2"> <text-area label="Remarks / Description" v-model="new_payment.remarks" /> </div>
+                <div class="my-2">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" class="form-checkbox" v-model="new_payment.isDeductible"/>
+                        <span class="ml-2 font-bold">Is deductible</span>
+                    </label>
                 </div>
 
                 <div class="flex items-center mx-auto justify-center gap-8 my-4">
@@ -65,13 +86,19 @@
     import Header from '../components/v2/Header'
     import ReadOnlyForm from '../components/v2/ReadonlyInput'
     import InputForm from '../components/v2/InputForm'
+    import Label from '../components/v2/Label'
+    import TextArea from '../components/v2/TextArea'
+    import Datepicker from 'vuejs-datepicker'
     import { ipcRenderer } from 'electron'
     
     export default ({
         components: {
             'main-header': Header,
             'readonly-form': ReadOnlyForm,
-            'input-form': InputForm
+            'input-form': InputForm,
+            'datepicker': Datepicker,
+            'text-area': TextArea,
+            'label-component': Label
         },
         data() {
             return {
@@ -83,7 +110,8 @@
                     amount: '',
                     penalty: '',
                     date: '',
-                    remarks: ''
+                    remarks: '',
+                    isDeductible: true
                 },
                 isFetchingData: false // change to true
             }
@@ -108,22 +136,22 @@
                 // console.log('submitting payment', this.new_payment)
                 const dataToSubmit = { id: this.buyer.id, payment: this.new_payment}
                 console.log('submitPayment', dataToSubmit)
-                ipcRenderer.send('addPayment', dataToSubmit)
-                ipcRenderer.once('addedPayment', (event, data) => {
-                    console.log('addedPayment', data)
-                    if(data == 1) {
-                        console.log('Add Payment SUCCESSFUL')
-                        // this.autoExport()
-                        // add loading screen
-                        setTimeout(() => {
-                             this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
-                        }, 2000)
-                    } else {
-                        alert('Add Payment ERROR')
-                        console.log('Add Payment ERROR')
-                    }
-                    this.isFetchingData = false
-                })
+                // ipcRenderer.send('addPayment', dataToSubmit)
+                // ipcRenderer.once('addedPayment', (event, data) => {
+                //     console.log('addedPayment', data)
+                //     if(data == 1) {
+                //         console.log('Add Payment SUCCESSFUL')
+                //         // this.autoExport()
+                //         // add loading screen
+                //         setTimeout(() => {
+                //              this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
+                //         }, 2000)
+                //     } else {
+                //         alert('Add Payment ERROR')
+                //         console.log('Add Payment ERROR')
+                //     }
+                //     this.isFetchingData = false
+                // })
             }
         }
     })
