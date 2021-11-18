@@ -20,13 +20,27 @@
                     <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
                     <div class="text-xs"> Contact: (032) 260-1522  Email: tumabinidevelopment@gmail.com </div>
                 </div>
-                <div class="w-1/2">
-                    <div class="flex items-right justify-right gap-8">
-                        <select v-model="project_id" placeholder="Select Project"  class="p-2 w-full border-2 border-gray-400 rounded-md my-1">
+                <div class="w-1/2 flex items-right justify-right gap-2">
+                    <!-- <div class="flex "> -->
+                        <select v-model="project_id" @change="filterProject($event)" placeholder="Select Project" class="p-2 w-full border-2 border-gray-400 rounded-md my-1">
                             <option class="" value="" disabled selected><p class="text-gray-300">Select Project...</p></option>
                             <option value=1>MyHome </option>
                             <option value=2>MyHome Dos</option>
+                            <option value=3>Gregory Homes</option>
+                            <option value=4>Laurence Ville</option>
+                            <option value=5>San Isidro Enclave</option>
                         </select>
+
+                        <select v-model="status" @change="filterStatus($event)" placeholder="Select Project"  class="p-2 w-full border-2 border-gray-400 rounded-md my-1">
+                            <option class="" value="2" disabled selected><p class="text-gray-300">All</p></option>
+                            <option value=1>Active</option>
+                            <option value=0>Inactive</option>
+                        </select>
+
+                        <!-- <button type="button" v-on:click="fetchAllBuyers"
+                            class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
+                            Export List
+                        </button> -->
                         <!-- <button type="button" v-on:click="fetchAllBuyers"
                             class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
                             All Buyers
@@ -39,10 +53,10 @@
                             class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
                             Inactive Buyers
                         </button> -->
-                    </div>
+                    <!-- </div> -->
                 </div>
             </div>
-            <div class="flex h-screen">
+            <div class="flex my-4">
                 <div class="w-1/4">
                     <div class="bg-white space-y-3 overflow-y-auto h-full">
                         <input class=" w-full bg-white border-2 border-light-blue-500 border-opacity-100 rounded-md px-3 py-2"
@@ -52,6 +66,7 @@
                             <single-buyer v-bind:lastname="buyer.last_name"
                                         :firstname="buyer.first_name"
                                         v-on:click.native="hasClicked(buyer.id)"/>
+                                        <!-- {{ buyer.first_name}} -->
                         </div>
                     </div>
                 </div>
@@ -108,10 +123,12 @@
         data() {
             return {
                 project_id: '',
+                status: 2, // initial: ALL
                 hasClickedBuyer: false,
                 buyers: {},
                 buyer_details: {},
-                id: 0
+                id: 0,
+                isFetchingData: false
             }
         },
         mounted() {
@@ -129,6 +146,32 @@
                     this.buyers = data
                 })
                 console.log('BUYERS LIST THIS.BUYERS', this.buyers)
+            },
+            filterProject(event) {
+                console.log('Filter Project ID', event.target.value)
+                this.project_id = event.target.value
+                this.fetchBuyersByProjectList()
+            },
+            filterStatus(event) {
+                console.log('Filter Status', event.target.value)
+                this.status = event.target.value
+                this.fetchBuyersByProjectList()
+            },
+            fetchBuyersByProjectList() {
+                this.isFetchingData = true
+                const dataToSubmit = {  project_id: this.project_id,
+                                        status: this.status}
+                ipcRenderer.send('fetchBuyersByProjectList', dataToSubmit)
+                ipcRenderer.once('fetchedBuyersByProjectList', (event, data) => {
+                    if(data.response == 1) {
+                        console.log('Fetching Buyers by Project SUCCESS')
+                        this.buyers = data.buyers
+                        this.isFetchingData = false
+                    } else {
+                        this.isFetchingData = false
+                        alert('Fetching Buyers by Project ERROR')
+                    }
+                })
             },
             hasClicked(id) {
                 this.hasClickedBuyer = true

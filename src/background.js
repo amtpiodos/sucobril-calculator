@@ -174,7 +174,7 @@ ipcMain.on('addLotOnlyBuyer', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
-// FUNCTION TO ADD NEW HOUSE AND LOTrequired_equity_amount BUYER IN DB
+// FUNCTION TO ADD NEW HOUSE AND LOT BUYER IN DB
 ipcMain.on('addHouseAndLotBuyer', (event, data) => {
   const { buyer, payment_details, unit } = data
   console.log({buyer}, {payment_details}, {unit})
@@ -329,10 +329,14 @@ ipcMain.on('fetchActiveOrInactiveBuyersList', (event, data) => {
 
 // FUNCTION TO FETCH ALL BUYERS OF A SPECIFIC PROJECTS
 ipcMain.on('fetchBuyersByProjectList', (event, data) => {
+  const { project_id, status} = data
   const knex = getDbConnection()
-  knex('Buyer').where({ project_id: data }).then((buyers) => {
-    event.reply('fetchedBuyersByProjectList', buyers)
-  }).catch((err) => { console.log('FETCH BUYERS LIST ERROR', err) ; throw err
+  knex('Buyer').where({ project_id: project_id, status: status }).then((buyers) => {
+    // event.reply('fetchedBuyersByProjectList', buyers)
+    event.reply('fetchedBuyersByProjectList', { response: 1, buyers: buyers })
+  }).catch((err) => {
+    event.reply('fetchedBuyersByProjectList', { response: 0 })
+    console.log('FETCH BUYERS LIST ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
 
