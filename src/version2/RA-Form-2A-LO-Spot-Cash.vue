@@ -230,10 +230,10 @@
                 const project_address = this.unit.project_address.toUpperCase()
 
                 const reservation_date = this.payment_details.date.toString()
-                const total_contract_price = this.payment_details.total_contract_price.toString()
+                const total_contract_price = this.formatDisplay(this.payment_details.total_contract_price.toString())
                 const spot_cash_discount_percentage = this.payment_details.spot_cash_discount_percentage.toString()
-                const spot_cash_discount_amount = this.payment_details.spot_cash_discount_amount.toString()
-                const new_tcp_less_discount = this.payment_details.new_tcp_less_discount.toString()
+                const spot_cash_discount_amount = this.formatDisplay(this.payment_details.spot_cash_discount_amount.toString())
+                const new_tcp_less_discount = this.formatDisplay(this.payment_details.new_tcp_less_discount.toString())
 
                 const php = 'PHP'
 
@@ -277,7 +277,7 @@
                 ws.cell(r, col['E']).string(` BLOCK: `).style(bold_style)
                 ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(regular_style)
                 ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
-                ws.cell(r, col['I']).date(reservation_date).style(regular_style)
+                ws.cell(r, col['I']).string(reservation_date).style(regular_style)
 
                 ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)

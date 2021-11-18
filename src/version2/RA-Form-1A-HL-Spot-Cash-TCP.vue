@@ -260,12 +260,12 @@
                 const project_address = this.unit.project_address.toUpperCase()
 
                 const reservation_date = this.payment_details.date.toString()
-                const total_contract_price = this.payment_details.total_contract_price.toString()
+                const total_contract_price = this.formatDisplay(this.payment_details.total_contract_price.toString())
                 const spot_cash_discount_less_percentage = this.payment_details.spot_cash_discount_less_percentage.toString()
-                const spot_cash_discount_less_amount = this.payment_details.spot_cash_discount_less_amount.toString()
-                const net_total_contract_price = this.payment_details.net_total_contract_price.toString()
-                const reservation_fee = this.payment_details.reservation_fee.toString()
-                const balance_total_contract_price = this.payment_details.balance_total_contract_price.toString()
+                const spot_cash_discount_less_amount = this.formatDisplay(this.payment_details.spot_cash_discount_less_amount.toString())
+                const net_total_contract_price = this.formatDisplay(this.payment_details.net_total_contract_price.toString())
+                const reservation_fee = this.formatDisplay(this.payment_details.reservation_fee.toString())
+                const balance_total_contract_price = this.formatDisplay(this.payment_details.balance_total_contract_price.toString())
 
                 const php = 'PHP'
 
@@ -316,7 +316,7 @@
                 ws.cell(r, col['E']).string(` BLOCK: `).style(bold_style)
                 ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(regular_style)
                 ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
-                ws.cell(r, col['I']).date(reservation_date).style(regular_style)
+                ws.cell(r, col['I']).string(reservation_date).style(regular_style)
 
                 ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)

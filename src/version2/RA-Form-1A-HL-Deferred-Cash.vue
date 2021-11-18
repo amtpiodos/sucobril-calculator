@@ -263,11 +263,11 @@
                 const project_address = this.unit.project_address.toUpperCase()
 
                 const reservation_date = this.payment_details.date.toString()
-                const total_contract_price = this.payment_details.total_contract_price.toString()
-                const balance_amount_after_reservation = this.payment_details.balance_amount_after_reservation.toString()
+                const total_contract_price = this.formatDisplay(this.payment_details.total_contract_price.toString())
+                const balance_amount_after_reservation = this.formatDisplay(this.payment_details.balance_amount_after_reservation.toString())
                 const installment_months = this.payment_details.installment_months.toString()
-                const monthly_installment = this.payment_details.monthly_installment.toString()
-                const reservation_fee = this.payment_details.reservation_fee.toString()
+                const monthly_installment = this.formatDisplay(this.payment_details.monthly_installment.toString())
+                const reservation_fee = this.formatDisplay(this.payment_details.reservation_fee.toString())
                 const equity_start_date = this.payment_details.equity_start_date.toString()
                 const equity_end_date = this.payment_details.equity_end_date.toString()
 
@@ -313,7 +313,7 @@
                 ws.cell(r, col['E']).string(` BLOCK: `).style(bold_style)
                 ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(regular_style)
                 ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
-                ws.cell(r, col['I']).date(reservation_date).style(regular_style)
+                ws.cell(r, col['I']).string(reservation_date).style(regular_style)
 
                 ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)

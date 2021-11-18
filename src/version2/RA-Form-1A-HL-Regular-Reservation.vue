@@ -280,11 +280,11 @@
                         this.$store.state.unit.phase.phase_name : 'N/A'
             },
             submitForm() {
-                console.log('dataToSubmit', this.payment_details)
                 const dataToSubmit = {  buyer: this.buyer,
                                         unit: this.unit,
                                         payment_details: this.payment_details }
 
+                console.log('dataToSubmit', dataToSubmit)
                 ipcRenderer.send('addHouseAndLotBuyer', dataToSubmit)
                 ipcRenderer.once('addedHouseAndLotBuyer', (event, data) => {
                     console.log('addedHouseAndLotBuyer', data)
@@ -322,17 +322,17 @@
                 const project_address = this.unit.project_address.toUpperCase()
 
                 const reservation_date = this.payment_details.date.toString()
-                const total_contract_price = this.payment_details.total_contract_price.toString()
+                const total_contract_price = this.formatDisplay(this.payment_details.total_contract_price.toString())
                 const required_equity_percentage = this.payment_details.required_equity_percentage.toString()
-                const required_equity_amount = this.payment_details.required_equity_amount.toString()
-                const equity_net_of_reservation_fee = this.payment_details.equity_net_of_reservation_fee.toString()
+                const required_equity_amount = this.formatDisplay(this.payment_details.required_equity_amount.toString())
+                const equity_net_of_reservation_fee = this.formatDisplay(this.payment_details.equity_net_of_reservation_fee.toString())
                 const equity_months = this.payment_details.equity_months.toString()
-                const monthly_equity_amount = this.payment_details.monthly_equity_amount.toString()
+                const monthly_equity_amount = this.formatDisplay(this.payment_details.monthly_equity_amount.toString())
                 const equity_start_date = this.payment_details.equity_start_date.toString()
                 const equity_end_date = this.payment_details.equity_end_date.toString()
                 const balance_loanable_percentage = this.payment_details.balance_loanable_percentage.toString()
-                const balance_loanable_amount = this.payment_details.balance_loanable_amount.toString()
-                const reservation_fee = this.payment_details.reservation_fee.toString()
+                const balance_loanable_amount = this.formatDisplay(this.payment_details.balance_loanable_amount.toString())
+                const reservation_fee = this.formatDisplay(this.payment_details.reservation_fee.toString())
 
                 console.log('TYPE total_contract_price', typeof(total_contract_price))
                 console.log('TYPE required_equity_percentage', typeof(required_equity_percentage))
@@ -388,7 +388,7 @@
                 ws.cell(r, col['E']).string(` BLOCK: `).style(bold_style)
                 ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(regular_style)
                 ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
-                ws.cell(r, col['I']).date(reservation_date).style(regular_style)
+                ws.cell(r, col['I']).string(reservation_date).style(regular_style)
 
                 ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)
