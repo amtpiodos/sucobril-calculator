@@ -34,11 +34,11 @@
                     <div class="full flex">
                         <div class="w-1/2 mr-2">
                             <label-component label="Payment Date" />
-                            <datepicker v-model="new_payment.date" placeholder="Select Payment Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                            <datepicker v-model="new_payment.payment_date" placeholder="Select Payment Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
                         </div>
                         <div class="w-1/2 ml-2">
-                            <label-component label="A.R. Date" />
-                            <datepicker v-model="new_payment.date" placeholder="Select A.R. Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                            <label-component label="Transaction / A.R. Date" />
+                            <datepicker v-model="new_payment.transaction_date" placeholder="Select Transaction / A.R. Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
                         </div>
                     </div>
                     <div class="full"> <input-form label="Reference No." v-model="new_payment.reference_no" /> </div>
@@ -105,13 +105,14 @@
                 buyer: {},
                 payment: {},
                 new_payment: {
+                    payment_date: '',
                     reference_no: '',
                     or_ar_no: '',
+                    transaction_date: '',
                     amount: '',
                     penalty: '',
-                    date: '',
                     remarks: '',
-                    isDeductible: true
+                    isDeductible: 1
                 },
                 isFetchingData: false // change to true
             }
@@ -136,22 +137,22 @@
                 // console.log('submitting payment', this.new_payment)
                 const dataToSubmit = { id: this.buyer.id, payment: this.new_payment}
                 console.log('submitPayment', dataToSubmit)
-                // ipcRenderer.send('addPayment', dataToSubmit)
-                // ipcRenderer.once('addedPayment', (event, data) => {
-                //     console.log('addedPayment', data)
-                //     if(data == 1) {
-                //         console.log('Add Payment SUCCESSFUL')
-                //         // this.autoExport()
-                //         // add loading screen
-                //         setTimeout(() => {
-                //              this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
-                //         }, 2000)
-                //     } else {
-                //         alert('Add Payment ERROR')
-                //         console.log('Add Payment ERROR')
-                //     }
-                //     this.isFetchingData = false
-                // })
+                ipcRenderer.send('addPayment', dataToSubmit)
+                ipcRenderer.once('addedPayment', (event, data) => {
+                    console.log('addedPayment', data)
+                    if(data == 1) {
+                        console.log('Add Payment SUCCESSFUL')
+                        // this.autoExport()
+                        // add loading screen
+                        setTimeout(() => {
+                             this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
+                        }, 2000)
+                    } else {
+                        alert('Add Payment ERROR')
+                        console.log('Add Payment ERROR')
+                    }
+                    this.isFetchingData = false
+                })
             }
         }
     })

@@ -340,6 +340,19 @@ ipcMain.on('fetchBuyersByProjectList', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+// FUNCTION TO FETCH ALL BUYERS OF A SPECIFIC PROJECTS WITHOUT STATUS
+ipcMain.on('fetchBuyersByProjectListNoStatus', (event, data) => {
+  const { project_id } = data
+  const knex = getDbConnection()
+  knex('Buyer').where({ project_id: project_id }).then((buyers) => {
+    // event.reply('fetchedBuyersByProjectList', buyers)
+    event.reply('fetchedBuyersByProjectListNoStatus', { response: 1, buyers: buyers })
+  }).catch((err) => {
+    event.reply('fetchedBuyersByProjectListNoStatus', { response: 0 })
+    console.log('FETCH BUYERS LIST ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
 // FUNCTION TO FETCH A SPECIFIC PROJECT
 ipcMain.on('fetchProject', (event, data) => {
   console.log('Fetching project name', data)
@@ -511,12 +524,14 @@ ipcMain.on('addPayment', (event, data) => {
   const knex = getDbConnection()
   knex('buyer_payment').where({ id: id  })
   .insert({
+      payment_date: payment.payment_date,
       reference_no: payment.reference_no,
       or_ar_no: payment.or_ar_no,
+      transaction_date: payment.transaction_date,
       amount: payment.amount,
       penalty: payment.penalty,
-      date: payment.date,
       remarks: payment.remarks,
+      isDeductible: payment.isDeductible,
       buyer_id: id
     })
     .then(() => {

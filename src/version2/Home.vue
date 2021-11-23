@@ -15,14 +15,15 @@
                 </div>
             </div> -->
             <div class="flex">
-                <div class="w-1/2">
+                <div class="w-2/5">
                     <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
                     <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
                     <div class="text-xs"> Contact: (032) 260-1522  Email: tumabinidevelopment@gmail.com </div>
                 </div>
-                <div class="w-1/2 flex items-right justify-right gap-2">
+                <div class="w-2/5 flex items-right justify-right gap-2">
                     <!-- <div class="flex "> -->
-                        <select v-model="project_id" @change="filterProject($event)" placeholder="Select Project" class="p-2 w-full border-2 border-gray-400 rounded-md my-1">
+                        <!-- ADD LABEL HERE  -->
+                        <select v-model="project_id" @change="filterProject($event)" placeholder="Select Project" class="px-2 w-full border-2 border-gray-400 rounded-md my-1">
                             <option class="" value="" disabled selected><p class="text-gray-300">Select Project...</p></option>
                             <option value=1>MyHome </option>
                             <option value=2>MyHome Dos</option>
@@ -31,29 +32,17 @@
                             <option value=5>San Isidro Enclave</option>
                         </select>
 
-                        <select v-model="status" @change="filterStatus($event)" placeholder="Select Project"  class="p-2 w-full border-2 border-gray-400 rounded-md my-1">
-                            <option class="" value="2" disabled selected><p class="text-gray-300">All</p></option>
+                        <select v-model="status" @change="filterStatus($event)" class="px-2 w-full border-2 border-gray-400 rounded-md my-1">
+                            <option class="" value="" disabled selected><p class="text-gray-300">Select Status...</p></option>
                             <option value=1>Active</option>
                             <option value=0>Inactive</option>
                         </select>
-
-                        <!-- <button type="button" v-on:click="fetchAllBuyers"
-                            class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
-                            Export List
-                        </button> -->
-                        <!-- <button type="button" v-on:click="fetchAllBuyers"
-                            class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
-                            All Buyers
-                        </button>
-                        <button type="button" v-on:click="fetchActiveOrInactiveBuyers(1)"
-                            class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
-                            Active Buyers
-                        </button>
-                        <button type="button" v-on:click="fetchActiveOrInactiveBuyers(0)"
-                            class="bg-gray-500 p-4 w-1/3 items-center align-center text-white text-sm font-regular border rounded-md mb-4">
-                            Inactive Buyers
-                        </button> -->
-                    <!-- </div> -->
+                </div>
+                <div class="w-1/5 flex items-center my-1 ">
+                    <button type="button" v-on:click="exportBuyers"
+                        class="bg-gray-500 mx-2 p-4 w-full items-center align-center text-white text-sm font-regular border rounded-md">
+                        Export Buyers
+                    </button> 
                 </div>
             </div>
             <div class="flex my-4">
@@ -123,7 +112,7 @@
         data() {
             return {
                 project_id: '',
-                status: 2, // initial: ALL
+                status: 1, // active
                 hasClickedBuyer: false,
                 buyers: {},
                 buyer_details: {},
@@ -140,6 +129,81 @@
             this.fetchAllBuyers()
         },
         methods: {
+            exportBuyers() {
+                console.log('Exporting Buyers')
+                let toExportBuyers = {}
+                let temp_project_id = 1
+                // change loop to dynamic
+                var xl = require('excel4node');
+                var wb = new xl.Workbook();
+                const ws = wb.addWorksheet('MYHOME');
+
+                let r = 1   // row
+                const s = 4 // initial size
+
+                const col = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9, 'J': 10, 'K': 11, 'L': 12, 'M': 13, 'N': 14 }
+                ws.column(col['A']).setWidth(s*5)
+                ws.column(col['B']).setWidth(s*5)
+                ws.column(col['C']).setWidth(s*5)
+                ws.column(col['D']).setWidth(s*5)
+                ws.column(col['E']).setWidth(s*2)
+                ws.column(col['F']).setWidth(s*2)
+                
+                ws.column(col['I']).setWidth(s*5)
+
+                const bold_header_style = wb.createStyle({ font: { color: '#000000', size: 13, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const bordered_style = wb.createStyle({ border: { left: { style: 'thin', color: '#000000' }, right: { style: 'thin', color: '#000000' }, top: { style: 'thin', color: '#000000' }, bottom: { style: 'thin', color: '#000000' }} })
+                const aligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const header_style = wb.createStyle({ font: { color: '#000000', size: 11, bolssd: true } })
+                const bold_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true } })
+                const regular_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: false } })
+                const center_bold = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' }, font: { color: '#000000', size: 11, bold: true } })
+                const italic_rightaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'right', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
+                const italic_leftaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'left', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
+
+                ws.cell(r, col['A'], r, col['H'], true).string('TUMABINI REAL ESTATE DEVELOPMENT').style(bold_header_style)
+                // ws.cell(r, col['I']).string(project.name).style(bold_header_style).style({font: {size: 10}, alignment: {horizontal: 'right'}})
+                ws.cell(r, col['I']).string('MYHOME').style(bold_header_style).style({font: {size: 10}, alignment: {horizontal: 'right'}})
+                ws.cell(++r, col['A'], ++r, col['H'], true).string('133 MC Briones St., Hi-way Bakilid, Mandaue City 6014 Tel#: 032 414-5103, 09564791879 Email: tumabinidevelopment@gmail.com').style(regular_style).style(aligned_style).style({font: {size: 8}})
+                // ws.cell(r-1, col['I']).string(project.location).style(regular_style).style({font: {size: 8}, alignment: {horizontal: 'right'}})
+                ws.cell(r-1, col['I']).string('Perrelos, Carcar City, Cebu').style(regular_style).style({font: {size: 8}, alignment: {horizontal: 'right'}})
+
+                ws.cell(++r, col['A']).string(`BUYER NAME`).style(bold_header_style).style(aligned_style).style({font: {size: 8}})
+                ws.cell(r, col['B']).string(`HOME ADDRESS`).style(bold_header_style).style(aligned_style).style({font: {size: 8}})
+                ws.cell(r, col['C']).string(`EMAIL ADDRESS`).style(bold_header_style).style(aligned_style).style({font: {size: 8}})
+                ws.cell(r, col['D']).string(`PROJECT`).style(bold_header_style).style(aligned_style).style({font: {size: 8}})
+                ws.cell(r, col['E']).string(`LOT`).style(bold_header_style).style(aligned_style).style({font: {size: 8}})
+                ws.cell(r, col['F']).string(`STATUS`).style(bold_header_style).style(aligned_style).style({font: {size: 8}})         
+
+                const dataToSubmit = {  project_id: 1,
+                                        status: this.status}
+                ipcRenderer.send('fetchBuyersByProjectListNoStatus', dataToSubmit)
+                ipcRenderer.once('fetchedBuyersByProjectListNoStatus', (event, data) => {
+                    if(data.response == 1) {
+                        toExportBuyers = data.buyers
+                        this.isFetchingData = false
+                        console.log('Fetching Buyers by Project WITHOUT STATUS SUCCESS', toExportBuyers)
+
+                        toExportBuyers.forEach(project_buyer => {
+                            let status = project_buyer.status == 1 ? 'Active'  : 'Inactive'
+                            ws.cell(++r, col['A']).string(`${project_buyer.last_name.toUpperCase()}, ${project_buyer.first_name.toUpperCase()}`).style(regular_style).style(aligned_style).style({font: {size: 8}})
+                            ws.cell(r, col['B']).string(`${project_buyer.home_address.toUpperCase()}`).style(regular_style).style(aligned_style).style({font: {size: 8}})
+                            ws.cell(r, col['C']).string(`${project_buyer.email_address.toUpperCase()}`).style(regular_style).style(aligned_style).style({font: {size: 8}})
+                            ws.cell(r, col['D']).string(`MYHOME`).style(regular_style).style(aligned_style).style({font: {size: 8}})
+                            ws.cell(r, col['E']).string(`LOT ${project_buyer.lot_id.toString()}`).style(regular_style).style(aligned_style).style({font: {size: 8}})
+                            ws.cell(r, col['F']).string(status).style(regular_style).style(aligned_style).style({font: {size: 8}})
+                            
+                        })
+                        wb.write(`./sample-masterlists.xlsx`)
+                        console.log('DONE Exporting Buyers')
+                    } else {
+                        this.isFetchingData = false
+                        alert('Fetching Buyers by Project ERROR', temp_project_id)
+                    }
+                })
+
+
+            },
             fetchAllBuyers() {
                 ipcRenderer.send('fetchBuyersList')
                 ipcRenderer.once('fetchedBuyersList', (event, data) => {

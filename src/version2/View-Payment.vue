@@ -16,7 +16,7 @@
                 </div>
 
                 <div class="full my-4 bg-gray-200">
-                    <p class="text-center p-2 font-semibold text-lg"> STATEMENT OF ACCOUNT </p>
+                    <p class="text-center p-2 font-semibold text-lg"> STATEMENT OF ACCOUNT </p> <!-- add reservation type -->
                     <p class="text-center pb-2 font-bold text-sm text-red-700" v-if="!buyer.status">
                         This buyer has been forefeited and is now inactive.
                     </p>
@@ -213,26 +213,17 @@
                     </div>
 
                     <div class="flex">
-                        <div class="w-1/5">
-                            <div class="flex">
-                                <!-- <div class="w-1/4"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> No. </p> </div> -->
-                                <!-- <div class="w-3/4"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Date </p> </div> -->
-                                <div class="w-full"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Date </p> </div>
-                            </div>
+                        <div class="w-3/5 flex">
+                            <div class="w-full"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Payment Date </p> </div>
+                            <div class="w-full"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Transaction/A.R. Date </p> </div>
+                            <div class="w-full"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Reference No. </p> </div>
+                            <div class="w-full"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> OR/AR No. </p> </div>
                         </div>
-                        <div class="w-1/5">
-                            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Reference No. </p>
-                        </div>
-                        <div class="w-1/5">
-                            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> OR/AR No. </p>
-                        </div>
+
                         <div class="w-1/5 flex">
                             <div class="w-1/2"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Amount </p> </div>
                             <div class="w-1/2"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Penalty </p> </div>
                         </div>
-                        <!-- <div class="w-1/6">
-                            <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Penalty </p>
-                        </div> -->
                         <div class="w-1/5">
                             <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Remarks </p>
                         </div>
@@ -358,8 +349,79 @@
                 console.log('add payment', this.payment)
                 this.$router.push({ name: "Add-Payment", params: { id: this.buyer.id, buyer: this.buyer, payment: this.payment }})
             },
+            formatDisplay(value) {
+               return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            },
             exportPayment() {
+                console.log('Exporting Payment for Buyer', this.buyer)
+                console.log('THIS.PAYMENT', this.buyer_payments)
+                const { project, block, lot } = this.buyer
+                const reservation = this.buyer.payment
+                const buyer_payments = this.buyer_payments
 
+                var xl = require('excel4node');
+                var wb = new xl.Workbook();
+                const ws = wb.addWorksheet('RA-Form 2A-LO Spot Cash');
+
+                let r = 1   // row
+                const s = 4 // initial size
+                const col = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9, 'J': 10, 'K': 11, 'L': 12, 'M': 13, 'N': 14 }
+
+                // ws.column(col['A']).setWidth(s*2)
+                // ws.column(col['B']).setWidth(s*2)
+                // ws.column(col['C']).setWidth(s*2)
+                // ws.column(col['D']).setWidth(s*2)
+                // ws.column(col['E']).setWidth(s*2)
+                // ws.column(col['F']).setWidth(s*2)
+                // ws.column(col['G']).setWidth(s*2)
+                // ws.column(col['H']).setWidth(s*4)
+                // ws.column(col['I']).setWidth(s*4)
+
+                const bold_header_style = wb.createStyle({ font: { color: '#000000', size: 13, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const bordered_style = wb.createStyle({ border: { left: { style: 'thin', color: '#000000' }, right: { style: 'thin', color: '#000000' }, top: { style: 'thin', color: '#000000' }, bottom: { style: 'thin', color: '#000000' }} })
+                const aligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const header_style = wb.createStyle({ font: { color: '#000000', size: 11, bold: true } })
+                const bold_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true } })
+                const regular_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: false } })
+                const center_bold = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' }, font: { color: '#000000', size: 11, bold: true } })
+                const italic_rightaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'right', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
+                const italic_leftaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'left', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
+
+                ws.cell(r, col['A'], r, col['H'], true).string('TUMABINI REAL ESTATE DEVELOPMENT').style(bold_header_style)
+                ws.cell(r, col['I']).string(project.name).style(bold_header_style).style({font: {size: 10}, alignment: {horizontal: 'right'}})
+                ws.cell(++r, col['A'], ++r, col['H'], true).string('133 MC Briones St., Hi-way Bakilid, Mandaue City 6014 Tel#: 032 414-5103, 09564791879 Email: tumabinidevelopment@gmail.com').style(regular_style).style(aligned_style).style({font: {size: 8}})
+                ws.cell(r-1, col['I']).string(project.location).style(regular_style).style({font: {size: 8}, alignment: {horizontal: 'right'}})
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('STATEMENT OF ACCOUNT').style(bordered_style).style(aligned_style).style(header_style)
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('DETAILS OF PAYMENT').style(bordered_style).style(aligned_style).style(header_style)
+
+                if(reservation.reservation_type == 1) {
+                    // format
+                }
+
+                this.buyer_payments.forEach(buyer_payment => {
+                    // s.cell(++r, col['A'], r, col['I'], true).string('sample').style(bordered_style).style(aligned_style).style(header_style)
+                    let amount = this.formatDisplay(buyer_payment.amount.toString())
+                    let penalty = this.formatDisplay(buyer_payment.penalty.toString())
+                    let transaction_date = buyer_payment.transaction_date.toDateString()
+                    let payment_date = buyer_payment.payment_date.toDateString()
+                    let { reference_no, or_ar_no, remarks } = buyer_payment
+                    
+
+                    ws.cell(++r, col['A'], r, col['B'], true).string(payment_date).style(bordered_style).style(aligned_style).style(regular_style)
+                    ws.cell(r, col['C'], r, col['D'], true).string(reference_no).style(bordered_style).style(aligned_style).style(regular_style)
+                    ws.cell(r, col['E'], r, col['F'], true).string(or_ar_no).style(bordered_style).style(aligned_style).style(regular_style)
+                    ws.cell(r, col['G'], r, col['H'], true).string(transaction_date).style(bordered_style).style(aligned_style).style(regular_style)
+                    ws.cell(r, col['I'], r, col['J'], true).string(amount).style(bordered_style).style(aligned_style).style(regular_style)
+                    ws.cell(r, col['K'], r, col['L'], true).string(penalty).style(bordered_style).style(aligned_style).style(regular_style)
+                    ws.cell(r, col['M'], r, col['N'], true).string(remarks).style(bordered_style).style(aligned_style).style(regular_style)
+                    
+                })
+                // to change destination path
+                wb.write(`./sample-payment.xlsx`);
+                // wb.write(`./outputs/${buyer_name}.xlsx`);
+                console.log('Done Exporting Payment for Buyer', this.buyer.id)
             }
         }
     })
