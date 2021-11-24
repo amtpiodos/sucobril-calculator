@@ -19,6 +19,12 @@ const routes = [
   },
 
   {
+    path: '/history',
+    name: 'History',
+    component: () => import('../version2/History.vue')
+  },
+
+  {
     path: '/project/:project_id/phases/:id/blocks   ',
     name: 'Blocks-With-Phase',
     component: () => import('../version2/BlocksList.vue')
