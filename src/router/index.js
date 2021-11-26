@@ -21,7 +21,7 @@ const routes = [
   {
     path: '/history',
     name: 'History',
-    component: () => import('../version2/History.vue')
+    component: () => import('../version2/History-List.vue')
   },
 
   {
@@ -61,17 +61,24 @@ const routes = [
     component: () => import('../version2/AddBuyerForm')
   },
 
-  {
-    path: '/viewbuyer/:id',
-    name: "View Buyer",
-    component: () => import('../version2/ViewBuyerDetails'),
-    props: true
-  },
+  // {
+  //   path: '/viewbuyer/:id',
+  //   name: "View Buyer",
+  //   component: () => import('../version2/ViewBuyerDetails'),
+  //   props: true
+  // },
+
+  // {
+  //   path: '/editbuyer/:id',
+  //   name: "Edit Buyer",
+  //   component: () => import('../version2/EditBuyerDetails'),
+  //   props: true
+  // },
 
   {
     path: '/editbuyer/:id',
-    name: "Edit Buyer",
-    component: () => import('../version2/EditBuyerDetails'),
+    name: "Edit-Buyer-Info",
+    component: () => import('../version2/Edit-Buyer-Info'),
     props: true
   },
 

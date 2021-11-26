@@ -286,6 +286,19 @@
                         this.$store.state.unit.phase.phase_name : 'N/A'
             },
             submitForm() {
+                // this.buyer = {
+                //     last_name: this.buyer.last_name.toUpperCase(),
+                //     first_name: this.buyer.first_name.toUpperCase(),
+                //     middle_initial: this.buyer.middle_initial.toUpperCase(),
+                //     contact_number: this.buyer.contact_number,
+                //     email_address: this.buyer.email_address.toUpperCase(),
+                //     home_address: this.buyer.home_address.toUpperCase(),
+                // }
+
+                // this.unit.realty_name = this.unit.realty_name.toUpperCase()
+                // this.unit.agent_name = this.unit.agent_name.toUpperCase()
+                // this.unit.lot_type = this.unit.lot_type.toUpperCase()
+
                 const dataToSubmit = {  buyer: this.buyer,
                                         unit: this.unit,
                                         payment_details: this.payment_details }
@@ -340,17 +353,6 @@
                 const balance_loanable_amount = this.formatDisplay(this.payment_details.balance_loanable_amount.toString())
                 const reservation_fee = this.formatDisplay(this.payment_details.reservation_fee.toString())
 
-                console.log('TYPE total_contract_price', typeof(total_contract_price))
-                console.log('TYPE required_equity_percentage', typeof(required_equity_percentage))
-                console.log('TYPE required_equity_amount', typeof(required_equity_amount))
-                console.log('TYPE equity_net_of_reservation_fee', typeof(equity_net_of_reservation_fee))
-                console.log('TYPE equity_months', typeof(equity_months))
-                console.log('TYPE monthly_equity_amount', typeof(monthly_equity_amount))
-                console.log('TYPE equity_start_date', typeof(equity_start_date))
-                console.log('TYPE equity_end_date', typeof(equity_end_date))
-                console.log('TYPE balance_loanable_percentage', typeof(balance_loanable_percentage))
-                console.log('TYPE balance_loanable_amount', typeof(balance_loanable_amount))
-                console.log('TYPE reservation_fee', typeof(reservation_fee))
 
                 const php = 'PHP'
 

@@ -1,17 +1,10 @@
 <template>
     <div class="h-screen">
         <main-header />
-        <div class="my-5 mx-24 px-5">
-            
+        <div class="my-5 mx-24">
 
             <div v-if="!isFetchingData">
-                <!-- <div>
-                    <button type="button" v-on:click="viewPayment"
-                        class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
-                        View Payments
-                    </button>
-                </div> -->
-                <div class="flex">
+                <div class="h-2/3 flex">
                     <div class="w-1/2 px-4">
                         <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
                         <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
@@ -22,81 +15,257 @@
                     </div>
                 </div>
 
-                <div class="full m-4 bg-gray-200">
-                    <p class="text-center pt-2 font-bold text-lg"> BUYER'S INFORMATION </p>
-                    <p class="text-center py-2 font-bold text-sm text-red-700" v-if="!buyer.status">
-                        This buyer has been forefeited and is now inactive.
-                    </p>
+                <!-- CHECK FOR MANAGER CREDENTIALS IF REQUESTING FOR EDIT -->
+                <div class="full m-4 border-4 rounded-md" v-if="this.isRequestingEdit">
+                    <p class="align-middle text-center text-md font-bold my-1 py-4 pt-8"> INPUT CREDENTIALS TO EDIT </p>
+                    <div class="w-full flex mx-auto justify-center items-center my-2 gap-4">
+                        <input-form label="Username:" v-model="inputtedCredentials.username"/>
+                        <password-form label="Password: " v-model="inputtedCredentials.password"/>
+                    </div>
+                    <p class="align-middle text-center text-sm text-red-700 font-bold my-1 py-2" v-if="this.incorrectCredentials"> Incorrect credentials. Please try again. </p>
+                    <div class="w-full flex mx-auto justify-center items-center my-4 gap-4">
+                        <button type="button" v-on:click="checkCredentials"
+                            class="w-1/5 bg-gray-200 p-2 align-middle text-black font-bold border rounded-md my-2">
+                            SUBMIT
+                        </button>
+                        <button type="button" v-on:click="cancelEdit"
+                            class="w-1/5 bg-gray-200 p-2 align-middle text-black font-bold border rounded-md my-2">
+                            CANCEL
+                        </button>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 p-1">
-                    <div class="flex px-4 gap-4">
-                        <div class="w-2/5"> <readonly-form label="Last Name" :value="buyer.last_name" /> </div>
-                        <div class="w-2/5"> <readonly-form label="First Name" :value="buyer.first_name" /> </div>
-                        <div class="w-1/5"> <readonly-form label="M.I." :value="buyer.middle_initial" /> </div>
+                <!-- VIEW BUYER INFO WITHOUT EDIT REQUEST -->
+                <div v-else>
+                    <div class="full m-4 bg-gray-200">
+                        <p class="text-center pt-2 font-bold text-lg"> BUYER'S INFORMATION </p>
+                        <p class="text-center pb-2 font-regular text-sm" v-if="buyer.status" v-on:click="editPersonalInfo()"> Edit Information </p>
+                        <p class="text-center pb-2 font-bold text-sm text-red-700" v-if="!buyer.status">
+                            This buyer has been forefeited and is now inactive.
+                        </p>
                     </div>
-                    <div class="full px-4"> <readonly-form label="Reservation Date" :value="buyer.payment.date" /> </div>
-                    <div class="full px-4"> <readonly-form label="Project Name" :value="buyer.project.name" /> </div>
-                    <div class="grid grid-cols-4 gap-4 px-4">
-                        <div class="full px-1"> <readonly-form label="Block" :value="buyer.block.name" /> </div>
-                        <div class="full px-1"> <readonly-form label="Lot" :value="buyer.lot.name" /> </div>
-                        <div class="full px-1"> <readonly-form label="Phase" :value="buyer.phase" /> </div>
-                        <div class="full px-1"> <readonly-form label="Floor Area" :value="getLotArea()" /> </div>
-                    </div>
-                    <div class="full px-4"> <readonly-form label="Project Address" :value="buyer.project.location" /> </div>
-                    <div class="grid grid-cols-2 gap-4 px-4">
-                        <div class="full"> <readonly-form label="Price/Sq.M" :value="buyer.lot.price_per_sqm" /> </div>
-                        <div class="full"> <readonly-form label="House Type" :value="buyer.lot.lot_type" /> </div>
-                    </div>
-                    <div class="full px-4"> <readonly-form label="Home Address" :value="buyer.home_address" />
-                    </div>
-                    <div class="flex px-4 gap-4">
-                        <div class="w-1/2"> <readonly-form label="Contact No." :value="buyer.contact_number" /> </div>
-                        <div class="w-1/2"> <readonly-form label="Email Address" :value="buyer.email_address" /> </div>
-                    </div>
-                    <div class="full px-4"> <readonly-form label="Realty's Name" :value="buyer.realty" /> </div>
-                    <div class="full px-4"> <readonly-form label="Agent's Name" :value="buyer.agent" /> </div>
-                </div>
 
-                <!-- HOUSE AND LOT REGULAR RESERVATION -->
-                <div v-if="buyer.reservation_type==1">
-                    <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION </p> </div>
-                    <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 p-1">
+                        <div class="flex px-4 gap-4">
+                            <div class="w-2/5"> <readonly-form label="Last Name" :value="buyer.last_name" /> </div>
+                            <div class="w-2/5"> <readonly-form label="First Name" :value="buyer.first_name" /> </div>
+                            <div class="w-1/5"> <readonly-form label="M.I." :value="buyer.middle_initial" /> </div>
                         </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2 mt-1">
-                                <p class="align-middle text-right text-xs font-bold">Required Equity 
-                                    <input type="text"
-                                        readonly disabled
-                                        v-model="buyer.payment.required_equity_percentage"
-                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                                    > %:
-                                </p>
+                        <div class="full px-4"> <readonly-form label="Reservation Date" :value="buyer.payment.date" /> </div>
+                        <div class="full px-4"> <readonly-form label="Project Name" :value="buyer.project.name" /> </div>
+                        <div class="grid grid-cols-4 gap-4 px-4">
+                            <div class="full px-1"> <readonly-form label="Block" :value="buyer.block.name" /> </div>
+                            <div class="full px-1"> <readonly-form label="Lot" :value="buyer.lot.name" /> </div>
+                            <div class="full px-1"> <readonly-form label="Phase" :value="buyer.phase" /> </div>
+                            <div class="full px-1"> <readonly-form label="Floor Area" :value="getLotArea()" /> </div>
+                        </div>
+                        <div class="full px-4"> <readonly-form label="Project Address" :value="buyer.project.location" /> </div>
+                        <div class="grid grid-cols-2 gap-4 px-4">
+                            <div class="full"> <readonly-form label="Price/Sq.M" :value="buyer.lot.price_per_sqm" /> </div>
+                            <div class="full"> <readonly-form label="House Type" :value="buyer.lot.lot_type" /> </div>
+                        </div>
+                        <div class="full px-4"> <readonly-form label="Home Address" :value="buyer.home_address" />
+                        </div>
+                        <div class="flex px-4 gap-4">
+                            <div class="w-1/2"> <readonly-form label="Contact No." :value="buyer.contact_number" /> </div>
+                            <div class="w-1/2"> <readonly-form label="Email Address" :value="buyer.email_address" /> </div>
+                        </div>
+                        <div class="full px-4"> <readonly-form label="Realty's Name" :value="buyer.realty" /> </div>
+                        <div class="full px-4"> <readonly-form label="Agent's Name" :value="buyer.agent" /> </div>
+                    </div>
+
+                    <!-- HOUSE AND LOT REGULAR RESERVATION -->
+                    <div v-if="buyer.reservation_type==1">
+                        <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION </p> </div>
+                        <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.required_equity_amount" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p></div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee: </p></div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_net_of_reservation_fee" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2 mt-1">
-                                <p class="align-middle text-right text-xs font-bold">Required Monthly Equity <br/> for 
-                                    <input type="text"
-                                        readonly disabled
-                                        v-model="buyer.payment.equity_months"
-                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                                    > months:
-                                </p>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 mt-1">
+                                    <p class="align-middle text-right text-xs font-bold">Required Equity
+                                        <input type="text"
+                                            readonly disabled
+                                            v-model="buyer.payment.required_equity_percentage"
+                                            class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                        > %:
+                                    </p>
+                                </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.required_equity_amount" /> </div> </div>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.monthly_equity_amount" /> </div> </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p></div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee: </p></div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_net_of_reservation_fee" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 mt-1">
+                                    <p class="align-middle text-right text-xs font-bold">Required Monthly Equity <br/> for
+                                        <input type="text"
+                                            readonly disabled
+                                            v-model="buyer.payment.equity_months"
+                                            class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                        > months:
+                                    </p>
+                                </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.monthly_equity_amount" /> </div> </div>
+                            </div>
+
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Starts: </p></div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_start_date" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_end_date" /> </div> </div>
+                            </div>
+
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2">
+                                    <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity:
+                                        <input type="text"
+                                            readonly disabled
+                                            v-model="buyer.payment.balance_loanable_percentage"
+                                            class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                        > months:
+                                    </p>
+                                </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_loanable_amount" /> </div> </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HOUSE AND LOT WITH SPOT EQUITY -->
+                    <div v-else-if="buyer.reservation_type==2">
+                        <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> WIH SPOT DOWNPAYMENT / ADVANCE DOWNPAYMENT </p> </div>
+                        <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 mt-1">
+                                    <p class="align-middle text-right text-xs font-bold">Required Equity
+                                        <input type="text"
+                                            v-model="buyer.payment.required_equity_percentage"
+                                            class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                            readonly disabled
+                                        > %:
+                                    </p>
+                                </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.required_equity_amount" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 mt-1">
+                                    <p class="align-middle text-right text-xs font-bold">Spot Cash Equity Less
+                                        <input type="text"
+                                            readonly disabled
+                                            v-model="buyer.payment.spot_cash_equity_less_percentage"
+                                            class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                        > %:
+                                    </p>
+                                </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.spot_cash_equity_less_amount" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Net Equity Less Discount: </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.net_equity_less_discount" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2">
+                                    <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee <br/>(shall be paid on or before 30 days from reservation): </p>
+                                </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_net_of_reservation_fee" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 mt-1">
+                                    <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> after Equity
+                                        <input type="text"
+                                            readonly disabled
+                                            v-model="buyer.payment.balance_loanable_percentage"
+                                            class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                        > %:
+                                    </p>
+                                </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_loanable_amount" /> </div> </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HOUSE AND LOT WITH SPOT CASH TCP -->
+                    <div v-else-if="buyer.reservation_type==3">
+                        <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> SPOT CASH TCP </p> </div>
+                        <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2">
+                                    <p class="align-middle text-right text-xs font-bold">SPOT CASH Discount <br /> Less
+                                        <input type="text"
+                                            readonly disabled
+                                            v-model="buyer.payment.spot_cash_discount_less_percentage"
+                                            class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                        > %:
+                                    </p>
+                                </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.spot_cash_discount_less_amount" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Net Total Contact Price: </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.net_total_contract_price" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2">
+                                    <p class="align-middle text-right text-xs font-bold">Balance TCP (shall be paid on or <br/> before 30 days from reservation): </p>
+                                </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_total_contract_price" /> </div> </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HOUSE AND LOT WITH DEFERREd CASH -->
+                    <div v-else-if="buyer.reservation_type==4">
+                        <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> DEFERRED CASH </p> </div>
+                        <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                            </div>
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Balance Amount after Reservation Fee: </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_amount_after_reservation" /> </div> </div>
+                            </div>
+
+                            <div class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2">
+                                    <p class="align-middle text-right text-xs font-bold">Monthly Installment Amount <br /> payable in
+                                        <input type="text"
+                                            v-model="buyer.payment.installment_months"
+                                            class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                            readonly disabled
+                                        > months:
+                                    </p>
+                                </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.monthly_installment" /> </div> </div>
+                            </div>
                         </div>
 
                         <div class="flex px-4 gap-4 my-2">
@@ -107,188 +276,35 @@
                             <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
                             <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_end_date" /> </div> </div>
                         </div>
+                    </div>
 
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2">
-                                <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity: 
-                                    <input type="text"
-                                        readonly disabled
-                                        v-model="buyer.payment.balance_loanable_percentage"
-                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                                    > months:
-                                </p>
-                            </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_loanable_amount" /> </div> </div>
+                    <div v-else>
+                        <div class="full m-4 bg-gray-200">
+                            <p class="text-center py-2 font-bold text-md text-red-500">
+                                ERROR Incorrect reservation type: {{ this.buyer.reservation_type }}
+                            </p>
                         </div>
+                    </div>
+
+                    <div class="flex items-center mx-auto justify-center gap-8 my-4">
+                        <!-- <button type="button" v-if="buyer.status" v-on:click="editDetails"
+                            class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                            EDIT INFORMATION
+                        </button> -->
+                        <button type="button" v-on:click="viewPayment"
+                            class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                            VIEW PAYMENTS
+                        </button>
+                        <button type="button" v-on:click="exportDetails"
+                            class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                            EXPORT INFORMATION
+                        </button>
+                        <button type="button" v-if="buyer.status" v-on:click="forefeitBuyer"
+                            class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                            FOREFEIT BUYER
+                        </button>
                     </div>
                 </div>
-                
-                <!-- HOUSE AND LOT WITH SPOT EQUITY -->
-                <div v-else-if="buyer.reservation_type==2">
-                    <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> WIH SPOT DOWNPAYMENT / ADVANCE DOWNPAYMENT </p> </div>
-                    <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2 mt-1">
-                                <p class="align-middle text-right text-xs font-bold">Required Equity 
-                                    <input type="text"
-                                        v-model="buyer.payment.required_equity_percentage"
-                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                                        readonly disabled
-                                    > %:
-                                </p>
-                            </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.required_equity_amount" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2 mt-1">
-                                <p class="align-middle text-right text-xs font-bold">Spot Cash Equity Less 
-                                    <input type="text"
-                                        readonly disabled
-                                        v-model="buyer.payment.spot_cash_equity_less_percentage"
-                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                                    > %:
-                                </p>
-                            </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.spot_cash_equity_less_amount" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Net Equity Less Discount: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.net_equity_less_discount" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2">
-                                <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee <br/>(shall be paid on or before 30 days from reservation): </p>
-                            </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_net_of_reservation_fee" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2 mt-1">
-                                <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> after Equity
-                                    <input type="text"
-                                        readonly disabled
-                                        v-model="buyer.payment.balance_loanable_percentage"
-                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                                    > %:
-                                </p>
-                            </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_loanable_amount" /> </div> </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- HOUSE AND LOT WITH SPOT CASH TCP -->
-                <div v-else-if="buyer.reservation_type==3">
-                    <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> SPOT CASH TCP </p> </div>
-                    <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2">
-                                <p class="align-middle text-right text-xs font-bold">SPOT CASH Discount <br /> Less
-                                    <input type="text"
-                                        readonly disabled
-                                        v-model="buyer.payment.spot_cash_discount_less_percentage"
-                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                                    > %:
-                                </p>
-                            </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.spot_cash_discount_less_amount" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Net Total Contact Price: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.net_total_contract_price" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2">
-                                <p class="align-middle text-right text-xs font-bold">Balance TCP (shall be paid on or <br/> before 30 days from reservation): </p>
-                            </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_total_contract_price" /> </div> </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- HOUSE AND LOT WITH DEFERREd CASH -->
-                <div v-else-if="buyer.reservation_type==4">
-                    <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> DEFERRED CASH </p> </div>
-                    <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
-                        </div>
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Balance Amount after Reservation Fee: </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_amount_after_reservation" /> </div> </div>
-                        </div>
-                        
-                        <div class="flex px-4 gap-4 my-2">
-                            <div class="w-1/4 items-center py-2">
-                                <p class="align-middle text-right text-xs font-bold">Monthly Installment Amount <br /> payable in
-                                    <input type="text"
-                                        v-model="buyer.payment.installment_months"
-                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                                        readonly disabled
-                                    > months:
-                                </p>
-                            </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.monthly_installment" /> </div> </div>
-                        </div>
-                    </div>
-
-                    <div class="flex px-4 gap-4 my-2">
-                        <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Starts: </p></div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_start_date" /> </div> </div>
-                    </div>
-                    <div class="flex px-4 gap-4 my-2">
-                        <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_end_date" /> </div> </div>
-                    </div>
-                </div>
-
-                <div v-else>
-                    <div class="full m-4 bg-gray-200">
-                        <p class="text-center py-2 font-bold text-md text-red-500">
-                            ERROR Incorrect reservation type: {{ this.buyer.reservation_type }}
-                        </p>
-                    </div>
-                </div>
-
-                <div class="flex items-center mx-auto justify-center gap-8 my-4">
-                    <!-- <button type="button" v-if="buyer.status" v-on:click="editDetails"
-                        class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
-                        EDIT INFORMATION
-                    </button> -->
-                    <button type="button" v-on:click="viewPayment"
-                        class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
-                        VIEW PAYMENTS
-                    </button>
-                    <button type="button" v-on:click="exportDetails"
-                        class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
-                        EXPORT INFORMATION
-                    </button>
-                    <button type="button" v-if="buyer.status" v-on:click="forefeitBuyer"
-                        class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
-                        FOREFEIT BUYER
-                    </button>
-                </div>
-
             </div>
             <div v-if="isFetchingData">
                 LOADING...
@@ -303,7 +319,9 @@
     import Header from '../components/v2/Header'
     import Label from '../components/v2/Label.vue'
     import InputForm from '../components/v2/InputForm'
+    import PasswordForm from '../components/v2/PasswordForm'
     import ReadOnlyForm from '../components/v2/ReadonlyInput'
+    // import { VueTailwindModal } from 'vue-tailwind-modal'
     // import XLSX from 'xlsx'
     import excel4node from 'excel4node'
 
@@ -312,26 +330,67 @@
             'main-header': Header,
             'label-component': Label,
             'input-form': InputForm,
-            'readonly-form': ReadOnlyForm
+            'password-form': PasswordForm,
+            'readonly-form': ReadOnlyForm,
+            // 'vue-tailwind-modal': VueTailwindModal
         },
         data() {
             return {
                 buyer: {},
                 payment: {},
                 isFetchingData: true,
-                isEditing: false
+                isEditing: false,
+                isRequestingEdit: false,
+                incorrectCredentials: false,
+                credentials: {
+                    username: 'MANAGER',
+                    password: 'password123'
+                },
+                inputtedCredentials: {
+                    username: '',
+                    password: ''
+                }
+                // modalOptions: {
+                //     background: "",
+                //     modal: "max-w-1/2 mx-24 border-8 border-gray-300 ",
+                //     close: "",
+                // },
             }
         },
         created() {
             this.getDetails(this.$route.params.id)
         },
         methods: {
+            cancelEdit() {
+                this.inputtedCredentials = { username: '', password: ''}
+                this.incorrectCredentials = false
+                this.isRequestingEdit = false
+            },
+            checkCredentials() {
+                console.log('INPUTTED CREDENTIALS', this.inputtedCredentials)
+                if( this.credentials.username == this.inputtedCredentials.username.toUpperCase() &&
+                    this.credentials.password == this.inputtedCredentials.password ) {
+                        console.log('CREDENTIALS MATCHED')
+                        // route to editing ?
+                        this.$router.push({ name: 'Edit-Buyer-Info',
+                                            params: {   id: this.buyer.id,
+                                                        buyer: this.buyer }})
+                        // this.isRequestingEdit = false
+
+                } else {
+                    this.incorrectCredentials = true
+                }
+            },
+            editPersonalInfo() {
+                console.log('edit personal info')
+                this.isRequestingEdit = true
+            },
             viewPayment() {
                 console.log('Viewing payment for buyer ', this.buyer.id)
                 this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
             },
             getDetails(id) {
-                this.isFetching = true,
+                this.isFetchingData = true,
                 ipcRenderer.send('fetchBuyer', id)
                 ipcRenderer.once('fetchedBuyer', (event, data) => {
                     this.buyer = data

@@ -554,6 +554,86 @@ ipcMain.on('fetchPaymentsList', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+// FUNCTION TO FETCH ALL LIST OF CHANGES IN HISTORY
+ipcMain.on('fetchHistoryList', (event, data) => {
+  console.log('Fetching History List')
+  const knex = getDbConnection()
+  knex('history_tracker').orderBy('date_of_change', 'desc').then((list) => {
+    // event.reply('fetchedBuyersByProjectList', buyers)
+    event.reply('fetchedHistoryList', { response: 1, list: list })
+  }).catch((err) => {
+    event.reply('fetchedHistoryList', { response: 0 })
+    console.log('FETCH HISTORY LIST ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO ADD CHANGE IN HISTORY
+ipcMain.on('addHistoryEntry', (event, data) => {
+  console.log('addHistoryEntry', data)
+  const knex = getDbConnection()
+  knex('history_tracker').insert({
+      date_of_change: data.date_of_change,
+      action: data.action,
+      object_id: data.object_id,
+      object_name: data.object_name,
+      object_type: data.object_type,
+      object_field: data.object_field,
+      old_value: data.old_value,
+      new_value: data.new_value
+    })
+    .then(() => {
+      console.log('ADD HISTORY ENTRY successful')
+      event.reply('addedHistoryEntry', 1)
+    }).catch((err) => {
+      event.reply('addedHistoryEntry', 0)
+      console.log('ADD HISTORY ENTRY FAILED', err) ; throw err
+    }).finally(() => knex.destroy())
+})
+
+
+// FUNCTION TO EDIT BUYER INFORMATION
+ipcMain.on('editBuyerInfo', (event, data) => {
+  console.log('editBuyerInfo', data)
+  const date = new Date()
+  const error_msgs = []
+  const { changed_data, unedited_buyer } = data
+
+  const lname = changed_data.last_name ? changed_data.last_name : unedited_buyer.last_name
+  const fname = changed_data.first_name ? changed_data.first_name : unedited_buyer.first_name
+  const mi = changed_data.middle_initial ? changed_data.middle_initial : unedited_buyer.middle_initial
+
+  const knex = getDbConnection()
+  knex('buyer').where({id: data.id})
+    .update(changed_data)
+    .then(() => {
+      // add changes to history tracker
+      for(const field in changed_data) {
+        const knex2 = getDbConnection()
+        knex2('history_tracker').insert({
+          date_of_change: date,
+          action: 'EDIT',
+          object_id: changed_data.id,
+          object_name: `${unedited_buyer.project.name} - ${lname} ${fname} ${mi}`,
+          object_type: 'BUYER',
+          object_field: field,
+          old_value: unedited_buyer[field],
+          new_value: changed_data[field]
+        })
+        .then(() => {
+          console.log('ADD HISTORY ENTRY successful')
+        }).catch((err) => {
+          error_msgs.push('ADD HISTORY ENTRY FAILED')
+          console.log('ADD HISTORY ENTRY FAILED', err) ; throw err
+        }).finally(() => knex2.destroy())
+      }
+      event.reply('editedBuyerInfo', {response: 1} )
+    }).catch((err) => {
+      error_msgs.push('UPDATE BUYER INFORMATION failed')
+      event.reply('editedBuyerInfo', {response: 0, error: error_msgs })
+      console.log('UPDATE BUYER INFORMATION failed', err) ; throw err
+    }).finally(() => knex.destroy())
+})
+
 // FUNCTION TO CONNECT DB mysql
 // function getDbConnection() {
 //   const knex = require('knex')({

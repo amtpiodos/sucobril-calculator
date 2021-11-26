@@ -5,9 +5,9 @@
         </div>
 
         <div class="mt-1 relative rounded-md shadow-sm">
-            <input type="text"
+            <input type="password"
                 v-model="inputVal"
-                class="form-input block border border-gray-200 rounded-md w-full py-2 text-md px-4 " >
+                class="form-input block border border-gray-200 rounded-md w-full py-2 text-md px-4 uppercase " >
         </div>
     </div>
 </template>
