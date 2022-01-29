@@ -15,6 +15,8 @@
                     <p class="text-center p-2 font-semibold text-lg"> ADD PAYMENT </p>
                 </div>
 
+                
+                <div v-if="!isAddingPayment">
                 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 py-1">
                     <div class="flex gap-4">
                         <div class="w-2/5"> <readonly-form label="Last Name" :value="buyer.last_name" /> </div>
@@ -33,22 +35,37 @@
 
                     <div class="full flex">
                         <div class="w-1/2 mr-2">
-                            <label-component label="Payment Date" />
-                            <datepicker v-model="new_payment.payment_date" placeholder="Select Payment Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                            <label-component label="Date" />
+                             <!-- <input-form label="Date" v-model="new_payment.payment_date" /> -->
+                            <datepicker v-model="new_payment.payment_date" typeable=true placeholder="Select Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
                         </div>
-                        <div class="w-1/2 ml-2">
-                            <label-component label="Transaction / A.R. Date" />
-                            <datepicker v-model="new_payment.transaction_date" placeholder="Select Transaction / A.R. Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
-                        </div>
+                        <div class="w-1/2 ml-2"> <input-form label="Transaction Date" v-model="new_payment.transaction_code" />  </div>
                     </div>
-                    <div class="full"> <input-form label="Reference No." v-model="new_payment.reference_no" /> </div>
-                    <div class="full"> <input-form label="OR/AR No." v-model="new_payment.or_ar_no" /> </div>
+                    <div class="full flex gap-4">
+                        <div class="w-1/2"> <input-form label="Reference No." v-model="new_payment.reference_no" /> </div>
+                        <div class="w-1/2"> <input-form label="OR/AR No." v-model="new_payment.or_ar_no" /> </div>
+                    </div>
+                    <div class="full"> <input-form label="Payment Via" v-model="new_payment.payment_via" /> </div>
                     <div class="full flex">
-                        <input-form label="Amount (Php)" v-model="new_payment.amount" class="w-1/2 mr-2"/>
-                        <input-form label="Penalty (Php)" v-model="new_payment.penalty" class="w-1/2 ml-2"/>
+                        <div class="w-1/2 mr-2">
+                            <label-component label="Amount (PHP)" />
+                            <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                <input type="text"
+                                    :value="formatDisplay(new_payment.amount)"
+                                    @change="updateAmount"
+                                    class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                            </div>
+                        </div>
+                        <div class="w-1/2 mr-2">
+                            <label-component label="Penalty (PHP)" />
+                            <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                <input type="text"
+                                    :value="formatDisplay(new_payment.penalty)"
+                                    @change="updatePenalty"
+                                    class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                            </div>
+                        </div>
                     </div>
-
-                    <!-- <div class="full"> <input-form label="Remarks / Description" v-model="new_payment.remarks" /> </div> -->
                 </div>
 
                 <div class="full my-2"> <text-area label="Remarks / Description" v-model="new_payment.remarks" /> </div>
@@ -78,6 +95,11 @@
                 </div> -->
 
             <!-- </div> -->
+                </div>
+                
+            <div v-if="isAddingPayment" class="text-center mx-auto my-4 font-semibold text-lg">
+                ADDING PAYMENT...
+            </div>
         </div>
     </div>
 </template>
@@ -102,13 +124,15 @@
         },
         data() {
             return {
+                isAddingPayment: false,
                 buyer: {},
                 payment: {},
                 new_payment: {
                     payment_date: '',
-                    reference_no: '',
+                    reference_no: '-',
                     or_ar_no: '',
-                    transaction_date: '',
+                    transaction_code: '-',
+                    payment_via: '',
                     amount: '',
                     penalty: '',
                     remarks: '',
@@ -128,31 +152,40 @@
             back() {
                 this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
             },
-            // getDate() {
-            //     let today = new Date()
-            //     this.new_payment.date = today
-            //     return this.new_payment.date
-            // },
+            formatDisplay(value) {
+               return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            },
+            formatParsedFloat(value) {
+                return parseFloat(value.replace(/,/g, '')).toFixed(2)
+            },
+            updateAmount(event) {
+                this.new_payment.amount = event.target.value
+            },
+            updatePenalty(event) {
+                this.new_payment.penalty = event.target.value
+            },
             submitPayment() {
-                // console.log('submitting payment', this.new_payment)
-                const dataToSubmit = { id: this.buyer.id, payment: this.new_payment}
-                console.log('submitPayment', dataToSubmit)
-                ipcRenderer.send('addPayment', dataToSubmit)
-                ipcRenderer.once('addedPayment', (event, data) => {
-                    console.log('addedPayment', data)
-                    if(data == 1) {
-                        console.log('Add Payment SUCCESSFUL')
-                        // this.autoExport()
-                        // add loading screen
-                        setTimeout(() => {
-                             this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
-                        }, 2000)
-                    } else {
-                        alert('Add Payment ERROR')
-                        console.log('Add Payment ERROR')
-                    }
-                    this.isFetchingData = false
-                })
+                this.isAddingPayment = true
+                this.new_payment.amount = this.formatParsedFloat(this.new_payment.amount)
+                this.new_payment.penalty = this.formatParsedFloat(this.new_payment.penalty)
+                // setTimeout(() => {
+                    const dataToSubmit = { id: this.buyer.id, payment: this.new_payment}
+                    console.log('submitPayment', dataToSubmit)
+                    ipcRenderer.send('addPayment', dataToSubmit)
+                    ipcRenderer.once('addedPayment', (event, data) => {
+                        console.log('addedPayment', data)
+                        if(data == 1) {
+                            console.log('Add Payment SUCCESSFUL')
+                            // this.autoExport()
+                            // add loading screen
+                            this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
+                        } else {
+                            alert('Add Payment ERROR')
+                            console.log('Add Payment ERROR')
+                        }
+                        this.isFetchingData = false
+                    })
+                // }, 1000)   
             }
         }
     })

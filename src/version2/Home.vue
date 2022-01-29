@@ -1,4 +1,6 @@
 <template>
+    <!-- <div class="h-screen"> -->
+
     <div class="h-screen">
         <main-header />
         <div class="mt-8 mb-2 mx-24">
@@ -46,7 +48,8 @@
                 </div>
             </div>
             <div class="flex my-4">
-                <div class="w-1/4">
+                <div class="w-1/4 h-96">
+                    <!-- <div class="bg-white space-y-3 overflow-y-auto h-1/2"> -->
                     <div class="bg-white space-y-3 overflow-y-auto h-full">
                         <input class=" w-full bg-white border-2 border-light-blue-500 border-opacity-100 rounded-md px-3 py-2"
                             placeholder="SEARCH BUYER..."/>
@@ -122,10 +125,10 @@
         },
         mounted() {
             this.hasClickedBuyer = false
-            console.log('hasClickedBuyer', this.hasClickedBuyer)
+            // console.log('hasClickedBuyer', this.hasClickedBuyer)
         },
         created() {
-            console.log('HOME - created')
+            // console.log('HOME - created')
             this.fetchAllBuyers()
         },
         methods: {
@@ -240,7 +243,7 @@
             hasClicked(id) {
                 this.hasClickedBuyer = true
                 this.id = id
-                console.log('hasClickedBuyer', this.hasClickedBuyer, 'id', this.id)
+                // console.log('hasClickedBuyer', this.hasClickedBuyer, 'id', this.id)
                 this.fetchBuyerDetails(id)
             },
             fetchBuyerDetails(id) {

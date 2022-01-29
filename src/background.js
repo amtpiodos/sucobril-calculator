@@ -190,7 +190,9 @@ ipcMain.on('addHouseAndLotBuyer', (event, data) => {
       project_id: unit.project_id,
       realty: unit.realty_name,
       agent: unit.agent_name,
+      agent_number: unit.agent_number,
       status: 1,
+      assumer_id: null,
       reservation_type: payment_details.reservation_type
     })
     .returning('id')
@@ -233,12 +235,15 @@ ipcMain.on('addHouseAndLotBuyer', (event, data) => {
           'status': 1,
           'owner_id': buyer_id,
           'price_per_sqm': unit.price_per_sqm,
-          'lot_type': unit.lot_type
+          'lot_type': unit.lot_type,
+          'lot_area': unit.lot_area,
+          'floor_area': unit.floor_area
         }).then(() => {
-          event.reply('addedHouseAndLotBuyer', 1)
+          // event.reply('addedHouseAndLotBuyer', 1)
+          event.reply('addedHouseAndLotBuyer', {response: 1, new_id: buyer_id})
           console.log('LOT STATUS UPDATED', unit.lot_id)
         }).catch((err) => {
-          event.reply('addedHouseAndLotBuyer', 0)
+          event.reply('addedHouseAndLotBuyer', {response: 0})
           console.log('ADDING OF PAYMENT ERROR', err) ; throw err
         }).finally(() => knex3.destroy())
       // edit to only one lot updated (where statement)
@@ -247,7 +252,7 @@ ipcMain.on('addHouseAndLotBuyer', (event, data) => {
       }).finally(() => knex2.destroy())
       // event.reply('isBuyerAdded', 1)
   }).catch((err) => {
-    event.reply('addedHouseAndLotBuyer', 0)
+    event.reply('addedHouseAndLotBuyer', {response: 0})
     console.log('HOUSE & LOT BUYER INSERT ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
@@ -312,7 +317,7 @@ ipcMain.on('fetchLotsList', (event, data) => {
 // FUNCTION TO FETCH ALL BUYERS
 ipcMain.on('fetchBuyersList', (event, data) => {
   const knex = getDbConnection()
-  knex('Buyer').select().then((buyers) => {
+  knex('Buyer').select().orderBy('last_name', 'asc').then((buyers) => {
     event.reply('fetchedBuyersList', buyers)
   }).catch((err) => { console.log('FETCH BUYERS LIST ERROR', err) ; throw err
   }).finally(() => knex.destroy())
@@ -321,7 +326,9 @@ ipcMain.on('fetchBuyersList', (event, data) => {
 // FUNCTION TO FETCH ALL ACTIVE OR INACTIVE BUYERS
 ipcMain.on('fetchActiveOrInactiveBuyersList', (event, data) => {
   const knex = getDbConnection()
-  knex('Buyer').where({ status: data }).then((buyers) => {
+  knex('Buyer').where({ status: data })
+  .orderBy('last_name', 'asc')
+  .then((buyers) => {
     event.reply('fetchedActiveOrInactiveBuyersList', buyers)
   }).catch((err) => { console.log('FETCH BUYERS LIST ERROR', err) ; throw err
   }).finally(() => knex.destroy())
@@ -331,7 +338,9 @@ ipcMain.on('fetchActiveOrInactiveBuyersList', (event, data) => {
 ipcMain.on('fetchBuyersByProjectList', (event, data) => {
   const { project_id, status} = data
   const knex = getDbConnection()
-  knex('Buyer').where({ project_id: project_id, status: status }).then((buyers) => {
+  knex('Buyer').where({ project_id: project_id, status: status })
+    .orderBy('last_name', 'asc')
+    .then((buyers) => {
     // event.reply('fetchedBuyersByProjectList', buyers)
     event.reply('fetchedBuyersByProjectList', { response: 1, buyers: buyers })
   }).catch((err) => {
@@ -344,7 +353,9 @@ ipcMain.on('fetchBuyersByProjectList', (event, data) => {
 ipcMain.on('fetchBuyersByProjectListNoStatus', (event, data) => {
   const { project_id } = data
   const knex = getDbConnection()
-  knex('Buyer').where({ project_id: project_id }).then((buyers) => {
+  knex('Buyer').where({ project_id: project_id })
+  .orderBy('last_name', 'asc')
+  .then((buyers) => {
     // event.reply('fetchedBuyersByProjectList', buyers)
     event.reply('fetchedBuyersByProjectListNoStatus', { response: 1, buyers: buyers })
   }).catch((err) => {
@@ -446,7 +457,6 @@ ipcMain.on('fetchProjectType', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
-
 // FUNCTION TO FETCH PAYMENT LOT ONLY
 ipcMain.on('fetchLotOnlyPayment', (event, data) => {
   console.log('fetchLotOnlyPayment', data)
@@ -527,7 +537,8 @@ ipcMain.on('addPayment', (event, data) => {
       payment_date: payment.payment_date,
       reference_no: payment.reference_no,
       or_ar_no: payment.or_ar_no,
-      transaction_date: payment.transaction_date,
+      transaction_code: payment.transaction_code,
+      payment_via: payment.payment_via,
       amount: payment.amount,
       penalty: payment.penalty,
       remarks: payment.remarks,
@@ -546,11 +557,28 @@ ipcMain.on('addPayment', (event, data) => {
 // FUNCTION TO FETCH BUYER PAYMENTS IN DB
 ipcMain.on('fetchPaymentsList', (event, data) => {
   const knex = getDbConnection()
-  knex('buyer_payment').where({ buyer_id: data.id  }).then((buyer_payments) => {
-    event.reply('fetchedPaymentsList', { response: 1, buyer_payments: buyer_payments })
+  knex('buyer_payment').where({ buyer_id: data.id  })
+    .orderBy('payment_date', 'desc')
+    .orderBy('id', 'desc')
+    .then((buyer_payments) => {
+      console.log('fetchPaymentsList BUYER ID', data.id, buyer_payments)
+      event.reply('fetchedPaymentsList', { response: 1, buyer_payments: buyer_payments })
   }).catch((err) => {
     event.reply('fetchedPaymentsList', { response: 0 })
     console.log('FETCH BUYER PAYMENTS ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO SPECIFIC BUYER PAYMENTS IN DB
+ipcMain.on('fetchPayment', (event, data) => {
+  const knex = getDbConnection()
+  knex('buyer_payment').where({ id: data })
+    .then((buyer_payment) => {
+      console.log('fetchedPayment BUYER ID', data, buyer_payment)
+      event.reply('fetchedPayment', { response: 1, buyer_payment: buyer_payment[0] })
+  }).catch((err) => {
+    event.reply('fetchedPayment', { response: 0 })
+    console.log('FETCH BUYER PAYMENT ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
 
@@ -596,14 +624,133 @@ ipcMain.on('editBuyerInfo', (event, data) => {
   console.log('editBuyerInfo', data)
   const date = new Date()
   const error_msgs = []
-  const { changed_data, unedited_buyer } = data
+  const { changed_buyer_info,
+          unedited_buyer_info,
+          
+          changed_unit,
+          unedited_unit,
+        
+          changed_payment,
+          unedited_payment } = data
 
-  const lname = changed_data.last_name ? changed_data.last_name : unedited_buyer.last_name
-  const fname = changed_data.first_name ? changed_data.first_name : unedited_buyer.first_name
-  const mi = changed_data.middle_initial ? changed_data.middle_initial : unedited_buyer.middle_initial
+  const lname = changed_buyer_info.last_name ? changed_buyer_info.last_name : unedited_buyer_info.last_name
+  const fname = changed_buyer_info.first_name ? changed_buyer_info.first_name : unedited_buyer_info.first_name
+  const mi = changed_buyer_info.middle_initial ? changed_buyer_info.middle_initial : unedited_buyer_info.middle_initial
+  
+  if(Object.keys(changed_buyer_info).length) {
+    const knex = getDbConnection()
+    knex('buyer').where({id: data.id})
+      .update(changed_buyer_info)
+      .then(() => {
+        // add changes to history tracker
+        for(const field in changed_buyer_info) {
+          const knex2 = getDbConnection()
+          knex2('history_tracker').insert({
+            date_of_change: date,
+            action: 'EDIT',
+            object_id: changed_buyer_info.id,
+            object_name: `${unedited_buyer_info.project.name} - ${lname} ${fname} ${mi}`,
+            object_type: 'BUYER',
+            object_field: field,
+            old_value: unedited_buyer_info[field],
+            new_value: changed_buyer_info[field]
+          })
+          .then(() => {
+            console.log('ADD HISTORY ENTRY successful')
+          }).catch((err) => {
+            error_msgs.push('ADD HISTORY ENTRY FAILED')
+            console.log('ADD HISTORY ENTRY FAILED', err) ; throw err
+          }).finally(() => knex2.destroy())
+        }
+        event.reply('editedBuyerInfo', {response: 1} )
+      }).catch((err) => {
+        error_msgs.push('UPDATE BUYER INFORMATION failed')
+        event.reply('editedBuyerInfo', {response: 0, error: error_msgs })
+        console.log('UPDATE BUYER INFORMATION failed', err) ; throw err
+      }).finally(() => knex.destroy())
+  }
+
+  if(Object.keys(changed_unit).length) {
+    const knex3 = getDbConnection()
+    knex3('lot').where({id: unedited_unit.id})
+      .update(changed_unit)
+      .then(() => {
+        // add changes to history tracker
+        for(const field in changed_unit) {
+          const knex4 = getDbConnection()
+          knex4('history_tracker').insert({
+            date_of_change: date,
+            action: 'EDIT',
+            object_id: changed_buyer_info.id,
+            object_name: `${unedited_buyer_info.project.name} - ${lname} ${fname} ${mi}`,
+            object_type: 'UNIT: LOT',
+            object_field: field,
+            old_value: unedited_unit[field],
+            new_value: changed_unit[field]
+          })
+          .then(() => {
+            console.log('ADD HISTORY ENTRY successful')
+          }).catch((err) => {
+            error_msgs.push('ADD HISTORY ENTRY FAILED')
+            console.log('ADD HISTORY ENTRY FAILED', err) ; throw err
+          }).finally(() => knex4.destroy())
+        }
+        event.reply('editedBuyerInfo', {response: 1} )
+      }).catch((err) => {
+        error_msgs.push('UPDATE BUYER INFORMATION failed')
+        event.reply('editedBuyerInfo', {response: 0, error: error_msgs })
+        console.log('UPDATE BUYER INFORMATION failed', err) ; throw err
+      }).finally(() => knex3.destroy())
+  }
+
+  if(Object.keys(changed_payment).length) {
+    const knex5 = getDbConnection()
+    knex5('hl_payment').where({id: unedited_payment.id})
+      .update(changed_payment)
+      .then(() => {
+        // add changes to history tracker
+        for(const field in changed_payment) {
+          const knex6 = getDbConnection()
+          knex6('history_tracker').insert({
+            date_of_change: date,
+            action: 'EDIT',
+            object_id: changed_buyer_info.id,
+            object_name: `${unedited_buyer_info.project.name} - ${lname} ${fname} ${mi}`,
+            object_type: 'UNIT: LOT',
+            object_field: field,
+            old_value: unedited_payment[field],
+            new_value: changed_payment[field]
+          })
+          .then(() => {
+            console.log('ADD HISTORY ENTRY (buyer reservation) successful')
+          }).catch((err) => {
+            error_msgs.push('ADD HISTORY ENTRY (buyer reservation) FAILED')
+            console.log('ADD HISTORY ENTRY FAILED', err) ; throw err
+          }).finally(() => knex6.destroy())
+        }
+        event.reply('editedBuyerInfo', {response: 1} )
+      }).catch((err) => {
+        error_msgs.push('UPDATE BUYER RESERVATION INFORMATION failed')
+        event.reply('editedBuyerInfo', {response: 0, error: error_msgs })
+        console.log('UPDATE BUYER RESERVATION INFORMATION failed', err) ; throw err
+      }).finally(() => knex5.destroy())
+  }
+  
+})
+
+// FUNCTION TO EDIT PAYMENT INFORMATION
+ipcMain.on('editPayment', (event, data) => {
+  console.log('editPayment', data)
+  const date = new Date()
+  const error_msgs = []
+  const { changed_data, unedited_payment, buyer } = data
+
+  const lname = changed_data.last_name ? changed_data.last_name : buyer.last_name
+  const fname = changed_data.first_name ? changed_data.first_name : buyer.first_name
+  const mi = changed_data.middle_initial ? changed_data.middle_initial : buyer.middle_initial
 
   const knex = getDbConnection()
-  knex('buyer').where({id: data.id})
+  knex('buyer_payment').where({id: data.id})
     .update(changed_data)
     .then(() => {
       // add changes to history tracker
@@ -613,10 +760,10 @@ ipcMain.on('editBuyerInfo', (event, data) => {
           date_of_change: date,
           action: 'EDIT',
           object_id: changed_data.id,
-          object_name: `${unedited_buyer.project.name} - ${lname} ${fname} ${mi}`,
-          object_type: 'BUYER',
+          object_name: `${buyer.project.name} - ${lname} ${fname} ${mi}`,
+          object_type: 'PAYMENT',
           object_field: field,
-          old_value: unedited_buyer[field],
+          old_value: unedited_payment[field],
           new_value: changed_data[field]
         })
         .then(() => {
@@ -626,39 +773,136 @@ ipcMain.on('editBuyerInfo', (event, data) => {
           console.log('ADD HISTORY ENTRY FAILED', err) ; throw err
         }).finally(() => knex2.destroy())
       }
-      event.reply('editedBuyerInfo', {response: 1} )
+      event.reply('editedPayment', {response: 1} )
     }).catch((err) => {
-      error_msgs.push('UPDATE BUYER INFORMATION failed')
-      event.reply('editedBuyerInfo', {response: 0, error: error_msgs })
-      console.log('UPDATE BUYER INFORMATION failed', err) ; throw err
+      error_msgs.push('UPDATE PAYMENT failed')
+      event.reply('editedPayment', {response: 0, error: error_msgs })
+      console.log('UPDATE PAYMENT failed', err) ; throw err
     }).finally(() => knex.destroy())
 })
 
-// FUNCTION TO CONNECT DB mysql
-// function getDbConnection() {
-//   const knex = require('knex')({
-//     client: 'mysql',
-//     connection: {
-//       // host: '192.168.1.29',
-//       host: '192.168.254.142',
-//       user: 'user',
-//       password: 'password',
-//       database: 'tumabini_db'
-//     }
-//   })
-//   return knex
-// }
+// // FUNCTION TO ASSUME HOUSE AND LOT UNIT
+ipcMain.on('assume-HL-unit', (event, data) => {
+  const { newBuyer, payment_details, old_id } = data
+  console.log({newBuyer}, {payment_details})
+  makeBuyerInactive(old_id)
+    const knex = getDbConnection()
+    knex.insert({
+        last_name: newBuyer.last_name,
+        first_name: newBuyer.first_name,
+        middle_initial: newBuyer.middle_initial,
+        contact_number: newBuyer.contact_number,
+        email_address: newBuyer.email_address,
+        home_address: newBuyer.home_address,
+        lot_id: newBuyer.lot.id,
+        project_id: newBuyer.project.id,
+        realty: newBuyer.realty_name,
+        agent: newBuyer.agent_name,
+        status: 1,
+        assumer_id: old_id,
+        reservation_type: payment_details.reservation_type
+      })
+      .returning('id')
+      .into('Buyer')
+      .then((id) => {
+        console.log('INSERTED', id)
+        const buyer_id = id
+        const knex2 = getDbConnection()
+        knex2.insert({
+          buyer_id: buyer_id,
+          date: payment_details.date,
+          total_contract_price: payment_details.total_contract_price,
+          reservation_type: payment_details.reservation_type,
+          reservation_fee: payment_details.reservation_fee,
+          required_equity_percentage: payment_details.required_equity_percentage,
+          required_equity_amount: payment_details.required_equity_amount,
+          equity_net_of_reservation_fee: payment_details.equity_net_of_reservation_fee,
+          equity_months: payment_details.equity_months,
+          monthly_equity_amount: payment_details.monthly_equity_amount,
+          equity_start_date: payment_details.equity_start_date,
+          equity_end_date: payment_details.equity_end_date,
+          balance_loanable_percentage: payment_details.balance_loanable_percentage,
+          balance_loanable_amount: payment_details.balance_loanable_amount,
+          spot_cash_equity_less_percentage: payment_details.spot_cash_equity_less_percentage,
+          spot_cash_equity_less_amount: payment_details.spot_cash_equity_less_amount,
+          net_equity_less_discount: payment_details.net_equity_less_discount,
+          spot_cash_discount_less_percentage: payment_details.spot_cash_discount_less_percentage,
+          spot_cash_discount_less_amount: payment_details.spot_cash_discount_less_amount,
+          net_total_contract_price: payment_details.net_total_contract_price,
+          balance_total_contract_price: payment_details.balance_total_contract_price,
+          balance_amount_after_reservation: payment_details.balance_amount_after_reservation,
+          installment_months: payment_details.installment_months,
+          monthly_installment: payment_details.monthly_installment,
+        })
+        .into('hl_payment')
+        .then(() => {
+          const knex3 = getDbConnection()
+          knex3('Lot').where({ id: newBuyer.lot.id  })
+          .update({
+            'status': 1,
+            'owner_id': buyer_id,
+            'price_per_sqm': newBuyer.lot.price_per_sqm,
+            'lot_type': newBuyer.lot.lot_type
+          }).then(() => {
+            
+            event.reply('assumed-HL-unit', {response: 1, new_id: buyer_id})
+            console.log('LOT STATUS UPDATED', newBuyer.lot.id)
+          }).catch((err) => {
+            event.reply('assumed-HL-unit', {response: 0})
+            console.log('ADDING OF PAYMENT ERROR', err) ; throw err
+          }).finally(() => knex3.destroy())
+        // edit to only one lot updated (where statement)
+        }).catch((err) => {
+          console.log('LOT STATUS UPDATE ERROR', err) ; throw err
+        }).finally(() => knex2.destroy())
+        // event.reply('isBuyerAdded', 1)
+    }).catch((err) => {
+      event.reply('assumed-HL-unit', {response: 0})
+      console.log('HOUSE & LOT BUYER INSERT ERROR', err) ; throw err
+    }).finally(() => knex.destroy())
 
+})
+
+function makeBuyerInactive(id) {
+  const knex = getDbConnection()
+  knex('Buyer')
+    .where({ id: id  })
+    .update({
+      'status': 0
+    }).then(() => {
+      console.log('BUYER STATUS UPDATED: Buyer now INACTIVE', id)
+    }).catch((err) => {
+      console.log('BUYER STATUS UPDATE ERROR: Buyer still ACTIVE', err) ; throw err
+  }).finally(() => knex.destroy())  
+  // _callback()
+}
+
+
+// FUNCTION TO CONNECT DB mysql
 function getDbConnection() {
-  console.log('getdbconnection')
   const knex = require('knex')({
     client: 'mysql',
     connection: {
-      host: '127.0.0.1',
-      user: 'root',
-      password: '',
+      host: '192.168.1.33',
+      // host: '192.168.254.142',
+      user: 'user',
+      password: 'password',
       database: 'tumabini_db'
     }
   })
   return knex
 }
+
+// function getDbConnection() {
+//   console.log('getdbconnection')
+//   const knex = require('knex')({
+//     client: 'mysql',
+//     connection: {
+//       host: '127.0.0.1',
+//       user: 'root',
+//       password: '',
+//       database: 'tumabini_db'
+//     }
+//   })
+//   return knex
+// }

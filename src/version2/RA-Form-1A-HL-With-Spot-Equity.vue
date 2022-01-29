@@ -23,7 +23,17 @@
                 </div>
                 <div class="full px-4"> <readonly-form label="Project Address" v-bind:value="unit.project_address" /> </div>
                 <div class="grid grid-cols-2 gap-4 px-4">
-                    <div class="full"> <input-form label="Price/Sq.M (PHP)" v-model="unit.price_per_sqm" /> </div>
+                    <div class="full">
+                        <label-component label="Price / SQM (PHP)" />
+                        <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                            <input type="text"
+                                :value="formatDisplay(unit.price_per_sqm)"
+                                @change="updatePricePerSqm"
+                                class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                        </div>
+                        <!-- <input-form label="Price/Sq.M (PHP)" :value="formatDisplay(unit.price_per_sqm)" /> -->
+                    </div>
+                    <!-- <div class="full"> <input-form label="Price/Sq.M (PHP)" v-model="unit.price_per_sqm" /> </div> -->
                     <div class="full"> <input-form label="House Type" v-model="unit.lot_type" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Home Address" v-model="buyer.home_address" /> </div>
@@ -234,6 +244,9 @@
             formatParsedFloat(value) {
                 return parseFloat(value.replace(/,/g, '')).toFixed(2)
             },
+            updatePricePerSqm(event) {
+                this.unit.price_per_sqm = event.target.value
+            },
             updateTCP(event) {
                 this.payment_details.total_contract_price = event.target.value
                 console.log('UpdateTCP', this.payment_details.total_contract_price)
@@ -278,13 +291,15 @@
                 ipcRenderer.send('addHouseAndLotBuyer', dataToSubmit)
                 ipcRenderer.once('addedHouseAndLotBuyer', (event, data) => {
                     console.log('addedHouseAndLotBuyer', data)
-                    if(data == 1) {
+                    if(data.response == 1) {
                         console.log('Add H&L Buyer SUCCESSFUL')
                         this.autoExport()
+
                         // add loading screen
                         setTimeout(() => {
-                            this.$router.push('/')
-                        }, 2000)
+                            // this.$router.push('/')
+                            this.$router.push({name: 'View-Buyer-HL', params: { id: data.new_id }})
+                        }, 1000)
                     } else {
                         alert('Add H&L Buyer error')
                         console.log('Add H&L Buyer error')

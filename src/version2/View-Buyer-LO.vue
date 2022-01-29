@@ -178,7 +178,7 @@
                 </div>
 
             </div>
-            <div v-if="isFetchingData">
+            <div v-if="isFetchingData" class="text-center mx-auto my-4 font-semibold text-lg">
                 LOADING...
             </div>
         </div>

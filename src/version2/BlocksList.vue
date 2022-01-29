@@ -10,13 +10,13 @@
                 <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
                 <div class="text-xs"> Contact: (032) 260-1522  Email: tumabinidevelopment@gmail.com </div>
             </div>
-            <div class="w-1/2">
+            <div class="w-full">
                 <div class="flex items-right justify-right gap-8">
                     <button class="w-1/3"> </button>
                     <button class="w-1/3"> </button>
-                    <button type="button" v-on:click="viewProjectBuyers"
+                    <button type="button" v-on:click="backToProjects"
                         class="bg-gray-500 p-4 w-1/3 items-center align-center text-white font-regular border rounded-md mb-4">
-                        View {{ project_name }} Buyers
+                        Back To Projects
                     </button>
                 </div>
             </div>
@@ -64,6 +64,9 @@
             console.log('ROUTE', this.$route.fullPath)
         },
         methods: {
+            backToProjects() {
+                this.$router.push({ name: 'Projects'})
+            },
             fetchBlocks() {
                 console.log('store project', this.$store.state.unit.project.project_id)
                 const id = this.has_phase ? this.phase_id : this.project_id
@@ -73,11 +76,6 @@
                     this.blocks = data
                     console.log('fetchedBlocksList', typeof(this.blocks), this.blocks)
                 })
-            },
-            viewProjectBuyers() {
-                const project_info = { id: this.project_id, name: this.project_name, location: this.project_location }
-                // const phase_info = { id: phase_id, name: this.phase }
-                this.$router.push({ name: "Project-Buyers-List", params: { id: this.project_id, project: project_info }})
             }
         }
     })

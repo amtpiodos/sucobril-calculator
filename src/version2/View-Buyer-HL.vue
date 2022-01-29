@@ -51,17 +51,18 @@
                             <div class="w-2/5"> <readonly-form label="First Name" :value="buyer.first_name" /> </div>
                             <div class="w-1/5"> <readonly-form label="M.I." :value="buyer.middle_initial" /> </div>
                         </div>
-                        <div class="full px-4"> <readonly-form label="Reservation Date" :value="buyer.payment.date" /> </div>
+                        <div class="full px-4"> <readonly-form label="Reservation Date" :value="formatDate(buyer.payment.date)" /> </div>
                         <div class="full px-4"> <readonly-form label="Project Name" :value="buyer.project.name" /> </div>
-                        <div class="grid grid-cols-4 gap-4 px-4">
+                        <div class="grid grid-cols-5 gap-2 px-4">
                             <div class="full px-1"> <readonly-form label="Block" :value="buyer.block.name" /> </div>
                             <div class="full px-1"> <readonly-form label="Lot" :value="buyer.lot.name" /> </div>
-                            <div class="full px-1"> <readonly-form label="Phase" :value="buyer.phase" /> </div>
-                            <div class="full px-1"> <readonly-form label="Floor Area" :value="getLotArea()" /> </div>
+                            <div class="full px-1"> <readonly-form label="Phase" :value="buyer.phase" /> </div>                            
+                            <div class="full px-1"> <readonly-form label="Lot Area" :value="getLotArea()" /> </div>
+                            <div class="full px-1"> <readonly-form label="Flr Area" :value="getFloorArea()" /> </div>
                         </div>
                         <div class="full px-4"> <readonly-form label="Project Address" :value="buyer.project.location" /> </div>
                         <div class="grid grid-cols-2 gap-4 px-4">
-                            <div class="full"> <readonly-form label="Price/Sq.M" :value="buyer.lot.price_per_sqm" /> </div>
+                            <div class="full"> <readonly-form label="Price/Sq.M (PHP)" :value="formatDisplay(buyer.lot.price_per_sqm)" /> </div>
                             <div class="full"> <readonly-form label="House Type" :value="buyer.lot.lot_type" /> </div>
                         </div>
                         <div class="full px-4"> <readonly-form label="Home Address" :value="buyer.home_address" />
@@ -71,16 +72,33 @@
                             <div class="w-1/2"> <readonly-form label="Email Address" :value="buyer.email_address" /> </div>
                         </div>
                         <div class="full px-4"> <readonly-form label="Realty's Name" :value="buyer.realty" /> </div>
-                        <div class="full px-4"> <readonly-form label="Agent's Name" :value="buyer.agent" /> </div>
+                        <div class="flex px-4 gap-4">
+                            <div class="w-1/2"> <readonly-form label= "Agent's Name" :value="buyer.agent" /> </div>
+                            <div class="w-1/2"> <readonly-form label= "Agent's Number" :value="buyer.agent_number" /> </div>
+                        </div>
+                        <!-- <div class="full px-4"> <readonly-form label="Agent's Name" :value="buyer.agent" /> </div> -->
+                    </div>
+                    <div class="flex items-center mx-auto justify-center gap-8 my-4">
+                        <button type="button" v-on:click="viewPayment"
+                            class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                            VIEW PAYMENTS
+                        </button>
+                        <button type="button" v-on:click="exportDetails"
+                            class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                            EXPORT INFORMATION
+                        </button>
                     </div>
 
                     <!-- HOUSE AND LOT REGULAR RESERVATION -->
                     <div v-if="buyer.reservation_type==1">
-                        <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION </p> </div>
+                        <div class="full m-4 bg-gray-200">
+                            <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION </p>
+                            <!-- <p class="text-center pb-2 font-regular text-sm" v-if="buyer.status" v-on:click="editReservation()"> Edit Reservation </p> -->
+                        </div>
                         <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.total_contract_price)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 mt-1">
@@ -92,49 +110,49 @@
                                         > %:
                                     </p>
                                 </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.required_equity_amount" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.required_equity_amount)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p></div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.reservation_fee)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee: </p></div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_net_of_reservation_fee" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.equity_net_of_reservation_fee)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 mt-1">
                                     <p class="align-middle text-right text-xs font-bold">Required Monthly Equity <br/> for
                                         <input type="text"
                                             readonly disabled
-                                            v-model="buyer.payment.equity_months"
+                                            :value="buyer.payment.equity_months"
                                             class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                         > months:
                                     </p>
                                 </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.monthly_equity_amount" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.monthly_equity_amount)" /> </div> </div>
                             </div>
 
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Starts: </p></div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_start_date" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDate(buyer.payment.equity_start_date)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_end_date" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDate(buyer.payment.equity_end_date)" /> </div> </div>
                             </div>
 
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2">
-                                    <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity:
+                                    <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity
                                         <input type="text"
                                             readonly disabled
-                                            v-model="buyer.payment.balance_loanable_percentage"
+                                            :value="buyer.payment.balance_loanable_percentage"
                                             class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                                        > months:
+                                        > %:
                                     </p>
                                 </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_loanable_amount" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.balance_loanable_amount)" /> </div> </div>
                             </div>
                         </div>
                     </div>
@@ -145,7 +163,7 @@
                         <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.total_contract_price)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 mt-1">
@@ -157,7 +175,7 @@
                                         > %:
                                     </p>
                                 </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.required_equity_amount" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.required_equity_amount)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 mt-1">
@@ -169,7 +187,7 @@
                                         > %:
                                     </p>
                                 </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.spot_cash_equity_less_amount" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.spot_cash_equity_less_amount)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Net Equity Less Discount: </p> </div>
@@ -177,25 +195,25 @@
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.reservation_fee)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2">
                                     <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee <br/>(shall be paid on or before 30 days from reservation): </p>
                                 </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_net_of_reservation_fee" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.equity_net_of_reservation_fee)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 mt-1">
                                     <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> after Equity
                                         <input type="text"
                                             readonly disabled
-                                            v-model="buyer.payment.balance_loanable_percentage"
+                                            :value="formatDisplay(buyer.payment.balance_loanable_percentage)"
                                             class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                         > %:
                                     </p>
                                 </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_loanable_amount" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.balance_loanable_amount" /> </div> </div>
                             </div>
                         </div>
                     </div>
@@ -206,7 +224,7 @@
                         <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.total_contract_price)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2">
@@ -218,21 +236,21 @@
                                         > %:
                                     </p>
                                 </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.spot_cash_discount_less_amount" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.spot_cash_discount_less_amount)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Net Total Contact Price: </p> </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.net_total_contract_price" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.net_total_contract_price)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.reservation_fee)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2">
                                     <p class="align-middle text-right text-xs font-bold">Balance TCP (shall be paid on or <br/> before 30 days from reservation): </p>
                                 </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_total_contract_price" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.balance_total_contract_price)" /> </div> </div>
                             </div>
                         </div>
                     </div>
@@ -243,28 +261,28 @@
                         <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.total_contract_price" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.total_contract_price)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.reservation_fee" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.reservation_fee)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Balance Amount after Reservation Fee: </p> </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.balance_amount_after_reservation" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.balance_amount_after_reservation)" /> </div> </div>
                             </div>
 
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2">
                                     <p class="align-middle text-right text-xs font-bold">Monthly Installment Amount <br /> payable in
                                         <input type="text"
-                                            v-model="buyer.payment.installment_months"
+                                            :value="formatDisplay(buyer.payment.installment_months)"
                                             class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                             readonly disabled
                                         > months:
                                     </p>
                                 </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.monthly_installment" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.monthly_installment)" /> </div> </div>
                             </div>
                         </div>
 
@@ -286,27 +304,19 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center mx-auto justify-center gap-8 my-4">
-                        <!-- <button type="button" v-if="buyer.status" v-on:click="editDetails"
-                            class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
-                            EDIT INFORMATION
-                        </button> -->
-                        <button type="button" v-on:click="viewPayment"
-                            class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
-                            VIEW PAYMENTS
-                        </button>
-                        <button type="button" v-on:click="exportDetails"
-                            class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
-                            EXPORT INFORMATION
-                        </button>
-                        <button type="button" v-if="buyer.status" v-on:click="forefeitBuyer"
+                    <div class="flex items-center mx-auto justify-center gap-8 my-4" v-if="buyer.status" >
+                        <button type="button" v-on:click="forefeitBuyer"
                             class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                             FOREFEIT BUYER
+                        </button>
+                        <button type="button" v-on:click="assumeUnit"
+                            class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                            ASSUME UNIT
                         </button>
                     </div>
                 </div>
             </div>
-            <div v-if="isFetchingData">
+            <div v-if="isFetchingData" class="text-center mx-auto my-4 font-semibold text-lg">
                 LOADING...
             </div>
         </div>
@@ -337,10 +347,10 @@
         data() {
             return {
                 buyer: {},
-                payment: {},
                 isFetchingData: true,
                 isEditing: false,
                 isRequestingEdit: false,
+                requestEditType: 0,
                 incorrectCredentials: false,
                 credentials: {
                     username: 'MANAGER',
@@ -349,25 +359,30 @@
                 inputtedCredentials: {
                     username: '',
                     password: ''
-                }
-                // modalOptions: {
-                //     background: "",
-                //     modal: "max-w-1/2 mx-24 border-8 border-gray-300 ",
-                //     close: "",
-                // },
+                },
+
+                previous_payees: [],
+                previous_payees_payments: []
             }
         },
         created() {
             this.getDetails(this.$route.params.id)
         },
         methods: {
+            assumeUnit() {
+                console.log('buyer', this.buyer)
+                this.$router.push({ name: 'Assume-Unit-Form',
+                                    params: { buyer: this.buyer }})
+                // route to input information for unit assumption
+
+            },
             cancelEdit() {
                 this.inputtedCredentials = { username: '', password: ''}
                 this.incorrectCredentials = false
                 this.isRequestingEdit = false
             },
             checkCredentials() {
-                console.log('INPUTTED CREDENTIALS', this.inputtedCredentials)
+                // console.log('INPUTTED CREDENTIALS', this.inputtedCredentials)
                 if( this.credentials.username == this.inputtedCredentials.username.toUpperCase() &&
                     this.credentials.password == this.inputtedCredentials.password ) {
                         console.log('CREDENTIALS MATCHED')
@@ -376,18 +391,38 @@
                                             params: {   id: this.buyer.id,
                                                         buyer: this.buyer }})
                         // this.isRequestingEdit = false
-
                 } else {
                     this.incorrectCredentials = true
                 }
             },
             editPersonalInfo() {
                 console.log('edit personal info')
-                this.isRequestingEdit = true
+                // this.isRequestingEdit = true
+                // remove this to add credentials again
+                this.$router.push({ name: 'Edit-Buyer-Info',
+                                            params: {   id: this.buyer.id,
+                                                        buyer: this.buyer }})
+                this.requestEditType = 1
             },
+            editReservation() {
+                this.isRequestingEdit = true
+                this.requestEditType = 2
+            },
+            formatDate(value) {
+                return value.toDateString() ? value.toDateString().replace(/^\S+\s/,'') : value
+                // return value.toDateString().replace(/^\S+\s/,'')
+            },
+            formatDisplay(value) {
+                return value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            //    return value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            //    return `₱ ${(value.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
+            },
+            
             viewPayment() {
                 console.log('Viewing payment for buyer ', this.buyer.id)
-                this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
+                this.$router.push({ name: "View-Payment",
+                                    params: {   id: this.buyer.id,
+                                                buyer: this.buyer}})
             },
             getDetails(id) {
                 this.isFetchingData = true,
@@ -415,7 +450,7 @@
                                 ipcRenderer.once('fetchedHouseAndLotPayment', (event, data) => {
                                     this.buyer.payment = data
                                     console.log('this.buyer in VIEW DETAILS HOUSE AND LOT BUYER', this.buyer)
-                                    console.log('this.buyer in VIEW DETAILS HOUSE AND LOT PAYMENT', this.payment)
+                                    console.log('============= payment', data)
                                     this.isFetchingData = false
                                 })
                             })
@@ -426,6 +461,10 @@
             getLotArea() {
                 console.log('this.buyer.lot.lot_area', this.buyer.lot.lot_area)
                 return `${this.buyer.lot.lot_area} sq.m`
+            },
+            getFloorArea() {
+                console.log('this.buyer.lot.floor_area', this.buyer.lot.floor_area)
+                return `${this.buyer.lot.floor_area} sq.m`
             },
             editDetails() {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
                 this.$router.push({ name: 'Edit Buyer', params: { id: this.buyer.id, buyer: this.buyer } })
@@ -447,6 +486,15 @@
                 })
             },
             exportDetails() {
+                // const buyer_name = `${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                const file_name = `${this.buyer.block.name} ${this.buyer.lot.name} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                // const home_address = this.buyer.home_address.toUpperCase()
+                // const email_address = this.buyer.email_address.toUpperCase()
+                // const contact_number = this.buyer.contact_number.toUpperCase()
+
+
+                const homedir = require('os').homedir();
+                console.log('homedir', homedir)
                 console.log('exporting details', this.buyer.reservation_type)
                 const reservationType = this.buyer.reservation_type
                 const php = ` Php `
@@ -456,39 +504,44 @@
                 const lot_name = `${this.buyer.lot.name}`
                 const price_per_sqm = `${this.buyer.lot.price_per_sqm}`
                 const phase = `${this.buyer.phase}`
-                const lot_area = this.buyer.lot.lot_area
-                const lot_type = this.buyer.lot.lot_type
-                const realty = this.buyer.realty
-                const agent = this.buyer.agent
-                const project_address = this.buyer.project.location
-                const home_address = this.buyer.home_address
-                const email_address = this.buyer.email_address
-                const contact_number = this.buyer.contact_number
+                const lot_area = `${this.buyer.lot.lot_area} SQ.M`
+                const floor_area = `${this.buyer.lot.floor_area} SQ.M`
+                const lot_type = this.buyer.lot.lot_type.toString()
+                const realty = this.buyer.realty.toUpperCase()
+                const agent = this.buyer.agent.toUpperCase()
+                const agent_number = this.buyer.agent_number.toString()
+                const project_address = this.buyer.project.location.toUpperCase()
+                const home_address = this.buyer.home_address.toUpperCase()
+                const email_address = this.buyer.email_address.toUpperCase()
+                const contact_number = this.buyer.contact_number.toString()
 
-                const total_contract_price = this.buyer.payment.total_contract_price
+                const reservation_date = this.formatDate(this.buyer.payment.date)
+                const total_contract_price = this.buyer.payment.total_contract_price ? this.formatDisplay(this.buyer.payment.total_contract_price) : this.buyer.payment.total_contract_price
+                
+                console.log('wrongtcp')
                 const required_equity_percentage = this.buyer.payment.required_equity_percentage
-                const required_equity_amount = this.buyer.payment.required_equity_amount
-                const equity_net_of_reservation_fee = this.buyer.payment.equity_net_of_reservation_fee
+                const required_equity_amount = this.buyer.payment.required_equity_amount ? this.formatDisplay(this.buyer.payment.required_equity_amount) : this.buyer.payment.required_equity_amount
+                const equity_net_of_reservation_fee = this.buyer.payment.equity_net_of_reservation_fee ? this.formatDisplay(this.buyer.payment.equity_net_of_reservation_fee) : this.buyer.payment.equity_net_of_reservation_fee
                 const equity_months = this.buyer.payment.equity_months
-                const monthly_equity_amount = this.buyer.payment.monthly_equity_amount
-                const equity_start_date = this.buyer.payment.equity_start_date
-                const equity_end_date = this.buyer.payment.equity_end_date
+                const monthly_equity_amount = this.buyer.payment.monthly_equity_amount ? this.formatDisplay(this.buyer.payment.monthly_equity_amount) : this.buyer.payment.monthly_equity_amount
+                const equity_start_date = this.formatDate(this.buyer.payment.equity_start_date)
+                const equity_end_date = this.formatDate(this.buyer.payment.equity_end_date)
                 const balance_loanable_percentage = this.buyer.payment.balance_loanable_percentage
-                const balance_loanable_amount = this.buyer.payment.balance_loanable_amount
+                const balance_loanable_amount = this.buyer.payment.balance_loanable_amount ? this.formatDisplay(this.buyer.payment.balance_loanable_amount) : this.buyer.payment.balance_loanable_amount
 
                 const spot_cash_equity_less_percentage = this.buyer.payment.spot_cash_equity_less_percentage
-                const spot_cash_equity_less_amount = this.buyer.payment.spot_cash_equity_less_amount
-                const net_equity_less_discount = this.buyer.payment.net_equity_less_discount
+                const spot_cash_equity_less_amount = this.buyer.payment.spot_cash_equity_less_amount ? this.formatDisplay(this.buyer.payment.spot_cash_equity_less_amount) : this.buyer.payment.spot_cash_equity_less_amount
+                const net_equity_less_discount = this.buyer.payment.net_equity_less_discount ? this.formatDisplay(this.buyer.payment.net_equity_less_discount) : this.buyer.payment.net_equity_less_discount
 
                 const spot_cash_discount_less_percentage = this.buyer.payment.spot_cash_discount_less_percentage
-                const spot_cash_discount_less_amount = this.buyer.payment.spot_cash_discount_less_amount
-                const net_total_contract_price = this.buyer.payment.net_total_contract_price
-                const balance_total_contract_price = this.buyer.payment.balance_total_contract_price
+                const spot_cash_discount_less_amount = this.buyer.payment.spot_cash_discount_less_amount ? this.formatDisplay(this.buyer.payment.spot_cash_discount_less_amount) : this.buyer.payment.spot_cash_discount_less_amount
+                const net_total_contract_price = this.buyer.payment.net_total_contract_price ? this.formatDisplay(this.buyer.payment.net_total_contract_price) : this.buyer.payment.net_total_contract_price
+                const balance_total_contract_price = this.buyer.payment.balance_total_contract_price ? this.formatDisplay(this.buyer.payment.balance_total_contract_price) : this.buyer.payment.balance_total_contract_price
 
-                const balance_amount_after_reservation = this.buyer.payment.balance_amount_after_reservation
+                const balance_amount_after_reservation = this.buyer.payment.balance_amount_after_reservation ? this.formatDisplay(this.buyer.payment.balance_amount_after_reservation) : this.buyer.payment.balance_amount_after_reservation
                 const installment_months = this.buyer.payment.installment_months
-                const monthly_installment = this.buyer.payment.monthly_installment
-                const reservation_fee = this.buyer.payment.reservation_fee
+                const monthly_installment = this.buyer.payment.monthly_installment ? this.formatDisplay(this.buyer.payment.monthly_installment) : this.buyer.payment.monthly_installment
+                const reservation_fee = this.buyer.payment.reservation_fee ? this.formatDisplay(this.buyer.payment.reservation_fee) : this.buyer.payment.reservation_fee
                 
                 var wb = new excel4node.Workbook()
                 var ws = wb.addWorksheet('RA - FORM 1A HL');
@@ -530,6 +583,8 @@
                 ws.cell(r, col['E']).string(` BLOCK: `).style(bold_style)
                 ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(regular_style)
                 ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
+                ws.cell(r, col['I']).string(reservation_date).style(regular_style)
+                
 
                 ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)
@@ -539,9 +594,11 @@
                 ws.cell(r, col['I']).string(price_per_sqm).style(regular_style)
 
                 ws.cell(++r, col['A']).string(` PHASE: `).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string(phase).style(regular_style)
-                ws.cell(r, col['E']).string(` FLOOR AREA: `).style(bold_style)
-                ws.cell(r, col['F'], r, col['G'], true).number(lot_area).style(regular_style)
+                ws.cell(r, col['B']).string(phase).style(regular_style)
+                ws.cell(r, col['C']).string(` LOT AREA: `).style(bold_style)
+                ws.cell(r, col['D']).string(lot_area).style(regular_style)
+                ws.cell(r, col['E']).string(` FLR AREA: `).style(bold_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(floor_area).style(regular_style)
                 ws.cell(r, col['H']).string(` TYPE OF HOUSE: `).style(bold_style)
                 ws.cell(r, col['I']).string(lot_type).style(regular_style)
 
@@ -553,7 +610,7 @@
                 ws.cell(++r, col['A']).string(` EMAIL ADDRESS: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(email_address).style(regular_style)
                 ws.cell(r, col['E'], r, col['F'], true).string(` CONTACT NUMBER: `).style(bold_style)
-                ws.cell(r, col['G'], r, col['I'], true).number(contact_number).style(regular_style)
+                ws.cell(r, col['G'], r, col['I'], true).string(contact_number).style(regular_style)
 
                 ws.cell(++r, col['A']).string(` REALTY: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(realty).style(regular_style)
@@ -568,39 +625,39 @@
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (inclusive of transfer fee charges and move-in fee): `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(total_contract_price).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['E'], true).string(` REQUIRED EQUITY `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${required_equity_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(required_equity_amount).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(required_equity_amount).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` Reservation Fee:`).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(reservation_fee).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` Equity Net of Reservation Fee:`).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(equity_net_of_reservation_fee).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(equity_net_of_reservation_fee).style(center_bold)
 
                     ws.cell(++r, col['A']).string('Equity Term: ').style(italic_leftaligned_style)
                     ws.cell(r, col['B']).number(equity_months).style(center_bold)
                     ws.cell(r, col['C']).string('months').style(italic_rightaligned_style)
                     
                     ws.cell(++r, col['A']).string('Equity Starts: ').style(italic_leftaligned_style)
-                    ws.cell(r, col['B'], r, col['D'], true).number(equity_start_date).style(center_bold)
+                    ws.cell(r, col['B'], r, col['D'], true).string(equity_start_date).style(center_bold)
 
                     ws.cell(++r, col['A']).string('Equity Ends: ').style(italic_leftaligned_style)
-                    ws.cell(r, col['B'], r, col['D'], true).number(equity_end_date).style(center_bold)
+                    ws.cell(r, col['B'], r, col['D'], true).string(equity_end_date).style(center_bold)
 
                     ws.cell(r-1, col['E'], r, col['F'], true).string('REQUIRED Monthly Equity: ').style(italic_rightaligned_style)
                     ws.cell(r-1, col['G'], r, col['G'], true).string(php).style(italic_rightaligned_style)
-                    ws.cell(r-1, col['H'], r, col['I'], true).number(monthly_equity_amount).style(center_bold)
+                    ws.cell(r-1, col['H'], r, col['I'], true).string(monthly_equity_amount).style(center_bold)
                     
                     ws.cell(++r, col['A'], r, col['E'], true).string(` Balance Loanable Amount after Equity: `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${balance_loanable_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(balance_loanable_amount).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(balance_loanable_amount).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                     ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(aligned_style).style(header_style)
@@ -711,14 +768,81 @@
                 } else {
                     ws.cell(++r, col['A'], r, col['I'], true).string(`ERROR: Reservation type ${reservationType} does not exist`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
-
-                    
                 }
                 
+                  ws.cell(++r, col['A'], r, col['I'], true).string('')
+                ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string(` 1. Failure to pay the first monthly equity after 30 days after reservation date shall mean cancelled & forefeited reservation. `).style(italic_leftaligned_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string(` 2. The balance amount shall be loanable to bank / PAG-IBIG financinng.`).style(italic_leftaligned_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string(` 3. For cash payment of balance amount, it shall be paid on or before 30 days after last payment of monthly equity.`).style(italic_leftaligned_style)
 
-              
-                wb.write(`./outputs/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
+                ws.cell(++r, col['A'], r, col['I'], true).string('Sample Computation for Bank/Pag-ibig Financing').style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string(`Sample Computation at 6.00% annual interest rate`).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['C'], true).string(`30 years`).style(italic_leftaligned_style)
+                ws.cell(r, col['D'], r, col['E'], true).string(`14,548.76 / month`).style(italic_leftaligned_style)            
+                ws.cell(r, col['F'], r, col['G'], true).string(`15 years`).style(italic_leftaligned_style)
+                ws.cell(r, col['H']).string(`20,477.12 / month`).style(italic_leftaligned_style)
+                
+                ws.cell(++r, col['B'], r, col['C'], true).string(`25 years`).style(italic_leftaligned_style)
+                ws.cell(r, col['D'], r, col['E'], true).string(`15,634.69 / month`).style(italic_leftaligned_style)        
+                ws.cell(r, col['F'], r, col['G'], true).string(`10 years`).style(italic_leftaligned_style)
+                ws.cell(r, col['H']).string(`26,940.36 / month`).style(italic_leftaligned_style)
+                
+                ws.cell(++r, col['B'], r, col['C'], true).string(`20 years`).style(italic_leftaligned_style)
+                ws.cell(r, col['D'], r, col['E'], true).string(`17,385.00 / month`).style(italic_leftaligned_style)     
+                ws.cell(r, col['F'], r, col['G'], true).string(`5 years`).style(italic_leftaligned_style)
+                ws.cell(r, col['H']).string(`46,913.19 / month`).style(italic_leftaligned_style)
+
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+                ws.cell(++r, col['A'], r, col['I'], true).string('REQUIREMENTS').style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(++r, col['A'], r, col['B'], true).string('Upon Reservation:').style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` 2 Valid IDs government issued with 3 speciment signature`).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` TIN number/TIN ID `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` RESERVATION FEE / First Monthly `).style(italic_leftaligned_style)
+                
+                ws.cell(++r, col['A'], r, col['B'], true).string('FOR PAG-IBIG/BANK LOAN').style(italic_leftaligned_style)
+                ws.cell(r, col['C'], r, col['I'], true).string("to be given upon developer's request (more or less 5 monts before EQUITY ENDS)").style(italic_leftaligned_style)
+                
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Certificate of Employment with stated gross income `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Latest 3 months payslip signed by HR or Compensation Personnel `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` 4 pcs 2x2 ID picture `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Marriage Certificate if married `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Proof Of Billing`).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Post dated Check (if Pag-ibig will request) and or needed if opt for IN-HOUSE FINANCING `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r, col['I'], true).string(` Others as may be required by bank/Pag-ibig`).style(italic_leftaligned_style)
+                
+                r+=2
+                ws.cell(++r, col['A'], r, col['C'], true).string(`Confirmed and Accepted By Buyer:`).style(bold_style)
+                ws.cell(++r, col['D'], r, col['F'], true).string(buyer_name).style(bold_style).style(aligned_style)
+                ws.cell(r, col['H']).string('Contact #:').style(italic_leftaligned_style)
+                ws.cell(r, col['I']).string(contact_number).style(bold_style).style(aligned_style)
+                
+                r+=2
+                ws.cell(++r, col['A'], r, col['C'], true).string(`Broker/Agent's Name and Signature:`).style(bold_style)
+                ws.cell(r, col['D'], r, col['F'], true).string(agent).style(bold_style).style(aligned_style)
+                ws.cell(r, col['H']).string('Contact #:').style(italic_leftaligned_style)
+                ws.cell(r, col['I']).string(agent_number).style(bold_style).style(aligned_style)
+                
+                ws.cell(++r, col['A'], r, col['C'], true).string(`Realty Name:`).style(bold_style)
+                ws.cell(r, col['D'], r, col['F'], true).string(realty).style(bold_style).style(aligned_style)
+
+                r+=2
+                ws.cell(++r, col['A']).string(`Account Officer:`).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string('_____________________________________').style(bold_style).style(aligned_style)
+
+                ws.cell(r, col['E'], r, col['F'], true).string(`Confirmed By:`).style(bold_style)
+                ws.cell(r, col['G'], r, col['I'], true).string('_____________________________________').style(bold_style).style(aligned_style)
+
+                
+                // wb.write(`./${file_name}.xlsx`);
+                
+                wb.write(`${homedir}/MYHOME/Reservations/${file_name}.xlsx`);
+                // wb.write(`./${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
                 // wb.write(`../../outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
+                
+                console.log('Done Exporting Payment for Buyer', this.buyer.id)
             }
         }
     })

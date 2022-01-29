@@ -20,7 +20,6 @@
                         Update Masterlist
                     </button>
                 </div>
-                
             </div>
 
             <!-- CHECK FOR MANAGER CREDENTIALS IF REQUESTING FOR EDIT -->
@@ -64,7 +63,6 @@
             <!-- <single-entry :entry="entry" v-on:click.native="openModal(entry.id)" /> -->
             <div class="my-2 bg-gray-100 border-2 border-gray-100 border-opacity-100 rounded-md px-3 py-2 mx-24 flex
             hover:bg-gray-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
-
                 <div class="w-2/3 my-auto flex"> 
                     <p class="w-1/3 text-xs leading-tight font-regular text-center"> {{ entry.date_of_change.toDateString() }}
                     <p class="w-1/3 text-xs leading-tight font-regular text-center"> {{ entry.action }} - {{ entry.object_type }} </p>
@@ -75,8 +73,8 @@
                     <p class="w-1/3 text-xs leading-tight font-semibold text-center"> {{ entry.old_value }} </p>
                     <p class="w-1/3 text-xs leading-tight font-semibold text-center"> {{ entry.new_value }} </p>
                     <div class="w-1/3 items-center justify-center flex">
-                        <input v-if="checkboxDisabled" type="checkbox" class="form-checkbox" v-model="entry.isUpdatedInMasterList" readonly disabled/>
-                        <input v-else type="checkbox" class="form-checkbox" v-model="entry.isUpdatedInMasterList" />
+                            <input type="checkbox" class="form-checkbox" v-model="entry.isUpdatedInMasterList"/>
+                        
                     </div>
                 </div>
             </div>
@@ -103,7 +101,6 @@
             return {
                 historyList: {},
                 updatedInMasterList: [],
-                checkboxDisabled: true,
 
                 isRequestingEdit: false,
                 incorrectCredentials: false,
@@ -144,7 +141,6 @@
                 this.inputtedCredentials = { username: '', password: ''}
                 this.incorrectCredentials = false
                 this.isRequestingEdit = false
-                this.checkboxDisabled = true
             },
             checkCredentials() {
                 console.log('CHECKING CREDENTIALS', this.inputtedCredentials)
@@ -152,9 +148,8 @@
                     this.credentials.password == this.inputtedCredentials.password ) {
                         console.log('CREDENTIALS MATCHED')
                         // route to editing ?
-                        this.checkboxDisabled = false
-                        // this.$router.push({ name: 'Update-Masterlist',
-                        //                     params: {   historyList: this.historyList }})
+                        this.$router.push({ name: 'Update-Masterlist',
+                                            params: {   historyList: this.historyList }})
                         this.isRequestingEdit = false
                 } else {
                     this.incorrectCredentials = true

@@ -1,6 +1,6 @@
 <template>
     <label for="text"
-            class="block text-sm font-bold uppercase leading-5 text-black px-1">
+            class="block text-sm font-semibold uppercase leading-5 text-black px-1">
             {{ label }}
         </label>
 </template>

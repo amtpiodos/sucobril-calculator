@@ -83,6 +83,20 @@ const routes = [
   },
 
   {
+    path: '/editpayment/:id',
+    name: "Edit-Payment-Info",
+    component: () => import('../version2/Edit-Payment-Info'),
+    props: true
+  },
+
+  {
+    path: '/update-masterlist',
+    name: "Update-Masterlist",
+    component: () => import('../version2/Update-Masterlist'),
+    props: true
+  },
+
+  {
     path: '/choose-reservation-type',
     name: 'Choose-Reservation-Type',
     component: () => import('../version2/ChooseReservationType')
@@ -172,7 +186,12 @@ const routes = [
     props: true
   },
 
-
+  {
+    path: '/assume-unit-form',
+    name: 'Assume-Unit-Form',
+    component: () => import('../version2/Assume-Unit-Form'),
+    props: true
+  },
 
 
 
