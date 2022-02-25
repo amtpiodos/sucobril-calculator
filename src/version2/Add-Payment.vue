@@ -37,7 +37,7 @@
                         <div class="w-1/2 mr-2">
                             <label-component label="Date" />
                              <!-- <input-form label="Date" v-model="new_payment.payment_date" /> -->
-                            <datepicker v-model="new_payment.payment_date" typeable=true placeholder="Select Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                            <datepicker v-model="new_payment.payment_date" :typeable=true placeholder="Select Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
                         </div>
                         <div class="w-1/2 ml-2"> <input-form label="Transaction Date" v-model="new_payment.transaction_code" />  </div>
                     </div>
@@ -153,10 +153,10 @@
                 this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
             },
             formatDisplay(value) {
-               return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+               return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value
             },
             formatParsedFloat(value) {
-                return parseFloat(value.replace(/,/g, '')).toFixed(2)
+                return value ? parseFloat(value.replace(/,/g, '')).toFixed(2) : value
             },
             updateAmount(event) {
                 this.new_payment.amount = event.target.value
@@ -165,10 +165,12 @@
                 this.new_payment.penalty = event.target.value
             },
             submitPayment() {
-                this.isAddingPayment = true
-                this.new_payment.amount = this.formatParsedFloat(this.new_payment.amount)
-                this.new_payment.penalty = this.formatParsedFloat(this.new_payment.penalty)
-                // setTimeout(() => {
+                if(!this.new_payment.payment_date) {
+                    alert('Date/s cannot be empty. Please select a date.')
+                } else {
+                    this.isAddingPayment = true
+                    this.new_payment.amount = this.formatParsedFloat(this.new_payment.amount)
+                    this.new_payment.penalty = this.formatParsedFloat(this.new_payment.penalty)
                     const dataToSubmit = { id: this.buyer.id, payment: this.new_payment}
                     console.log('submitPayment', dataToSubmit)
                     ipcRenderer.send('addPayment', dataToSubmit)
@@ -185,7 +187,7 @@
                         }
                         this.isFetchingData = false
                     })
-                // }, 1000)   
+                }
             }
         }
     })

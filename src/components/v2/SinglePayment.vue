@@ -24,10 +24,10 @@
         props: ['buyer_payment'],
         methods: {
             formatDisplay(value) {
-                return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value
             },
             formatDate(value) {
-                return value.toDateString().replace(/^\S+\s/,'')
+                return value && value.toDateString() ? value.toDateString().replace(/^\S+\s/,'') : value
             },
         }
     })

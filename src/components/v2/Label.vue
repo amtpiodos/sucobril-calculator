@@ -2,7 +2,7 @@
     <label for="text"
             class="block text-sm font-semibold uppercase leading-5 text-black px-1">
             {{ label }}
-        </label>
+    </label>
 </template>
 
 <script>

@@ -12,18 +12,25 @@
                 <!-- <div class="full px-4"> <readonly-form label="Reservation Date" v-bind:value="payment_details.date" /> </div> -->
                 <div class="full px-4">
                     <label-component label="Select Date" />
-                    <datepicker v-model="payment_details.date" placeholder="Select Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                    <datepicker v-model="payment_details.date" :typeable="true" placeholder="Select Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
                 </div>
                 <div class="full px-4"> <readonly-form label="Project Name" :value="unit.project_name" /> </div>
                 <div class="grid grid-cols-4 gap-4 px-4">
                     <div class="full px-1"> <readonly-form label="Block" v-bind:value="unit.block" /> </div>
                     <div class="full px-1"> <readonly-form label="Lot" v-bind:value="unit.lot" /> </div>
                     <div class="full px-1"> <readonly-form label="Phase" v-bind:value="getPhase()" /> </div>
-                    <div class="full px-1"> <readonly-form label="Lot Area" v-bind:value="unit.lot_area" /> </div>
+                    <!-- <div class="full px-1"> <readonly-form label="Lot Area" v-bind:value="unit.lot_area" /> </div> -->
+                    <div class="full px-1"> 
+                        <label for="text" class="block text-sm font-semibold uppercase leading-5 text-black px-1"> LOT AREA (SQM) </label>
+                        <input type="text" :value="formatDisplay(unit.lot_area)" @change="updateLotArea" class="mt-1 w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                    </div>
                 </div>
                 <div class="full px-4"> <readonly-form label="Project Address" v-bind:value="unit.project_address" /> </div>
                 <div class="grid grid-cols-2 gap-4 px-4">
-                    <div class="full"> <input-form label="Price/Sq.M (PHP)" v-model="unit.price_per_sqm" /> </div>
+                    <div class="full">
+                        <label for="text" class="block text-sm font-semibold uppercase leading-5 text-black px-1"> PRICE PER SQM </label>
+                        <input type="text" :value="formatDisplay(unit.price_per_sqm)" @change="updatePricePerSqm" class="mt-1 w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                    </div>
                     <div class="full"> <input-form label="Lot Type" v-model="unit.lot_type" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Home Address" v-model="buyer.home_address" /> </div>
@@ -32,7 +39,11 @@
                     <div class="w-1/2"> <input-form label="Email Address" v-model="buyer.email_address" /> </div>
                 </div>
                 <div class="full px-4"> <input-form label="Realty's Name" v-model="unit.realty_name" /> </div>
-                <div class="full px-4"> <input-form label="Agent's Name" v-model="unit.agent_name" /> </div>
+                <!-- <div class="full px-4"> <input-form label="Agent's Name" v-model="unit.agent_name" /> </div> -->
+                <div class="flex px-4 gap-4">
+                    <div class="w-1/2"> <input-form label= "Agent's Name" v-model="unit.agent_name" /> </div>
+                    <div class="w-1/2"> <input-form label= "Agent's Number" v-model="unit.agent_number" /> </div>
+                </div> 
             </div>
 
             <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> SPOT CASH </p> </div>
@@ -44,7 +55,7 @@
                         <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                             <input type="numbers"
                                 :value="formatDisplay(payment_details.total_contract_price)"
-                                @change="updateTCP"
+                                readonly disabled
                                 class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase"></div>
                         </div>
                     </div>
@@ -132,7 +143,8 @@
                     price_per_sqm: '',
                     realty_name: '',
                     agent_name: '',
-                    lot_area: `${this.$store.state.unit.unit_details.lot_area} SQ. M`,
+                    agent_number: '',
+                    lot_area: '',
                     lot_type: '',
                 },
                 payment_details: {
@@ -160,13 +172,13 @@
         },
         methods: {
             formatDisplay(value) {
-               return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+               return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value
             },
             formatDecimal(value) {
-                return value.toFixed(2)
+                return value ? value.toFixed(2) : value
             },
             formatParsedFloat(value) {
-                return parseFloat(value.replace(/,/g, '')).toFixed(2)
+                return value ? parseFloat(value.replace(/,/g, '')).toFixed(2) : value
             },
             updateTCP(event) {
                 this.payment_details.total_contract_price = event.target.value
@@ -178,11 +190,24 @@
                 console.log('UpdateSCDPercentage', this.payment_details.spot_cash_discount_percentage)
                 this.updateCalculations()
             },
+            updateLotArea(event) {
+                this.unit.lot_area = event.target.value
+                console.log('updating lot area', this.unit.lot_area)
+                this.updateCalculations()
+            },
+            updatePricePerSqm(event) {
+                this.unit.price_per_sqm = event.target.value
+                console.log('updating price per sqm', this.unit.price_per_sqm)
+                this.updateCalculations()
+            },
             updateCalculations() {
-                const formatted_total_contract_price = this.formatParsedFloat(this.payment_details.total_contract_price)
+                // const formatted_total_contract_price = this.formatParsedFloat(this.payment_details.total_contract_price)
+                const formatted_lot_area = this.formatParsedFloat(this.unit.lot_area)
+                const formatted_price_per_sqm = this.formatParsedFloat(this.unit.price_per_sqm)
 
-                this.payment_details.spot_cash_discount_amount = this.formatDecimal(formatted_total_contract_price * (this.payment_details.spot_cash_discount_percentage * 0.01))
-                this.payment_details.new_tcp_less_discount = this.formatDecimal(formatted_total_contract_price - this.payment_details.spot_cash_discount_amount)
+                this.payment_details.total_contract_price = this.formatDecimal(formatted_lot_area * formatted_price_per_sqm)
+                this.payment_details.spot_cash_discount_amount = this.formatDecimal(this.payment_details.total_contract_price * (this.payment_details.spot_cash_discount_percentage * 0.01))
+                this.payment_details.new_tcp_less_discount = this.formatDecimal(this.payment_details.total_contract_price - this.payment_details.spot_cash_discount_amount)
                 this.payment_details.monthly_installment = this.payment_details.installment_months
                                     ? this.formatDecimal(this.payment_details.new_tcp_less_discount / this.payment_details.installment_months) : 0
             },
@@ -192,10 +217,12 @@
                         this.$store.state.unit.phase.phase_name : 'N/A'
             },
             submitForm() {
-
                 // insert error validation here
                 // user should only click here once
                 // add loading screen
+                this.unit.lot_area = this.formatParsedFloat(this.unit.lot_area)
+                this.unit.price_per_sqm = this.formatParsedFloat(this.unit.price_per_sqm)
+                this.payment_details.total_contract_price = this.formatParsedFloat(this.payment_details.total_contract_price)
 
                 const dataToSubmit = {  buyer: this.buyer,
                                         unit: this.unit,
@@ -204,13 +231,11 @@
                 ipcRenderer.send('addLotOnlyBuyer', dataToSubmit)
                 ipcRenderer.once('addedLotOnlyBuyer', (event, data) => {
                     console.log('addedLotOnlyBuyer', data)
-                    if(data == 1) {
+                    if(data.response == 1) {
                         console.log('Add Buyer SUCCESSFUL')
                         this.autoExport()
                         // add loading screen
-                        setTimeout(() => {
-                            this.$router.push('/')
-                        }, 2000)
+                        this.$router.push({name: 'View-Buyer-LO', params: { id: data.new_id }})
                     } else {
                         console.log('Add Lot only buyer error')
                     }

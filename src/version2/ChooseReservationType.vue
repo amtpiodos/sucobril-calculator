@@ -14,12 +14,13 @@
             <common-button title="With Spot Equity" description="Sample description of what a With Spot Equity is " route_path="RA-Form-1A-HL-With-Spot-Equity"/>
             <common-button title="Spot Cash TCP" description="Sample description of what a Spot Cash TCP is " route_path="RA-Form-1A-HL-Spot-Cash-TCP"/>
             <common-button title="Deferred Cash" description="Sample description of what a Deferred Cash is " route_path="RA-Form-1A-HL-Deferred-Cash"/>
+            <!-- <common-button title="In-house Financing" description="Sample description of what a In-house Financing is" route_path="RA-Form-1A-HL-Inhouse-Financing"/> -->
         </div>
 
         <!-- LOT Only -->
         <div class="my-8 mx-24 grid grid-cols-1 gap-4 lg:grid-cols-3 md:gap-8" v-if="project_type==2">
             <common-button title="Regular Reservation" description="Sample description of what a Regular Reservation is" route_path="RA-Form-2A-LO-Regular-Reservation"/>
-            <common-button title="With Spot Downpayment" description="Sample description of what a With Spot Downpayment is" route_path="RA-Form-2A-LO-Spot-Downpayment"/>
+            <common-button title="Build After 6 Months" description="Sample description of what a Build After 6 months is" route_path="RA-Form-2A-LO-Spot-Downpayment"/>
             <common-button title="Spot Cash" description="Sample description of what a Spot Cash is" route_path="RA-Form-2A-LO-Spot-Cash"/>
         </div>
 

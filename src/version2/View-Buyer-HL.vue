@@ -100,7 +100,22 @@
                                 <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
                                 <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.total_contract_price)" /> </div> </div>
                             </div>
-                            <div class="flex px-4 gap-4 my-2">
+
+                            <!-- REQUIRED EQUITY if reservation date is before 2021 and is Laurence Ville -->
+                            <div class="flex px-4 gap-4 my-2" v-if="dateIsBefore2021 && buyer.project.id == 4">
+                                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Required Equity Amount: </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4">
+                                    <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                        <input type="text"
+                                            :value="formatDisplay(buyer.payment.required_equity_amount)"
+                                            class="w-full py-2 px-2 text-sm border border-gray-200 rounded-md uppercase"
+                                            readonly disabled>
+                                    </div> </div>
+                                </div>
+                            </div>
+
+                            <!-- ELSE Normal Regular Reservation -->
+                            <div class="flex px-4 gap-4 my-2" v-else>
                                 <div class="w-1/4 items-center py-2 mt-1">
                                     <p class="align-middle text-right text-xs font-bold">Required Equity
                                         <input type="text"
@@ -112,6 +127,8 @@
                                 </div>
                                 <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.required_equity_amount)" /> </div> </div>
                             </div>
+
+                            
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p></div>
                                 <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.reservation_fee)" /> </div> </div>
@@ -142,7 +159,21 @@
                                 <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDate(buyer.payment.equity_end_date)" /> </div> </div>
                             </div>
 
-                            <div class="flex px-4 gap-4 my-2">
+                            <!-- BALANCE LOANABLE if reservation date is before 2021 and is Laurence Ville -->
+                            <div class="flex px-4 gap-4 my-2" v-if="dateIsBefore2021 && buyer.project.id == 4">
+                                <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity: </p> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4">
+                                    <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                        <input type="text"
+                                            :value="formatDisplay(buyer.payment.balance_loanable_amount)"
+                                            class="w-full py-2 px-2 text-sm border border-gray-200 rounded-md uppercase"
+                                            readonly disabled>
+                                    </div> </div>
+                                </div>
+                            </div>
+                            
+                            <!-- NORMAL BALANCE LOANABLE AMOUNT -->
+                            <div class="flex px-4 gap-4 my-2" v-else>
                                 <div class="w-1/4 items-center py-2">
                                     <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity
                                         <input type="text"
@@ -153,6 +184,23 @@
                                     </p>
                                 </div>
                                 <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.balance_loanable_amount)" /> </div> </div>
+                            </div>
+
+                            <!-- NEW BALANCE LOANABLE if project is GREGORY HOMES -->
+                            <div v-if="buyer.project_id == 3" class="flex px-4 gap-4 my-2">
+                                <div class="w-1/4 items-center py-2 my-2">
+                                    <p class="align-middle text-right text-xs font-bold">
+                                        New Balance Loanable Amount <br/> (Add-on Php 100,000.00):
+                                    </p>
+                                </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4">
+                                    <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                        <input type="text"
+                                            :value="formatDisplay(buyer.payment.new_balance_loanable_amount)"
+                                            class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                            readonly disabled>
+                                    </div>
+                                </div></div>
                             </div>
                         </div>
                     </div>
@@ -191,7 +239,7 @@
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Net Equity Less Discount: </p> </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.net_equity_less_discount" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.net_equity_less_discount)" /> </div> </div>
                             </div>
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
@@ -208,12 +256,12 @@
                                     <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> after Equity
                                         <input type="text"
                                             readonly disabled
-                                            :value="formatDisplay(buyer.payment.balance_loanable_percentage)"
+                                            :value="buyer.payment.balance_loanable_percentage"
                                             class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                         > %:
                                     </p>
                                 </div>
-                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.balance_loanable_amount" /> </div> </div>
+                                <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.balance_loanable_amount)" /> </div> </div>
                             </div>
                         </div>
                     </div>
@@ -276,7 +324,7 @@
                                 <div class="w-1/4 items-center py-2">
                                     <p class="align-middle text-right text-xs font-bold">Monthly Installment Amount <br /> payable in
                                         <input type="text"
-                                            :value="formatDisplay(buyer.payment.installment_months)"
+                                            :value="buyer.payment.installment_months"
                                             class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
                                             readonly disabled
                                         > months:
@@ -288,11 +336,11 @@
 
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Starts: </p></div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_start_date" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDate(buyer.payment.equity_start_date)" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-2">
                             <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form v-model="buyer.payment.equity_end_date" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDate(buyer.payment.equity_end_date)" /> </div> </div>
                         </div>
                     </div>
 
@@ -305,7 +353,7 @@
                     </div>
 
                     <div class="flex items-center mx-auto justify-center gap-8 my-4" v-if="buyer.status" >
-                        <button type="button" v-on:click="forefeitBuyer"
+                        <button type="button" v-on:click="confirmForefeit"
                             class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                             FOREFEIT BUYER
                         </button>
@@ -346,6 +394,8 @@
         },
         data() {
             return {
+                dateToCheck: new Date('01/01/2021'),
+                dateIsBefore2021: false,
                 buyer: {},
                 isFetchingData: true,
                 isEditing: false,
@@ -409,11 +459,11 @@
                 this.requestEditType = 2
             },
             formatDate(value) {
-                return value.toDateString() ? value.toDateString().replace(/^\S+\s/,'') : value
+                return value && value.toDateString() ? value.toDateString().replace(/^\S+\s/,'') : value
                 // return value.toDateString().replace(/^\S+\s/,'')
             },
             formatDisplay(value) {
-                return value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                return value ? value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value
             //    return value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             //    return `₱ ${(value.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
             },
@@ -451,6 +501,7 @@
                                     this.buyer.payment = data
                                     console.log('this.buyer in VIEW DETAILS HOUSE AND LOT BUYER', this.buyer)
                                     console.log('============= payment', data)
+                                    this.dateIsBefore2021 = this.buyer.payment.date < this.dateToCheck ? true : false
                                     this.isFetchingData = false
                                 })
                             })
@@ -469,6 +520,14 @@
             editDetails() {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
                 this.$router.push({ name: 'Edit Buyer', params: { id: this.buyer.id, buyer: this.buyer } })
             },
+            confirmForefeit() {
+                if(confirm('Are you sure to forefeit this buyer?')) {
+                    console.log('OK')
+                    this.forefeitBuyer()
+                } else {
+                    console.log('CANCELLED')
+                }
+            },
             forefeitBuyer() {
                 const data = {  id: this.buyer.id,
                                 lot_id: this.buyer.lot.id }
@@ -480,9 +539,11 @@
                          : alert(`Forefeiting buyer for ${this.buyer.project.name} ${this.buyer.block.name} ${this.buyer.lot.name} - ${this.buyer.first_name} ${this.buyer.project.name} ${this.buyer.middle_initial} ${this.buyer.lot.name} ${this.buyer.last_name} failed`)
                     // refresh page
 
-                    setTimeout(() =>{
-                        this.$router.push('/')
-                    }, 1000)
+                    // setTimeout(() =>{
+                    //     this.$router.push('/')
+                    // }, 1000)
+                    
+                    this.$router.push({name: 'View-Buyer-HL', params: { id: this.buyer.id }})
                 })
             },
             exportDetails() {
@@ -494,8 +555,7 @@
 
 
                 const homedir = require('os').homedir();
-                console.log('homedir', homedir)
-                console.log('exporting details', this.buyer.reservation_type)
+
                 const reservationType = this.buyer.reservation_type
                 const php = ` Php `
                 const buyer_name = `${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}`
@@ -518,7 +578,7 @@
                 const reservation_date = this.formatDate(this.buyer.payment.date)
                 const total_contract_price = this.buyer.payment.total_contract_price ? this.formatDisplay(this.buyer.payment.total_contract_price) : this.buyer.payment.total_contract_price
                 
-                console.log('wrongtcp')
+                // console.log('wrongtcp')
                 const required_equity_percentage = this.buyer.payment.required_equity_percentage
                 const required_equity_amount = this.buyer.payment.required_equity_amount ? this.formatDisplay(this.buyer.payment.required_equity_amount) : this.buyer.payment.required_equity_amount
                 const equity_net_of_reservation_fee = this.buyer.payment.equity_net_of_reservation_fee ? this.formatDisplay(this.buyer.payment.equity_net_of_reservation_fee) : this.buyer.payment.equity_net_of_reservation_fee
@@ -584,7 +644,6 @@
                 ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(regular_style)
                 ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
                 ws.cell(r, col['I']).string(reservation_date).style(regular_style)
-                
 
                 ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)
@@ -770,29 +829,38 @@
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                 }
                 
-                  ws.cell(++r, col['A'], r, col['I'], true).string('')
-                ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(bordered_style).style(aligned_style).style(header_style)
-                ws.cell(++r, col['A'], r, col['I'], true).string(` 1. Failure to pay the first monthly equity after 30 days after reservation date shall mean cancelled & forefeited reservation. `).style(italic_leftaligned_style)
-                ws.cell(++r, col['A'], r, col['I'], true).string(` 2. The balance amount shall be loanable to bank / PAG-IBIG financinng.`).style(italic_leftaligned_style)
-                ws.cell(++r, col['A'], r, col['I'], true).string(` 3. For cash payment of balance amount, it shall be paid on or before 30 days after last payment of monthly equity.`).style(italic_leftaligned_style)
+                if(reservationType == 1 || reservationType == 4) {
+                    // ws.cell(++r, col['A'], r, col['I'], true).string('')
+                    // ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(bordered_style).style(aligned_style).style(header_style)
+                    // ws.cell(++r, col['A'], r, col['I'], true).string(` 1. Failure to pay the first monthly equity after 30 days after reservation date shall mean cancelled & forefeited reservation. `).style(italic_leftaligned_style)
+                    // ws.cell(++r, col['A'], r, col['I'], true).string(` 2. The balance amount shall be loanable to bank / PAG-IBIG financinng.`).style(italic_leftaligned_style)
+                    // ws.cell(++r, col['A'], r, col['I'], true).string(` 3. For cash payment of balance amount, it shall be paid on or before 30 days after last payment of monthly equity.`).style(italic_leftaligned_style)
 
-                ws.cell(++r, col['A'], r, col['I'], true).string('Sample Computation for Bank/Pag-ibig Financing').style(bordered_style).style(aligned_style).style(header_style)
-                ws.cell(++r, col['A'], r, col['I'], true).string(`Sample Computation at 6.00% annual interest rate`).style(italic_leftaligned_style)
-                ws.cell(++r, col['B'], r, col['C'], true).string(`30 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['D'], r, col['E'], true).string(`14,548.76 / month`).style(italic_leftaligned_style)            
-                ws.cell(r, col['F'], r, col['G'], true).string(`15 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['H']).string(`20,477.12 / month`).style(italic_leftaligned_style)
-                
-                ws.cell(++r, col['B'], r, col['C'], true).string(`25 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['D'], r, col['E'], true).string(`15,634.69 / month`).style(italic_leftaligned_style)        
-                ws.cell(r, col['F'], r, col['G'], true).string(`10 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['H']).string(`26,940.36 / month`).style(italic_leftaligned_style)
-                
-                ws.cell(++r, col['B'], r, col['C'], true).string(`20 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['D'], r, col['E'], true).string(`17,385.00 / month`).style(italic_leftaligned_style)     
-                ws.cell(r, col['F'], r, col['G'], true).string(`5 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['H']).string(`46,913.19 / month`).style(italic_leftaligned_style)
+                    const rate30 = this.formatDisplay((0.005995505 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                    const rate25 = this.formatDisplay((0.006443014 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                    const rate20 = this.formatDisplay((0.007164311 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                    const rate15 = this.formatDisplay((0.008438568 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                    const rate10 = this.formatDisplay((0.01110205 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                    const rate5 = this.formatDisplay((0.0193328082 * parseFloat(this.buyer.payment.balance_loanable_amount)))
 
+                    ws.cell(++r, col['A'], r, col['I'], true).string('Sample Computation for Bank/Pag-ibig Financing').style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(++r, col['A'], r, col['I'], true).string(`Sample Computation at 6.00% annual interest rate`).style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['C'], true).string(`30 years`).style(italic_leftaligned_style)
+                    ws.cell(r, col['D'], r, col['E'], true).string(`${rate30} / month`).style(italic_leftaligned_style)            
+                    ws.cell(r, col['F'], r, col['G'], true).string(`15 years`).style(italic_leftaligned_style)
+                    ws.cell(r, col['H']).string(`${rate15} / month`).style(italic_leftaligned_style)
+                    
+                    ws.cell(++r, col['B'], r, col['C'], true).string(`25 years`).style(italic_leftaligned_style)
+                    ws.cell(r, col['D'], r, col['E'], true).string(`${rate25} / month`).style(italic_leftaligned_style)        
+                    ws.cell(r, col['F'], r, col['G'], true).string(`10 years`).style(italic_leftaligned_style)
+                    ws.cell(r, col['H']).string(`${rate10} / month`).style(italic_leftaligned_style)
+                    
+                    ws.cell(++r, col['B'], r, col['C'], true).string(`20 years`).style(italic_leftaligned_style)
+                    ws.cell(r, col['D'], r, col['E'], true).string(`${rate20} / month`).style(italic_leftaligned_style)     
+                    ws.cell(r, col['F'], r, col['G'], true).string(`5 years`).style(italic_leftaligned_style)
+                    ws.cell(r, col['H']).string(`${rate5} / month`).style(italic_leftaligned_style)
+                }
+                
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
                 ws.cell(++r, col['A'], r, col['I'], true).string('REQUIREMENTS').style(bordered_style).style(aligned_style).style(header_style)
@@ -836,12 +904,23 @@
                 ws.cell(r, col['G'], r, col['I'], true).string('_____________________________________').style(bold_style).style(aligned_style)
 
                 
+
+                switch(this.buyer.project.id) {
+                    case 1:
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/MYHOME/Reservations/${file_name}.xlsx`); break;
+                    case 2:
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/MYHOME-DOS/Reservations/${file_name}.xlsx`); break;
+                    case 3:
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/GREGORY-HOMES/Reservations/${file_name}.xlsx`); break;
+                    case 4:
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/LAURENCE-VILLE/Reservations/${file_name}.xlsx`); break;
+                    default: break;
+                }
+
                 // wb.write(`./${file_name}.xlsx`);
                 
-                wb.write(`${homedir}/MYHOME/Reservations/${file_name}.xlsx`);
-                // wb.write(`./${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
-                // wb.write(`../../outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
-                
+                // wb.write(`${homedir}/MYHOME/Reservations/${file_name}.xlsx`);
+                alert('Done Exporting')
                 console.log('Done Exporting Payment for Buyer', this.buyer.id)
             }
         }

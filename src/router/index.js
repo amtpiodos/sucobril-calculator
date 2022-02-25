@@ -83,6 +83,14 @@ const routes = [
   },
 
   {
+    path: '/edit-LO-buyer/:id',
+    name: "Edit-Buyer-Info-LO",
+    component: () => import('../version2/Edit-Buyer-Info-LO'),
+    props: true
+  },
+
+
+  {
     path: '/editpayment/:id',
     name: "Edit-Payment-Info",
     component: () => import('../version2/Edit-Payment-Info'),

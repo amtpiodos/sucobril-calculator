@@ -26,12 +26,16 @@
                         <datepicker :typeable="true" v-model="newBuyer.date" placeholder="Select Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
                     </div>
                     <div class="full px-4"> <readonly-form label="Project Name" :value="newBuyer.project.name" /> </div>
-                    <div class="grid grid-cols-4 gap-4 px-4">
+                    <div class="grid grid-cols-5 gap-4 px-4">
                         <div class="full px-1"> <readonly-form label="Block" v-bind:value="newBuyer.block.name" /> </div>
                         <div class="full px-1"> <readonly-form label="Lot" v-bind:value="newBuyer.lot.name" /> </div>
                         <div class="full px-1"> <readonly-form label="Phase" v-bind:value="newBuyer.phase" /> </div>
-                        <div class="full px-1"> <readonly-form label="Floor Area" v-bind:value="newBuyer.lot.lot_area" /> </div>
+                        <div class="full px-1"> <input-form label="Lot Area" v-model="newBuyer.lot.lot_area" /> </div>
+                        <div class="full px-1" v-if="newBuyer.reservation_type < 5">
+                            <input-form label="Flr Area" v-model="newBuyer.lot.floor_area" />
+                        </div>
                     </div>
+                    
                     <div class="full px-4"> <readonly-form label="Project Address" v-bind:value="newBuyer.project.location" /> </div>
                     <div class="grid grid-cols-2 gap-4 px-4">
                         <div class="full"> <readonly-form label="Price/Sq.M (PHP)" v-bind:value="newBuyer.lot.price_per_sqm" /> </div>
@@ -43,7 +47,11 @@
                         <div class="w-1/2"> <input-form label="Email Address" v-model="newBuyer.email_address" /> </div>
                     </div>
                     <div class="full px-4"> <input-form label="Realty's Name" v-model="newBuyer.realty_name" /> </div>
-                    <div class="full px-4"> <input-form label= "Agent's Name" v-model="newBuyer.agent_name" /> </div>
+                    <!-- <div class="full px-4"> <input-form label= "Agent's Name" v-model="newBuyer.agent_name" /> </div> -->
+                    <div class="flex px-4 gap-4">
+                        <div class="w-1/2"> <input-form label= "Agent's Name" v-model="newBuyer.agent_name" /> </div>
+                        <div class="w-1/2"> <input-form label= "Agent's Number" v-model="newBuyer.agent_number" /> </div>
+                    </div>
                 </div>
                 <div class="flex items-center mx-auto justify-center gap-8 my-4">
                         <button type="button" v-on:click="submitNewBuyer"
@@ -89,7 +97,7 @@
         created() {
             this.newBuyer = this.$route.params.buyer
             // new information
-            this.newBuyer.agent = ''
+            this.newBuyer.agent_name = ''
             this.newBuyer.contact_number = ''
             this.newBuyer.date = ''
             this.newBuyer.email_address = ''
@@ -97,10 +105,9 @@
             this.newBuyer.home_address = ''
             this.newBuyer.last_name = ''
             this.newBuyer.middle_initial = ''
-
+            this.newBuyer.agent_number = ''
             this.newBuyer.phase = typeof(this.newBuyer.phase) == 'object' ? this.newBuyer.phase.name : 'N/A'
-            
-    
+
         },
         methods: {
             cancelAssumption() {
@@ -108,29 +115,53 @@
             },
             submitNewBuyer() {
                 console.log('newBuyer', this.newBuyer)
-                // check reservation type add for LOT ONLY
                 const dataToSubmit = {  old_id: this.oldBuyer.id,
                                         newBuyer: this.newBuyer,
                                         payment_details: this.newBuyer.payment }
-
+                
                 console.log('dataToSubmit', dataToSubmit)
-                ipcRenderer.send('assume-HL-unit', dataToSubmit)
-                ipcRenderer.once('assumed-HL-unit', (event, data) => {
-                    console.log('assumed-HL-unit', data)
-                    if(data.response == 1) {
-                        console.log('Add H&L ASSUMING Buyer SUCCESSFUL')
-                        // this.autoExport()
-                        // add loading screen
-                        setTimeout(() => {
-                            // this.$router.push('/')
-                            this.$router.push({name: 'View-Buyer-HL', params: { id: data.new_id }})
-                        }, 1000)
-                    } else {
-                        alert('Add H&L Buyer error')
-                        console.log('Add H&L Buyer error')
-                    }
-                    this.isFetchingData = false
-                })
+                // ASSUME H & L UNIT
+                const reservation_type = this.newBuyer.reservation_type
+                if(reservation_type == 1
+                    || reservation_type == 2
+                    || reservation_type == 3
+                    || reservation_type == 4) {
+                        console.log('ASSUMING BUYER HL')
+                        ipcRenderer.send('assume-HL-unit', dataToSubmit)
+                        ipcRenderer.once('assumed-HL-unit', (event, data) => {
+                            console.log('assumed-HL-unit', data)
+                            if(data.response == 1) {
+                                console.log('Add H&L ASSUMING Buyer SUCCESSFUL')
+                                setTimeout(() => {
+                                    this.$router.push({name: 'View-Buyer-HL', params: { id: data.new_id }})
+                                }, 1000)
+                            } else {
+                                alert('Add H&L Buyer error')
+                                console.log('Add H&L Buyer error')
+                            }
+                            this.isFetchingData = false
+                        })
+                } else if(reservation_type == 5
+                    || reservation_type == 6
+                    || reservation_type == 7) {
+                        console.log('ASSUMING BUYER LOT ONLY')
+                        ipcRenderer.send('assume-LO-unit', dataToSubmit)
+                        ipcRenderer.once('assumed-LO-unit', (event, data) => {
+                            console.log('assumed-LO-unit', data)
+                            if(data.response == 1) {
+                                console.log('Add LOT ONLY ASSUMING Buyer SUCCESSFUL')
+                                setTimeout(() => {
+                                    this.$router.push({name: 'View-Buyer-LO', params: { id: data.new_id }})
+                                }, 1000)
+                            } else {
+                                alert('Add LO Buyer error')
+                                console.log('Add LO Buyer error')
+                            }
+                            this.isFetchingData = false
+                        })
+                } else {
+                    alert(`VIEW BUYER ERROR: Incorrect reservation type ${reservation_type}`)
+                } 
             },
             viewBuyerInfo() {
                 const reservation_type = this.newBuyer.reservation_type

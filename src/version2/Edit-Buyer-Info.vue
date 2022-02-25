@@ -3,7 +3,6 @@
         <main-header />
         <div class="my-5 mx-24">
 
-            
                 <!-- <div>
                     <button type="button" v-on:click="viewPayment"
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
@@ -37,7 +36,10 @@
                     </div> 
                     <div class="full px-4">
                         <label-component label="Reservation Date" />
-                        <datepicker :typeable="true" v-model="edited_payment.date " placeholder="Select Date..." class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                        <datepicker :typeable="true" v-model="edited_payment.date "
+                                    @selected="checkReservationDate()"
+                                    placeholder="Select Date..." class="my-1"
+                                    input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
                
                         <!-- <readonly-form label="Reservation Date" :value="unedited_payment.date.toDateString()" /> -->
                         <!-- <datepicker v-model="unedited_payment.date" :typeable=true placeholder="Reservation Date" class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker> -->
@@ -66,131 +68,457 @@
                     <div class="flex px-4 gap-4">
                         <div class="w-1/2"> <input-form label= "Agent's Name" v-model="edited_buyer.agent" /> </div>
                         <div class="w-1/2"> <input-form label= "Agent's Number" v-model="edited_buyer.agent_number" /> </div>
-                    </div>
-                    <!-- <div class="full px-4"> <input-form label="Agent's Name" v-model="edited_buyer.agent" /> </div> -->
-                    
+                    </div> 
                 </div>
 
-                <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION </p> </div>
-                <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
-                    <!-- TOTAL CONTRACT PRICE -->
-                    <div class="flex px-4 gap-4 my-2">
-                        <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4">
-                            <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
-                                <!-- <input type="text"
-                                    :value="payment_details.total_contract_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                    @change="updateTCP"
-                                    class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase"> -->
-                                <input type="text"
-                                    :value="formatDisplay(edited_payment.total_contract_price)"
-                                    @change="updateTCP"
-                                    class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                <!-- REGULAR RESERVATION EDIT  -->
+                <div v-if="unedited_payment.reservation_type == 1">
+                    <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION </p> </div>
+                    <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                        <!-- TOTAL CONTRACT PRICE -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <!-- <input type="text"
+                                        :value="payment_details.total_contract_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                        @change="updateTCP"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase"> -->
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.total_contract_price)"
+                                        @change="updateTCP"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                                </div> </div>
+                            </div>
+                        </div>
+
+                        <!-- LAURENCE VILLE REQUIRED EQUITY BEFORE 2021 -->
+                        <div class="flex px-4 gap-4 my-2" v-if="dateIsBefore2021 && unedited_buyer.project.id == 4">
+                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Required Equity Amount: </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.required_equity_amount)"
+                                        @change="updateREA"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                                </div> </div>
+                            </div>
+                        </div>
+                        <!-- NORMAL REQUIRED EQUITY -->
+                        <div class="flex px-4 gap-4 my-2" v-else>
+                            <div class="w-1/4 items-center py-2 mt-1">
+                                <p class="align-middle text-right text-xs font-bold">Required Equity
+                                    <input type="number"
+                                        :value="edited_payment.required_equity_percentage"
+                                        @change="updateREP"
+                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase"
+                                    > %:
+                                </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.required_equity_amount)"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                        readonly disabled>
+                                </div>
                             </div> </div>
                         </div>
-                    </div>
 
-                    <!-- REQUIRED EQUITY -->
-                    <div class="flex px-4 gap-4 my-2">
-                        <div class="w-1/4 items-center py-2 mt-1">
-                            <p class="align-middle text-right text-xs font-bold">Required Equity
-                                <input type="number"
-                                    :value="edited_payment.required_equity_percentage"
-                                    @change="updateREP"
-                                    class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase"
-                                > %:
-                            </p>
+                        <!-- RESERVATION FEE  -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p></div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.reservation_fee)"
+                                        @change="updateREF"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                                </div>
+                            </div> </div>
                         </div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4">
-                            <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+
+                        <!-- EQUITY NET OF RESERVATION FEE  -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee: </p></div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.equity_net_of_reservation_fee)"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                        readonly disabled>
+                                </div>
+                            </div> </div>
+                        </div>
+
+                        <!-- MONTHLY EQUITY  -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 mt-1">
+                                <p class="align-middle text-right text-xs font-bold">Required Monthly Equity <br/> for 
+                                    <input type="text"
+                                        v-model="edited_payment.equity_months" @change="updateEquityMonths"
+                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                    > months:
+                                </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.monthly_equity_amount)"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                        readonly disabled>
+                                </div>
+                            </div> </div>
+                        </div>
+
+                        <!-- EQUITY START AND END DATES -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity (Start - End): </p></div>
+                            <div class="w-1/2 grid grid-cols-2 gap-x-4">
+                                <div class="w-full">
+                                    <datepicker :typeable="true" v-model="edited_payment.equity_start_date" placeholder="Start Date" class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                                </div>
+                                <div class="w-full">
+                                    <datepicker :typeable="true" v-model="edited_payment.equity_end_date" placeholder="End Date" class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                                </div>
+                                <!-- <vue-date-picker class="border border-white" minDate="2000-01-01" @confirm="upDate($event)"/> -->
+                            </div>
+                        </div>
+
+                        <!-- BALANCE LOANABLE if reservation date is before 2021 and is Laurence Ville -->
+                        <div class="flex px-4 gap-4 my-2" v-if="dateIsBefore2021 && unedited_buyer.project.id == 4">
+                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity: </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.balance_loanable_amount)"
+                                        @change="updateBLA"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                                </div> </div>
+                            </div>
+                        </div>
+
+                        <!-- BALANCE LOANABLE  -->
+                        <div class="flex px-4 gap-4 my-2" v-else>
+                            <div class="w-1/4 items-center py-2">
+                                <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity
+                                    <input type="text"
+                                        v-model="edited_payment.balance_loanable_percentage"
+                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase bg-gray-100"
+                                        readonly disabled
+                                    > %:
+                                </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.balance_loanable_amount)"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                        readonly disabled>
+                                </div>
+                            </div></div>
+                        </div>
+
+                        <!-- NEW BALANCE LOANABLE if project is GREGORY HOMES -->
+                        <div v-if="unedited_buyer.project.id == 3" class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 my-2">
+                                <p class="align-middle text-right text-xs font-bold">
+                                    New Balance Loanable Amount 
+                                </p>
+                                <div class="float-right">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="form-checkbox" v-model="addOn100k" v-on:change="updateCalculations()"/>
+                                        <span class="text-xs text-right ml-2 font-bold">(Add-on Php 100,000.00):</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.new_balance_loanable_amount)"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                        readonly disabled>
+                                </div>
+                            </div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EDIT HL WITH SPOT EQUITY  -->
+                <div v-else-if="unedited_payment.reservation_type == 2">
+                    <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> WIH SPOT DOWNPAYMENT / ADVANCE DOWNPAYMENT </p> </div>
+                    <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                        <!-- TOTAL CONTRACT PRICE  -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.total_contract_price)"
+                                        @change="updateTCP"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                                </div>
+                            </div> </div>
+                        </div>
+
+                        <!-- REQUIRED EQUITY  -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 mt-1">
+                                <p class="align-middle text-right text-xs font-bold">Required Equity 
+                                    <input type="number"
+                                        :value="edited_payment.required_equity_percentage"
+                                        @change="updateREP"
+                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                    > %:
+                                </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.required_equity_amount)"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                        readonly disabled>
+                                </div>
+                            </div> </div>
+                        </div>
+
+                        <!-- SPOT CASH EQUITY LESS -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 mt-1">
+                                <p class="align-middle text-right text-xs font-bold">Spot Cash Equity Less
+                                    <input type="number"
+                                        :value="edited_payment.spot_cash_equity_less_percentage"
+                                        @change="updateSCEL"
+                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                    > %:
+                                </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
                                 <input type="text"
-                                    :value="formatDisplay(edited_payment.required_equity_amount)"
+                                    :value="formatDisplay(edited_payment.spot_cash_equity_less_amount)"
                                     class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                     readonly disabled>
-                            </div>
-                        </div> </div>
-                    </div>
+                            </div> </div>
+                        </div>
 
-                    <!-- RESERVATION FEE  -->
-                    <div class="flex px-4 gap-4 my-2">
-                        <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p></div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4">
-                            <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                        <!-- NET EQUITY LESS DISCOUNT  -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Net Equity Less Discount: </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
                                 <input type="text"
-                                    :value="formatDisplay(edited_payment.reservation_fee)"
-                                    @change="updateREF"
-                                    class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
-                            </div>
-                        </div> </div>
-                    </div>
+                                    :value="formatDisplay(edited_payment.net_equity_less_discount)"
+                                    class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                    readonly disabled>
+                            </div> </div>
+                        </div>
 
-                    <!-- EQUITY NET OF RESERVATION FEE  -->
-                    <div class="flex px-4 gap-4 my-2">
-                        <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee: </p></div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4">
-                            <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                        <!-- RESERVATION FEE  -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.reservation_fee)"
+                                        @change="updateREF"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                                </div>
+                            </div> </div>
+                        </div>
+
+                        <!-- EQUITY NET OF RESERVATION FEE -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2">
+                                <p class="align-middle text-right text-xs font-bold">Equity Net of Reservation Fee <br/>(shall be paid on or before 30 days from reservation): </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
                                 <input type="text"
                                     :value="formatDisplay(edited_payment.equity_net_of_reservation_fee)"
                                     class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                     readonly disabled>
-                            </div>
-                        </div> </div>
-                    </div>
-
-                    <!-- MONTHLY EQUITY  -->
-                    <div class="flex px-4 gap-4 my-2">
-                        <div class="w-1/4 items-center py-2 mt-1">
-                            <p class="align-middle text-right text-xs font-bold">Required Monthly Equity <br/> for 
-                                <input type="text"
-                                    v-model="edited_payment.equity_months" @change="updateEquityMonths"
-                                    class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
-                                > months:
-                            </p>
+                            </div> </div>
                         </div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4">
-                            <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+
+                        <!-- BALANCE LOANABLE AMOUNT -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2">
+                                <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity
+                                    <input type="text"
+                                        v-model="edited_payment.balance_loanable_percentage"
+                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase bg-gray-100"
+                                        readonly disabled
+                                    > %:
+                                </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.balance_loanable_amount)"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                        readonly disabled>
+                                </div>
+                            </div> </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- EDIT HL SPOT CASH  -->
+                <div v-else-if="unedited_payment.reservation_type == 3">
+                    <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> SPOT CASH TCP </p> </div>
+                    <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                        <!-- TOTAL CONTRACT PRICE -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.total_contract_price)"
+                                        @change="updateTCP"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                                </div>
+                            </div> </div>
+                        </div>
+
+                        <!-- SPOT CASH DISCOUNT -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 mt-1">
+                                <p class="align-middle text-right text-xs font-bold">Required Equity
+                                    <input type="number"
+                                        :value="edited_payment.spot_cash_discount_less_percentage"
+                                        @change="updateSCD"
+                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                    > %:
+                                </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.spot_cash_discount_less_amount)"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                        readonly disabled>
+                                </div>
+                            </div> </div>
+                        </div>
+
+                        <!-- NET TOTAL CONTRACT PRICE -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Net Total Contact Price: </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
                                 <input type="text"
-                                    :value="formatDisplay(edited_payment.monthly_equity_amount)"
+                                        :value="formatDisplay(edited_payment.net_total_contract_price)"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                        readonly disabled>
+                            </div> </div>
+                        </div>
+
+                        <!-- RESERVATION FEE -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.reservation_fee)"
+                                        @change="updateREF"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                                </div>
+                            </div> </div>
+                        </div>
+
+                        <!-- BALANCE TCP -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2">
+                                <p class="align-middle text-right text-xs font-bold">Balance TCP (shall be paid on or <br/> before 30 days from reservation): </p>
+                            </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <input type="text"
+                                        :value="formatDisplay(edited_payment.balance_total_contract_price)"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                        readonly disabled>
+                            </div> </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EDIT PAYMENT DEFERRED CASH -->
+                <div v-else-if="unedited_payment.reservation_type == 4">
+                    <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> DEFERRED CASH </p> </div>
+                    <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
+                        <!-- TOTAL CONTRACT PRICE -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (inclusive of transfer and move-in fees) </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.total_contract_price)"
+                                        @change="updateTCP"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                                </div>
+                            </div> </div>
+                        </div>
+
+                        <!-- RESERVATION FEE -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.reservation_fee)"
+                                        @change="updateREF"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
+                                </div>
+                            </div> </div>
+                        </div>
+
+                        <!-- BALANCE AMONT AFTER RESERVATION -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Balance Amount after Reservation Fee: </p> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <input type="text"
+                                    :value="formatDisplay(edited_payment.balance_amount_after_reservation)"
                                     class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                     readonly disabled>
+                            </div> </div>
+                        </div>
+                        
+                        <!-- MONTHLY INSTALLMENT -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 mt-1">
+                                <p class="align-middle text-right text-xs font-bold">Required Monthly Equity <br/> for
+                                    <input type="text"
+                                        v-model="edited_payment.installment_months"
+                                        @change="updateIM"
+                                        class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase "
+                                    > months:
+                                </p>
                             </div>
-                        </div> </div>
-                    </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4">
+                                <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
+                                    <input type="text"
+                                        :value="formatDisplay(edited_payment.monthly_installment)"
+                                        class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
+                                        readonly disabled>
+                                </div>
+                            </div> </div>
+                        </div>
 
-                    <!-- EQUITY START AND END DATES -->
-                    <div class="flex px-4 gap-4 my-2">
-                        <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity (Start - End): </p></div>
-                        <div class="w-1/2 grid grid-cols-2 gap-x-4">
-                            <div class="w-full">
-                                <datepicker :typeable="true" v-model="edited_payment.equity_start_date" placeholder="Start Date" class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                        <!-- EQUITY START AND END DATES -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity (Start - End): </p></div>
+                            <div class="w-1/2 grid grid-cols-2 gap-x-4">
+                                <div class="w-full">
+                                    <datepicker :typeable="true" v-model="edited_payment.equity_start_date" placeholder="Start Date" class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                                </div>
+                                <div class="w-full">
+                                    <datepicker :typeable="true" v-model="edited_payment.equity_end_date" placeholder="End Date" class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
+                                </div>
+                                <!-- <vue-date-picker class="border border-white" minDate="2000-01-01" @confirm="upDate($event)"/> -->
                             </div>
-                            <div class="w-full">
-                                <datepicker :typeable="true" v-model="edited_payment.equity_end_date" placeholder="End Date" class="my-1" input-class="p-2 px-2 w-full border border-gray-200 rounded-md"> </datepicker>
-                            </div>
-                            <!-- <vue-date-picker class="border border-white" minDate="2000-01-01" @confirm="upDate($event)"/> -->
                         </div>
                     </div>
-
-                    <!-- BALANCE LOANABLE  -->
-                    <div class="flex px-4 gap-4 my-2">
-                        <div class="w-1/4 items-center py-2">
-                            <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity
-                                <input type="text"
-                                    v-model="edited_payment.balance_loanable_percentage"
-                                    class=" border border-gray-200 rounded-md w-1/4 py-1 text-md text-center px-2 uppercase bg-gray-100"
-                                    readonly disabled
-                                > %:
-                            </p>
-                        </div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4">
-                            <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
-                                <input type="text"
-                                    :value="formatDisplay(edited_payment.balance_loanable_amount)"
-                                    class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
-                                    readonly disabled>
-                            </div>
-                        </div></div>
-                    </div>
+                </div>
+                
+                <div v-else class="text-center mx-auto my-4 font-semibold text-lg text-red-500">
+                    ERROR: WRONG RESERVATION TYPE
                 </div>
 
                 <div class="w-full flex mx-auto justify-center items-center my-4 gap-4">
@@ -238,6 +566,9 @@
         },
         data() {
             return {
+                dateIsBefore2021: false,
+                dateToCheck: new Date('01/01/2021'),
+
                 unedited_buyer: '',
                 edited_buyer: this.$route.params.buyer,
                 changed_data: {},
@@ -250,7 +581,11 @@
                 unedited_payment: '',
                 changed_payment: {},
 
-                isFetchingData: true
+                isFetchingData: true,
+                addOn100k:
+                    this.$route.params.buyer.payment.balance_loanable_amount 
+                    == this.$route.params.buyer.payment.new_balance_loanable_amount
+                    ? false : true,
             }
         },
         created() {
@@ -258,6 +593,10 @@
             this.unedited_buyer = this.getDetails(this.$route.params.id)
         },
         methods: {
+            checkReservationDate() {
+                this.dateIsBefore2021 = this.edited_payment.date < this.dateToCheck ? true : false
+                console.log('this.dateisbefore 2021', this.dateIsBefore2021)
+            },
             // change callback process or logic
             addChangedFields(_callback) {
                 const edited = this.edited_buyer
@@ -284,14 +623,10 @@
                 }
 
                 for(const payment_field in edited_payment) {
-                    // console.log('EDITED PAYMENT', payment_field,
-                    //         edited_payment[payment_field], typeof(edited_payment[payment_field]),
-                    //         unedited_payment[payment_field], typeof(unedited_payment[payment_field]))
                     if(edited_payment[payment_field] !== unedited_payment[payment_field]) {
                         if(typeof(edited_payment[payment_field]) !== 'object') {
-                            this.changed_payment[payment_field] = isNaN(this.formatParsedFloat(edited_payment[payment_field])) ? edited_payment[payment_field] : (this.formatParsedFloat(edited_payment[payment_field]))
-
-                            // this.changed_payment[payment_field] = edited_payment[payment_field]
+                            this.changed_payment[payment_field] = isNaN(this.formatParsedFloat(edited_payment[payment_field]))
+                            ? edited_payment[payment_field] : (this.formatParsedFloat(edited_payment[payment_field]))
                         } else {
                             if(payment_field == 'date' || payment_field == 'equity_end_date' || payment_field == 'equity_start_date') {
                                 console.log('edited vs unedited', edited_payment[payment_field], typeof(edited_payment[payment_field]), unedited_payment[payment_field], typeof(unedited_payment[payment_field]))
@@ -305,15 +640,18 @@
             },
             
             formatDisplay(value) {
-                console.log('formatDisplay', value)
-               return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+               return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value
             },
             formatDecimal(value) {
-                return value.toFixed(2)
+                return value ? value.toFixed(2) : value
             },
             formatParsedFloat(value) {
-                console.log('formatParsedFloat', value)
-                return parseFloat((value.toString()).replace(/,/g, '')).toFixed(2)
+                return value ? parseFloat((value.toString()).replace(/,/g, '')).toFixed(2) : value
+            },
+            updateBLA(event){
+                this.edited_payment.balance_loanable_amount = event.target.value
+                console.log('UpdateBLA', this.edited_payment.balance_loanable_amount, typeof(this.edited_payment.balance_loanable_amount))
+                this.updateCalculations()
             },
             updateTCP(event) {
                 this.edited_payment.total_contract_price = event.target.value
@@ -326,10 +664,29 @@
                 this.updateCalculations()
             },
             updateREF(event) {
-                console.log('updating ref', event.target.value)
                 this.edited_payment.reservation_fee = event.target.value
-                // this.payment_details.reservation_fee = parseFloat(event.replace(/,/g, ''))
                 console.log('UpdateReservationFee')
+                this.updateCalculations()
+            },
+            updateSCEL(event) {
+                this.edited_payment.spot_cash_equity_less_percentage = event.target.value
+                console.log('UpdateSCEL', this.edited_payment.spot_cash_equity_less_percentage)
+                this.updateCalculations()
+            },
+            updateSCD(event) {
+                this.edited_payment.spot_cash_discount_less_percentage = event.target.value
+                console.log('UpdateSCD', this.edited_payment.spot_cash_discount_less_percentage)
+                this.updateCalculations()
+            },
+            updateREA(event) {
+                this.edited_payment.required_equity_amount = event.target.value
+                console.log('UpdateREA', this.edited_payment.required_equity_amount, typeof(this.edited_payment.required_equity_amount))
+                this.updateCalculations()
+            },
+            //DEFERRED
+            updateIM(event) {
+                this.edited_payment.installment_months = event.target.value
+                console.log('UpdateIM', this.edited_payment.installment_months)
                 this.updateCalculations()
             },
             updateEquityMonths(event) {
@@ -340,25 +697,73 @@
             updateCalculations() {
                 console.log('update calc edited payment', this.edited_payment)
                 
-                // const formatted_total_contract_price = this.formatParsedFloat(this.edited_payment.total_contract_price)
-                // const formatted_reservation_fee = this.formatParsedFloat(this.edited_payment.reservation_fee)
-                // const formatted_total_contract_price = parseFloat(this.payment_details.total_contract_price.replace(/,/g, '')).toFixed(2)
-                // const formatted_reservation_fee = parseFloat(this.payment_details.reservation_fee.replace(/,/g, '')).toFixed(2)
-
-                // console.log('formatted balance loanable amount', formatted_balance_loanable_amount)
-                console.log('typeof(tcp)', typeof(this.edited_payment.total_contract_price))
-                this.edited_payment.required_equity_amount = this.formatDecimal(this.formatParsedFloat(this.edited_payment.total_contract_price) * (this.edited_payment.required_equity_percentage * 0.01))
-                this.edited_payment.balance_loanable_percentage = 100 - this.edited_payment.required_equity_percentage
-                this.edited_payment.balance_loanable_amount = this.formatDecimal(this.formatParsedFloat(this.edited_payment.total_contract_price) * (this.edited_payment.balance_loanable_percentage * 0.01))
-                this.edited_payment.equity_net_of_reservation_fee = this.formatDecimal(this.edited_payment.required_equity_amount - this.formatParsedFloat(this.edited_payment.reservation_fee))
-                this.edited_payment.monthly_equity_amount = this.edited_payment.equity_months ? this.formatDecimal(this.edited_payment.equity_net_of_reservation_fee / this.edited_payment.equity_months) : 0
+                const formatted_total_contract_price = this.formatParsedFloat(this.edited_payment.total_contract_price)
+                const formatted_reservation_fee = this.formatParsedFloat(this.edited_payment.reservation_fee)
                 
-                // console.log('updating calculations', this.edited_payment.required_equity_amount)
+                switch(this.unedited_payment.reservation_type) {
+                    case 1:
+                        if(this.dateIsBefore2021 && this.unedited_buyer.project.id == 4) {
+                            console.log('is before 2021 and laurence ville')
+                            const formatted_required_equity_amount = this.formatParsedFloat(this.edited_payment.required_equity_amount)
+                            this.edited_payment.required_equity_percentage = ''
+                            this.edited_payment.balance_loanable_percentage = ''
+                            
+                            this.edited_payment.equity_net_of_reservation_fee = this.formatDecimal(formatted_required_equity_amount - formatted_reservation_fee)
+                            this.edited_payment.monthly_equity_amount = this.edited_payment.equity_months ? this.formatDecimal(this.edited_payment.equity_net_of_reservation_fee / this.edited_payment.equity_months) : 0
+                        } else {
+                            // normal reservation
+                            this.edited_payment.required_equity_amount = this.formatDecimal(formatted_total_contract_price * (this.edited_payment.required_equity_percentage * 0.01))
+                            this.edited_payment.balance_loanable_percentage = 100 - this.edited_payment.required_equity_percentage
+                            this.edited_payment.balance_loanable_amount = this.formatDecimal(formatted_total_contract_price * (this.edited_payment.balance_loanable_percentage * 0.01))
+                            this.edited_payment.equity_net_of_reservation_fee = this.formatDecimal(this.edited_payment.required_equity_amount - formatted_reservation_fee)
+                            this.edited_payment.monthly_equity_amount = this.edited_payment.equity_months ? this.formatDecimal(this.edited_payment.equity_net_of_reservation_fee / this.edited_payment.equity_months) : 0
+                        
+                        // GREGORY HOMES ADD ON
+                            if(this.unedited_buyer.project.id == 3) {
+                                console.log('type of blanace lonable', typeof(this.edited_payment.balance_loanable_amount))
+                                console.log('type of formatparsedfloat balance', typeof(this.formatParsedFloat(+this.edited_payment.balance_loanable_amount)))
+                                this.edited_payment.new_balance_loanable_amount = this.addOn100k 
+                                    ? this.formatDisplay(this.formatParsedFloat(+this.edited_payment.balance_loanable_amount - -100000))
+                                    : this.formatDisplay(this.formatParsedFloat(+this.edited_payment.balance_loanable_amount))
+
+                                // this.edited_payment.new_balance_loanable_amount = this.formatDisplay(this.formatParsedFloat(this.edited_payment.balance_loanable_amount) - -100000)
+                                // this.edited_payment.new_balance_loanable_amount = +this.edited_payment.balance_loanable_amount + 100000
+                            }
+                        }
+                        // this.edited_payment.required_equity_amount = this.formatDecimal(this.formatParsedFloat(this.edited_payment.total_contract_price) * (this.edited_payment.required_equity_percentage * 0.01))
+                        // this.edited_payment.balance_loanable_percentage = 100 - this.edited_payment.required_equity_percentage
+                        // this.edited_payment.balance_loanable_amount = this.formatDecimal(this.formatParsedFloat(this.edited_payment.total_contract_price) * (this.edited_payment.balance_loanable_percentage * 0.01))
+                        // this.edited_payment.equity_net_of_reservation_fee = this.formatDecimal(this.edited_payment.required_equity_amount - this.formatParsedFloat(this.edited_payment.reservation_fee))
+                        // this.edited_payment.monthly_equity_amount = this.edited_payment.equity_months ? this.formatDecimal(this.edited_payment.equity_net_of_reservation_fee / this.edited_payment.equity_months) : 0
+                        break;
+                    case 2:
+                        this.edited_payment.required_equity_amount = this.formatDecimal(formatted_total_contract_price * (this.edited_payment.required_equity_percentage * 0.01))
+                        this.edited_payment.spot_cash_equity_less_amount = this.formatDecimal(this.edited_payment.required_equity_amount * (this.edited_payment.spot_cash_equity_less_percentage * 0.01))
+                        this.edited_payment.net_equity_less_discount = this.formatDecimal(this.edited_payment.required_equity_amount - this.edited_payment.spot_cash_equity_less_amount)
+                        this.edited_payment.equity_net_of_reservation_fee = this.formatDecimal(this.edited_payment.net_equity_less_discount - formatted_reservation_fee)
+                        this.edited_payment.balance_loanable_percentage = 100 - this.edited_payment.required_equity_percentage
+                        this.edited_payment.balance_loanable_amount = this.formatDecimal(formatted_total_contract_price * (this.edited_payment.balance_loanable_percentage * 0.01))
+                        break;
+                    case 3:
+                        this.edited_payment.spot_cash_discount_less_amount = this.formatDecimal(formatted_total_contract_price * (this.edited_payment.spot_cash_discount_less_percentage * 0.01))
+                        this.edited_payment.net_total_contract_price = this.formatDecimal(formatted_total_contract_price - this.edited_payment.spot_cash_discount_less_amount)
+                        this.edited_payment.balance_total_contract_price = this.formatDecimal(this.formatDecimal(formatted_total_contract_price - this.edited_payment.spot_cash_discount_less_amount)- formatted_reservation_fee)
+                        break;
+                    case 4:
+                        this.edited_payment.balance_amount_after_reservation = this.formatDecimal(formatted_total_contract_price - formatted_reservation_fee)
+                        this.edited_payment.monthly_installment = this.edited_payment.installment_months ? this.formatDecimal((this.edited_payment.balance_amount_after_reservation / this.edited_payment.installment_months)) : 0
+                        break;
+                    default: break;
+                }
+
+                // if(this.unedited_buyer.project.id == 3) {
+                //     this.edited_payment.new_balance_loanable_amount = this.formatDisplay(this.formatParsedFloat(this.edited_payment.balance_loanable_amount) - -100000)
+                // }
             },
             updateInfo() {
                 // this.edited_payment.total_contract_price = this.formatParsedFloat(this.edited_payment.total_contract_price)
                 // this.edited_payment.reservation_fee = this.formatParsedFloat(this.edited_payment.reservation_fee)
-                console.log('============UPDATING INFO')
+                console.log('============ UPDATING INFO ==============')
                 this.isFetchingData = true
                 this.addChangedFields(() => {
                     // console.log('added changed fields', this.changed_payment)
@@ -449,6 +854,7 @@
                                     this.unedited_payment = data
                                     // console.log('this.unedited_buyer in EDIT BUYER INFO', this.unedited_buyer)
                                     // console.log('this.buyer in VIEW DETAILS HOUSE AND LOT PAYMENT', this.payment)
+                                    this.dateIsBefore2021 = this.unedited_payment.date < this.dateToCheck ? true : false
                                     this.isFetchingData = false
                                 })
                             })

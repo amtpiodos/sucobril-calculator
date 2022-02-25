@@ -198,7 +198,7 @@
                 this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
             },
             formatDisplay(value) {
-               return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+               return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value
             },
             // formatParsedFloat(value) {
             //     return parseFloat(value.replace(/,/g, '')).toFixed(2)

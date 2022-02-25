@@ -3,13 +3,6 @@
         <main-header />
         <div class="my-5 mx-24 px-5">
             <div v-if="!isFetchingData">
-
-                <!-- <div>
-                    <button type="button" v-on:click="viewPayment"
-                        class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
-                        View Payments
-                    </button>
-                </div> -->
                 <div class="flex">
                     <div class="w-1/2 px-4">
                         <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
@@ -23,18 +16,18 @@
 
                 <div class="full m-4 bg-gray-200">
                     <p class="text-center pt-2 font-bold text-lg"> BUYER'S INFORMATION </p>
+                    <p class="text-center pb-2 font-regular text-sm" v-if="buyer.status" v-on:click="editPersonalInfo()"> Edit Information </p>
                     <p class="text-center py-2 font-bold text-sm text-red-700" v-if="!buyer.status">
                         This buyer has been forefeited and is now inactive.
                     </p>
                 </div>
-
                 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 p-1">
                     <div class="flex px-4 gap-4">
                         <div class="w-2/5"> <readonly-form label="Last Name" :value="buyer.last_name" /> </div>
                         <div class="w-2/5"> <readonly-form label="First Name" :value="buyer.first_name" /> </div>
                         <div class="w-1/5"> <readonly-form label="M.I." :value="buyer.middle_initial" /> </div>
                     </div>
-                    <div class="full px-4"> <readonly-form label="Reservation Date" :value="buyer.payment.date" /> </div>
+                    <div class="full px-4"> <readonly-form label="Reservation Date" :value="formatDate(buyer.payment.date)" /> </div>
                     <div class="full px-4"> <readonly-form label="Project Name" :value="buyer.project.name" /> </div>
                     <div class="grid grid-cols-4 gap-4 px-4">
                         <div class="full px-1"> <readonly-form label="Block" :value="buyer.block.name" /> </div>
@@ -54,7 +47,22 @@
                         <div class="w-1/2"> <readonly-form label="Email Address" :value="buyer.email_address" /> </div>
                     </div>
                     <div class="full px-4"> <readonly-form label="Realty's Name" :value="buyer.realty" /> </div>
-                    <div class="full px-4"> <readonly-form label="Agent's Name" :value="buyer.agent" /> </div>
+                    <!-- <div class="full px-4"> <readonly-form label="Agent's Name" :value="buyer.agent" /> </div> -->
+                    <div class="flex px-4 gap-4">
+                        <div class="w-1/2"> <readonly-form label= "Agent's Name" :value="buyer.agent" /> </div>
+                        <div class="w-1/2"> <readonly-form label= "Agent's Number" :value="buyer.agent_number" /> </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center mx-auto justify-center gap-8 my-4">
+                    <button type="button" v-on:click="viewPayment"
+                        class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                        VIEW PAYMENTS
+                    </button>
+                    <button type="button" v-on:click="exportDetails"
+                        class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                        EXPORT INFORMATION
+                    </button>
                 </div>
 
                 <!-- LOT ONLY REGULAR RESERVATION -->
@@ -63,7 +71,7 @@
                     <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                         <div class="flex px-4 gap-4 my-4">
                             <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.total_contract_price" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.total_contract_price)" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4">
                             <div class="w-1/4 items-center py-2">
@@ -74,19 +82,19 @@
                                         readonly disabled> months:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.monthly_installment" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.monthly_installment)" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4">
                             <div class="w-1/4 items-center py-4"> <p class="align-middle text-right text-xs font-bold">FIRST MONTHLY INSTALLMENT <br> FEE / RESERVATION FEE: </p> </div>
-                            <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.reservation_fee" /> </div> </div>
+                            <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.reservation_fee)" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4">
                             <div class="w-1/4 items-center py-4"> <p class="align-middle text-right text-xs font-bold">Monthly Installment <br> START DATE: </p> </div>
-                            <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.monthly_start_date" /> </div> </div>
+                            <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <readonly-form :value="formatDate(buyer.payment.monthly_start_date)" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 ">
                             <div class="w-1/4 items-center py-4"> <p class="align-middle text-right text-xs font-bold">Monthly Installment <br> END DATE: </p> </div>
-                            <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.monthly_end_date" /> </div> </div>
+                            <div class="w-3/4 py-2"> <div class="items-starts w-3/4"> <readonly-form :value="formatDate(buyer.payment.monthly_end_date)" /> </div> </div>
                         </div>
                     </div>
                 </div>
@@ -97,15 +105,15 @@
                     <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                         <div class="flex px-4 gap-4 my-4">
                             <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.total_contract_price" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.total_contract_price)" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-4">
                             <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">Spot Downpayment / <br> Advance Payment </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.spot_downpayment" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.spot_downpayment)" /> </div> </div>
                         </div>
                         <div class="flex px-4 gap-4 my-4">
                             <div class="w-1/4 items-center py-4"> <p class="align-middle text-right text-xs font-bold">NEW TCP Less Downpayment </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.new_tcp_less_downpayment" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.new_tcp_less_downpayment)" /> </div> </div>
                         </div>
 
                         <div class="flex px-4 gap-4 my-4">
@@ -117,7 +125,17 @@
                                         readonly disabled> months:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.monthly_installment" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.monthly_installment)" /> </div> </div>
+                        </div>
+
+                        <!-- INSTALLMENT START AND END DATES -->
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Starts: </p></div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDate(buyer.payment.monthly_start_date)" /> </div> </div>
+                        </div>
+                        <div class="flex px-4 gap-4 my-2">
+                            <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Equity Ends: </p></div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDate(buyer.payment.monthly_end_date)" /> </div> </div>
                         </div>
                     </div>
                 </div>
@@ -128,7 +146,7 @@
                     <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                         <div class="flex px-4 gap-4 my-4">
                             <div class="w-1/4 items-center py-2"> <p class="align-middle text-right text-xs font-bold">TOTAL CONTRACT PRICE: <br> (includes transfer fee) </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.total_contract_price" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.total_contract_price)" /> </div> </div>
                         </div>
 
                         <div class="flex px-4 gap-4 my-4">
@@ -140,12 +158,12 @@
                                         readonly disabled> %:
                                 </p>
                             </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.spot_cash_discount_amount" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.spot_cash_discount_amount)" /> </div> </div>
                         </div>
 
                         <div class="flex px-4 gap-4 my-4">
                             <div class="w-1/4 items-center py-4"> <p class="align-middle text-right text-xs font-bold"> NEW TCP Less Discount </p> </div>
-                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="buyer.payment.new_tcp_less_discount" /> </div> </div>
+                            <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.new_tcp_less_discount)" /> </div> </div>
                         </div>
                     </div>
                 </div>
@@ -158,11 +176,18 @@
                     </div>
                 </div>
 
-                <div class="flex items-center mx-auto justify-center gap-8 my-4">
-                    <!-- <button type="button" v-if="buyer.status" v-on:click="editDetails"
-                        class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
-                        EDIT INFORMATION
-                    </button> -->
+                <div class="flex items-center mx-auto justify-center gap-8 my-4" v-if="buyer.status" >
+                    <button type="button" v-on:click="confirmForefeit"
+                        class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                        FOREFEIT BUYER
+                    </button>
+                    <button type="button" v-on:click="assumeUnit"
+                        class="bg-gray-600 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
+                        ASSUME UNIT
+                    </button>
+                </div>
+
+                <!-- <div class="flex items-center mx-auto justify-center gap-8 my-4">
                     <button type="button" v-on:click="viewPayment"
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                         VIEW PAYMENTS
@@ -175,7 +200,7 @@
                         class="bg-gray-500 p-4 w-1/4 align-middle text-white font-bold border rounded-md mb-4">
                         FOREFEIT BUYER
                     </button>
-                </div>
+                </div> -->
 
             </div>
             <div v-if="isFetchingData" class="text-center mx-auto my-4 font-semibold text-lg">
@@ -214,6 +239,27 @@
             this.getDetails(this.$route.params.id)
         },
         methods: {
+            assumeUnit() {
+                console.log('buyer', this.buyer)
+                this.$router.push({ name: 'Assume-Unit-Form',
+                                    params: { buyer: this.buyer }})
+                // route to input information for unit assumption
+            },
+            editPersonalInfo() {
+                console.log('edit personal info')
+                // this.isRequestingEdit = true
+                // remove this to add credentials again
+                this.$router.push({ name: 'Edit-Buyer-Info-LO',
+                                            params: {   id: this.buyer.id,
+                                                        buyer: this.buyer }})
+                this.requestEditType = 1
+            },
+            formatDate(value) {
+                return value && value.toDateString() ? value.toDateString().replace(/^\S+\s/,'') : value
+            },
+            formatDisplay(value) {
+                return value ? value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value
+            },
             viewPayment() {
                 console.log('Viewing payment for buyer ', this.buyer.id)
                 this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
@@ -259,6 +305,14 @@
             editDetails() {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
                 this.$router.push({ name: 'Edit Buyer', params: { id: this.buyer.id, buyer: this.buyer } })
             },
+            confirmForefeit() {
+                if(confirm('Are you sure to forefeit this buyer?')) {
+                    console.log('OK')
+                    this.forefeitBuyer()
+                } else {
+                    console.log('CANCELLED')
+                }
+            },
             forefeitBuyer() {
                 const data = {  id: this.buyer.id,
                                 lot_id: this.buyer.lot.id }
@@ -270,9 +324,11 @@
                          : alert(`Forefeiting buyer for ${this.buyer.project.name} ${this.buyer.block.name} ${this.buyer.lot.name} - ${this.buyer.first_name} ${this.buyer.project.name} ${this.buyer.middle_initial} ${this.buyer.lot.name} ${this.buyer.last_name} failed`)
                     // refresh page
 
-                    setTimeout(() =>{
-                        this.$router.push('/')
-                    }, 1000)
+                    // setTimeout(() =>{
+                    //     this.$router.push('/')
+                    // }, 1000)
+
+                    this.$router.push({name: 'View-Buyer-LO', params: { id: this.buyer.id }})
                 })
             },
             exportDetails() {

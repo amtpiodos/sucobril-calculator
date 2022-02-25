@@ -3,42 +3,45 @@
 
     <div class="h-screen">
         <main-header />
-        <div class="mt-8 mb-2 mx-24">
-            <!-- <div class="flex my-8 ">
-                <div class="w-1/2">
-                    <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
-                    <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
+        <div class="my-5 mx-24 px-5 flex">
+            <div class="w-1/2">
+                <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
+                <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
+            </div>
+            <div class="w-1/2">
+                <div class="text-xs">
+                    <p class="text-right"> Contact No. / Landline: (032) 260-1522 </p> 
+                    <p class="text-right"> Email: tumabinidevelopment@gmail.com </p>
                 </div>
-                <div class="w-1/2">
-                    <div class="text-xs">
-                        <p class="text-right"> Contact No. / Landline: (032) 260-1522 </p> 
-                        <p class="text-right"> Email: tumabinidevelopment@gmail.com </p>
-                    </div>
-                </div>
-            </div> -->
+            </div>
+        </div>
+        <div class="my-2 mx-24">
             <div class="flex">
-                <div class="w-2/5">
-                    <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
+                <div class="w-2/5 flex">
+                    <input class="align-center w-3/5 bg-white border-2 border-light-blue-500
+                            border-opacity-100 rounded-md px-3 py-2 mr-4"
+                            v-on:keyup.delete="searchFilterBuyer($event)" v-on:keypress="searchFilterBuyer($event)" placeholder="SEARCH BUYER..."/>
+
+                    <!-- <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
                     <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
-                    <div class="text-xs"> Contact: (032) 260-1522  Email: tumabinidevelopment@gmail.com </div>
+                    <div class="text-xs"> Contact: (032) 260-1522  Email: tumabinidevelopment@gmail.com </div> -->
                 </div>
                 <div class="w-2/5 flex items-right justify-right gap-2">
-                    <!-- <div class="flex "> -->
-                        <!-- ADD LABEL HERE  -->
-                        <select v-model="project_id" @change="filterProject($event)" placeholder="Select Project" class="px-2 w-full border-2 border-gray-400 rounded-md my-1">
-                            <option class="" value="" disabled selected><p class="text-gray-300">Select Project...</p></option>
-                            <option value=1>MyHome </option>
-                            <option value=2>MyHome Dos</option>
-                            <option value=3>Gregory Homes</option>
-                            <option value=4>Laurence Ville</option>
-                            <option value=5>San Isidro Enclave</option>
-                        </select>
+                    <select v-model="project_id" @change="filterProject($event)" placeholder="Select Project" class="px-2 w-full border-2 border-gray-400 rounded-md my-1">
+                        <option class="" value="" disabled selected><p class="text-gray-300">Filter Project...</p></option>
+                        <option value=1>MyHome </option>
+                        <option value=2>MyHome Dos</option>
+                        <option value=3>Gregory Homes</option>
+                        <option value=4>Laurence Ville</option>
+                        <option value=5>San Isidro Enclave</option>
+                        <option value=6>Fatima Heights</option>
+                    </select>
 
-                        <select v-model="status" @change="filterStatus($event)" class="px-2 w-full border-2 border-gray-400 rounded-md my-1">
-                            <option class="" value="" disabled selected><p class="text-gray-300">Select Status...</p></option>
-                            <option value=1>Active</option>
-                            <option value=0>Inactive</option>
-                        </select>
+                    <select v-model="status" @change="filterStatus($event)" class="px-2 w-full border-2 border-gray-400 rounded-md my-1">
+                        <option class="" value="" disabled selected><p class="text-gray-300">Select Status...</p></option>
+                        <option value=1>Active</option>
+                        <option value=0>Inactive</option>
+                    </select>
                 </div>
                 <div class="w-1/5 flex items-center my-1 ">
                     <button type="button" v-on:click="exportBuyers"
@@ -51,10 +54,10 @@
                 <div class="w-1/4 h-96">
                     <!-- <div class="bg-white space-y-3 overflow-y-auto h-1/2"> -->
                     <div class="bg-white space-y-3 overflow-y-auto h-full">
-                        <input class=" w-full bg-white border-2 border-light-blue-500 border-opacity-100 rounded-md px-3 py-2"
-                            placeholder="SEARCH BUYER..."/>
+                        <!-- <input class=" w-full bg-white border-2 border-light-blue-500 border-opacity-100 rounded-md px-3 py-2"
+                            @change="searchFilterBuyer($event)" placeholder="SEARCH BUYER..."/> -->
 
-                        <div v-for="buyer in buyers" :key="buyer.id">
+                        <div v-for="buyer in filtered_buyers" :key="buyer.id">
                             <single-buyer v-bind:lastname="buyer.last_name"
                                         :firstname="buyer.first_name"
                                         v-on:click.native="hasClicked(buyer.id)"/>
@@ -72,7 +75,8 @@
                         <div class="my-5 mx-5 px-5" v-if="hasClickedBuyer">
                             <div class="my-32">
                                 <p class="my-2 text-center align-center font-semibold uppercase text-xl"> {{ buyer_details.last_name }}, {{ buyer_details.first_name }} </p>
-                                <p class="my-2 text-center align-center font-regular uppercase text-md"> {{ buyer_details.home_address }} </p>
+                                <!-- <p class="my-2 text-center align-center font-regular uppercase text-md"> {{ buyer_details.home_address }} </p> -->
+                                <p class="my-2 text-center align-center font-regular uppercase text-md"> {{ unit_details }} </p>
                                 <p class="my-2 text-center align-center font-bold uppercase text-sm" v-if="buyer_details.status"> Status: Active</p>
                                 <p class="my-2 text-center align-center font-bold uppercase text-sm text-red-500" v-else> Status: Inactive </p>
                             </div>
@@ -117,10 +121,23 @@
                 project_id: '',
                 status: 1, // active
                 hasClickedBuyer: false,
-                buyers: {},
-                buyer_details: {},
+                buyers: [],
+                filtered_buyers: [],
                 id: 0,
-                isFetchingData: false
+                isFetchingData: false,
+
+                all_projects: {},
+                all_phases: {},
+                all_blocks: {},
+                all_lots: {},
+
+                buyer_details: {},
+                block_details: {},
+                lot_details: {},
+                phase_details: {},
+                project_details: {},
+                unit_details: ''
+                
             }
         },
         mounted() {
@@ -130,8 +147,82 @@
         created() {
             // console.log('HOME - created')
             this.fetchAllBuyers()
+            this.fetchAllProjects()
+            this.fetchAllPhases()
+            this.fetchAllBlocks()
+            this.fetchAllLots()
         },
         methods: {
+
+            fetchAllProjects() {
+                console.log('fetchAllProjects')
+                ipcRenderer.send('fetchAllProjects')
+                ipcRenderer.once('fetchedAllProjects', (event, data) => {
+                    this.all_projects = data
+                })
+            },
+            fetchAllPhases() {
+                console.log('fetchAllPhases')
+                ipcRenderer.send('fetchAllPhases')
+                ipcRenderer.once('fetchedAllPhases', (event, data) => {
+                    this.all_phases = data
+                })
+            },
+            fetchAllBlocks() {
+                console.log('fetchAllBlocks')
+                ipcRenderer.send('fetchAllBlocks')
+                ipcRenderer.once('fetchedAllBlocks', (event, data) => {
+                    this.all_blocks = data
+                })
+            },
+            fetchAllLots() {
+                console.log('fetchAllLots')
+                ipcRenderer.send('fetchAllLots')
+                ipcRenderer.once('fetchedAllLots', (event, data) => {
+                    this.all_lots = data
+                })
+            },
+            fetchUnitDetails(buyer) {
+                // const specific_lot = this.all_lots.find(lot => lot.id === buyer_details.lot_id)
+                // const specific_block = this.all_blocks.find(block => block.id === specific_lot.block_id)
+                // // const specific_project = this.all_projects.find(project => project.id === buyer_details.project_id)
+                // // const specific_phase = buyer.details.project_id === 4
+                // //     ? this.all_phases.find(phase => phase.id === specific_block.phase_id).name : ''
+                // // return `${specific_lot.name}
+                // return specific_lot
+
+                ipcRenderer.send('fetchBuyer', buyer)
+                ipcRenderer.once('fetchedBuyer', (event, data) => {
+                    this.buyer_details = data
+                    ipcRenderer.send('fetchLot', data.lot_id)
+                    ipcRenderer.once('fetchedLot', (event, data) => {
+                        this.lot_details = data
+                        ipcRenderer.send('fetchBlock', data.block_id)
+                        ipcRenderer.once('fetchedBlock', (event, data) => {
+                            this.block_details = data
+                            console.log('block', this.block_details)
+                            if(buyer.project_id == 4) {
+                               ipcRenderer.send('fetchPhase', data.phase_id)
+                               ipcRenderer.once('fetchedPhase', (event, data) => {
+                                   this.phase_details = data
+                               })
+                            } else { this.phase_details = {} }
+                            ipcRenderer.send('fetchProject', data.project_id)
+                            ipcRenderer.once('fetchedProject', (event, data) => {
+                                this.project_details = data
+
+                                const phase_name = this.phase_details.name ? this.phase_details.name : ''
+                                this.unit_details = `${this.project_details.name} ${phase_name} ${this.block_details.name} ${this.lot_details.name}`
+                                // console.log('projects list',this.project_details)
+                            })
+                        })
+                    })
+                })
+
+                
+
+            },
+
             exportBuyers() {
                 console.log('Exporting Buyers')
                 let toExportBuyers = {}
@@ -140,6 +231,7 @@
                 var xl = require('excel4node');
                 var wb = new xl.Workbook();
                 const ws = wb.addWorksheet('MYHOME');
+                const homedir = require('os').homedir();
 
                 let r = 1   // row
                 const s = 4 // initial size
@@ -197,7 +289,7 @@
                             ws.cell(r, col['F']).string(status).style(regular_style).style(aligned_style).style({font: {size: 8}})
                             
                         })
-                        wb.write(`./sample-masterlists.xlsx`)
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/sample-masterlists.xlsx`)
                         console.log('DONE Exporting Buyers')
                     } else {
                         this.isFetchingData = false
@@ -211,6 +303,7 @@
                 ipcRenderer.send('fetchBuyersList')
                 ipcRenderer.once('fetchedBuyersList', (event, data) => {
                     this.buyers = data
+                    this.filtered_buyers = data
                 })
                 console.log('BUYERS LIST THIS.BUYERS', this.buyers)
             },
@@ -233,6 +326,7 @@
                     if(data.response == 1) {
                         console.log('Fetching Buyers by Project SUCCESS')
                         this.buyers = data.buyers
+                        this.filtered_buyers = data.buyers
                         this.isFetchingData = false
                     } else {
                         this.isFetchingData = false
@@ -243,16 +337,17 @@
             hasClicked(id) {
                 this.hasClickedBuyer = true
                 this.id = id
-                // console.log('hasClickedBuyer', this.hasClickedBuyer, 'id', this.id)
-                this.fetchBuyerDetails(id)
+                console.log('hasClickedBuyer', this.hasClickedBuyer, 'id', this.id)
+                // this.fetchBuyerDetails(id)
+                this.fetchUnitDetails(id)
             },
-            fetchBuyerDetails(id) {
-                console.log('id', id)
-                ipcRenderer.send('fetchBuyer', id)
-                ipcRenderer.once('fetchedBuyer', (event, data) => {
-                    this.buyer_details = data
-                })
-            },
+            // fetchBuyerDetails(id) {
+            //     console.log('id', id)
+            //     ipcRenderer.send('fetchBuyer', id)
+            //     ipcRenderer.once('fetchedBuyer', (event, data) => {
+            //         this.buyer_details = data
+            //     })
+            // },
             viewFullDetails() {
                 console.log('VIEW DETAILS this.id', this.id, this.buyer_details)
                 if(this.buyer_details.reservation_type == 5
@@ -274,8 +369,23 @@
                     console.log('fetchedActiveOrInactiveBuyersList', data)
                     // add loading screen
                     this.buyers = data
+                    this.filtered_buyers = data.buyers
                     this.isFetchingData = false
                 })
+            },
+            searchFilterBuyer(event){
+                console.log('Searching', event.target.value)
+                const keyword_filter = event.target.value.toUpperCase()
+                let filtered_buyers = this.buyers.filter(function(buyer) {
+                    
+                    return buyer.last_name.toUpperCase().includes(keyword_filter) ||
+                    buyer.first_name.toUpperCase().includes(keyword_filter)
+                })
+                console.log(filtered_buyers)
+                this.filtered_buyers = filtered_buyers
+                
+                // return this.buyers
+                
             }
         }
     })

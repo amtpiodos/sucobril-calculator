@@ -43,7 +43,10 @@
                     <div class="w-full" v-if="payment.reservation_type == 1">
                         <div class="full my-2"> <readonly-form label="Required Equity" :value="formatDisplay(payment.required_equity_amount)" /> </div>
                         <div class="full my-2"> <readonly-form label="Equity Net of Reservation:" :value="formatDisplay(payment.equity_net_of_reservation_fee)" /> </div>
-                        <div class="full my-2"> <readonly-form label="Required Loanable Amount" :value="formatDisplay(payment.balance_loanable_amount)" /> </div>
+                        <div class="full my-2">                            
+                            <readonly-form v-if="buyer.project.id == 3" label="Required Loanable Amount" :value="formatDisplay(payment.new_balance_loanable_amount)"/>
+                            <readonly-form v-else label="Required Loanable Amount" :value="formatDisplay(payment.balance_loanable_amount)"/>
+                        </div>
                         <div class="flex gap-4 my-2">
                             <div class="w-1/2">
                                 <label-component label="Running Equity Balance:"/>
@@ -78,24 +81,24 @@
                     <!-- HL WITH SPOT EQUITY -->
                     <div class="w-full" v-if="payment.reservation_type == 2">
                         <div class="flex gap-4 my-2">
-                            <div class="w-1/2"> <readonly-form label="Required Equity" :value="payment.required_equity_amount" /> </div>
-                            <div class="w-1/2"> <readonly-form label="Equity Less of Reservation:" :value="payment.equity_net_of_reservation_fee" /> </div>
+                            <div class="w-1/2"> <readonly-form label="Required Equity" :value="formatDisplay(payment.required_equity_amount)" /> </div>
+                            <div class="w-1/2"> <readonly-form label="Equity Less of Reservation:" :value="formatDisplay(payment.equity_net_of_reservation_fee)" /> </div>
                         </div>
                         <div class="flex gap-4 my-2">
                             <div class="w-1/2"> <readonly-form label="Discount (%):" :value="payment.spot_cash_equity_less_percentage" /> </div>
-                            <div class="w-1/2"> <readonly-form label="Total Discount (PHP)" :value="payment.spot_cash_equity_less_amount" /> </div>
+                            <div class="w-1/2"> <readonly-form label="Total Discount (PHP)" :value="formatDisplay(payment.spot_cash_equity_less_amount)" /> </div>
 
                         </div>
                         <div class="flex gap-4 my-2">
-                            <div class="w-1/2"> <readonly-form label="Net Equity Payable" :value="payment.net_equity_less_discount" /> </div>
-                            <div class="w-1/2"> <readonly-form label="Required Loanable Amount" :value="payment.balance_loanable_amount" /> </div>
+                            <div class="w-1/2"> <readonly-form label="Net Equity Payable" :value="formatDisplay(payment.net_equity_less_discount)" /> </div>
+                            <div class="w-1/2"> <readonly-form label="Required Loanable Amount" :value="formatDisplay(payment.balance_loanable_amount)" /> </div>
 
                         </div>
                         <div class="full my-2">
                             <label-component label="Running Balance:"/>
                             <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                                 <input type="text"
-                                    v-model="running_balance"
+                                    :value="formatDisplay(running_balance)"
                                     class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                     readonly disabled>
                             </div>
@@ -104,7 +107,7 @@
                             <label-component label="Total Payments Made:"/>
                             <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                                 <input type="text"
-                                    v-model="total_payments_made"
+                                    :value="formatDisplay(total_payments_made)"
                                     class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                     readonly disabled>
                             </div>
@@ -113,17 +116,17 @@
 
                     <!-- HL SPOT CASH -->
                     <div class="w-full" v-if="payment.reservation_type == 3">
-                        <div class="full my-2"> <readonly-form label="TCP Net of Reservation" :value="payment.net_total_contract_price" /> </div>
+                        <div class="full my-2"> <readonly-form label="TCP Net of Reservation" :value="formatDisplay(payment.net_total_contract_price)" /> </div>
                         <div class="flex gap-4 my-2">
-                            <div class="w-1/2"> <readonly-form label="Discount (%):" :value="payment.spot_cash_discount_less_percentage" /> </div>
-                            <div class="w-1/2"> <readonly-form label="Discount Amount (PHP)" :value="payment.spot_cash_discount_less_amount" /> </div>
+                            <div class="w-1/2"> <readonly-form label="Discount (%):" :value="formatDisplay(payment.spot_cash_discount_less_percentage)" /> </div>
+                            <div class="w-1/2"> <readonly-form label="Discount Amount (PHP)" :value="formatDisplay(payment.spot_cash_discount_less_amount)" /> </div>
                         </div>
-                        <div class="full my-2"> <readonly-form label="Total TCP Payable" :value="payment.balance_total_contract_price" /> </div>
+                        <div class="full my-2"> <readonly-form label="Total TCP Payable" :value="formatDisplay(payment.balance_total_contract_price)" /> </div>
                         <div class="full my-2">
                             <label-component label="TCP Balance:"/>
                             <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                                 <input type="text"
-                                    v-model="running_balance"
+                                    :value="formatDisplay(running_balance)"
                                     class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                     readonly disabled>
                             </div>
@@ -132,7 +135,7 @@
                             <label-component label="Total Payments Made:"/>
                             <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                                 <input type="text"
-                                    v-model="total_payments_made"
+                                    :value="formatDisplay(total_payments_made)"
                                     class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                     readonly disabled>
                             </div>
@@ -141,14 +144,14 @@
 
                     <!-- DEFERRED CASH -->
                     <div class="w-full" v-if="payment.reservation_type == 4">
-                        <div class="full my-2"> <readonly-form label="TCP Net of Reservation" :value="payment.balance_amount_after_reservation" /> </div>
+                        <div class="full my-2"> <readonly-form label="TCP Net of Reservation" :value="formatDisplay(payment.balance_amount_after_reservation)" /> </div>
                         <div class="full my-2"> <readonly-form label="Number of months payable" :value="payment.installment_months" /> </div>
-                        <div class="full my-2"> <readonly-form label="Monthly Amortization" :value="payment.monthly_installment" /> </div>
+                        <div class="full my-2"> <readonly-form label="Monthly Amortization" :value="formatDisplay(payment.monthly_installment)" /> </div>
                         <div class="full my-2">
                             <label-component label="TCP Balance:"/>
                             <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                                 <input type="text"
-                                    v-model="running_balance"
+                                    :value="formatDisplay(running_balance)"
                                     class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                     readonly disabled>
                             </div>
@@ -157,7 +160,7 @@
                             <label-component label="Total Payments Made:"/>
                             <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                                 <input type="text"
-                                    v-model="total_payments_made"
+                                    :value="formatDisplay(total_payments_made)"
                                     class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
                                     readonly disabled>
                             </div>
@@ -205,35 +208,35 @@
 
                 <!-- <div v-else> RESERVATION TYPE ERROR  </div> -->
 
-                <div class="mb-8 overflow-x-scroll">
+                <div class="mb-8">
                     <div class="full my-4 bg-gray-200">
                         <p class="text-center pt-2 font-semibold text-lg"> PAYMENT DETAILS </p>
                         <p class="text-center pb-2 font-regular text-xs" v-if="buyer.status"> ( Click on specific payment to edit ) </p>
                     </div>
-                    
-                    <!-- CHECK FOR MANAGER CREDENTIALS IF REQUESTING FOR EDIT -->
-                    <div class="full m-4 border-4 rounded-md" v-if="this.isRequestingEdit">
-                        <p class="align-middle text-center text-md my-1 pt-8"> INPUT CREDENTIALS TO EDIT </p>
-                        <p class="align-middle text-center text-sm font-bold my-1 pb-2"> {{ formatDate(clickedPayment.payment_date) }} {{ clickedPayment.remarks }} </p>
-                        <div class="w-full flex mx-auto justify-center items-center my-2 gap-4">
-                            <input-form label="Username:" v-model="inputtedCredentials.username"/>
-                            <password-form label="Password: " v-model="inputtedCredentials.password"/>
-                        </div>
-                        <p class="align-middle text-center text-sm text-red-700 font-bold my-1 py-2" v-if="this.incorrectCredentials"> Incorrect credentials. Please try again. </p>
-                        <div class="w-full flex mx-auto justify-center items-center my-4 gap-4">
-                            <button type="button" v-on:click="checkCredentials"
-                                class="w-1/5 bg-gray-200 p-2 align-middle text-black font-bold border rounded-md my-2">
-                                SUBMIT
-                            </button>
-                            <button type="button" v-on:click="cancelEdit"
-                                class="w-1/5 bg-gray-200 p-2 align-middle text-black font-bold border rounded-md my-2">
-                                CANCEL
-                            </button>
-                        </div>
-                    </div>
 
-                    <div class="flex flex-wrap">
-                        <div class="w-4/6 flex">
+                    <!-- CHECK FOR MANAGER CREDENTIALS IF REQUESTING FOR EDIT -->
+                        <div class="full m-4 border-4 rounded-md" v-if="this.isRequestingEdit">
+                            <p class="align-middle text-center text-md my-1 pt-8"> INPUT CREDENTIALS TO EDIT </p>
+                            <p class="align-middle text-center text-sm font-bold my-1 pb-2"> {{ formatDate(clickedPayment.payment_date) }} {{ clickedPayment.remarks }} </p>
+                            <div class="w-full flex mx-auto justify-center items-center my-2 gap-4">
+                                <input-form label="Username:" v-model="inputtedCredentials.username"/>
+                                <password-form label="Password: " v-model="inputtedCredentials.password"/>
+                            </div>
+                            <p class="align-middle text-center text-sm text-red-700 font-bold my-1 py-2" v-if="this.incorrectCredentials"> Incorrect credentials. Please try again. </p>
+                            <div class="w-full flex mx-auto justify-center items-center my-4 gap-4">
+                                <button type="button" v-on:click="checkCredentials"
+                                    class="w-1/5 bg-gray-200 p-2 align-middle text-black font-bold border rounded-md my-2">
+                                    SUBMIT
+                                </button>
+                                <button type="button" v-on:click="cancelEdit"
+                                    class="w-1/5 bg-gray-200 p-2 align-middle text-black font-bold border rounded-md my-2">
+                                    CANCEL
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap">
+                            <div class="w-4/6 flex">
                             <div class="w-full"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Date </p> </div>
                             <div class="w-full"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Description </p> </div>
                             <div class="w-full"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Payment Via </p> </div>
@@ -250,11 +253,13 @@
                         </div> -->
                     </div>
 
-                    <div class="h-96 mx-1">
-                        <div class="overflow-y-auto h-full">
-                            <div v-for="single_payment in previous_payees_payments" :key="single_payment.id">
-                                    <single-payment v-bind:buyer_payment="single_payment" v-on:click.native="editPayment(single_payment)"/>
-                            
+                    <div class="overflow-x-scroll">
+                        <div class="max-h-96 mx-1">
+                            <div class="overflow-y-auto h-full">
+                                <div v-for="single_payment in previous_payees_payments" :key="single_payment.id">
+                                        <single-payment v-bind:buyer_payment="single_payment" v-on:click.native="editPayment(single_payment)"/>
+                                
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -273,7 +278,6 @@
                             Back to Reservation Details
                         </button>
                     </div>
-
                 </div>
 
             </div>
@@ -427,7 +431,7 @@
                         if(this.payment.reservation_type == 1) {
                             this.running_equity_balance = this.payment.required_equity_amount - this.total_payments_made
                         } else if(this.payment.reservation_type == 2) {
-                            this.running_balance = this.payment.total_contract_price - this.payment.equity_net_of_reservation_fee - this.total_payments_made
+                            this.running_balance = this.payment.balance_loanable_amount - (this.total_payments_made - this.payment.equity_net_of_reservation_fee)
                         } else if(this.payment.reservation_type == 3) {
                             this.running_balance = this.payment.balance_total_contract_price - this.total_payments_made
                         } else if(this.payment.reservation_type == 4) {
@@ -456,25 +460,25 @@
                 this.$router.push({ name: "Add-Payment", params: { id: this.buyer.id, buyer: this.buyer, payment: this.payment }})
             },
             formatDate(value) {
-                return value.toDateString().replace(/^\S+\s/,'')
+                return value && value.toDateString() ? value.toDateString().replace(/^\S+\s/,'') : value
             },
             formatDisplay(value) {
-               return `${(value.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
+               return value ? `${(value.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}` : value
             },
             exportPayment() {
-                console.log('Exporting Payment for Buyer', this.buyer.last_name)
+                console.log('Exporting Payment for Buyer', this.buyer.last_name, this.buyer.phase)
                 // const buyer = this.buyer
                 const { project, block, lot } = this.buyer
-                // const phase = this.buyer.phase ? this.buyer.phase.name : 'N/A'
-                const phase = "N/A"
+                const phase = this.buyer.phase ? this.buyer.phase : 'N/A'
+                // const phase = "N/A"
                 const reservation = this.buyer.payment
+                console.log('BUYER RESERVATION', reservation)
                 const buyer_payments = this.previous_payees_payments
                 const buyer_name = `${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
 
-                
                 const homedir = require('os').homedir();
-                const file_name = `${project.name.toUpperCase()} ${block.name.toUpperCase()} ${lot.name.toUpperCase()} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
-                
+                const file_name = `${block.name.toUpperCase()} ${lot.name.toUpperCase()} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+
                 var xl = require('excel4node');
                 var wb = new xl.Workbook();
                 const ws = wb.addWorksheet(`${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`);
@@ -641,6 +645,31 @@
                     
                 } else {
                     // reservation format for lot only
+                    console.log('lot only')
+                    ws.cell(++r, col['A']).string("BUYER'S NAME").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    ws.cell(r, col['B'], r, col['D'], true).string(buyer_name).style(left_aligned_style).style(regular_style)
+                    ws.cell(r, col['E'], r, col['G'], true).string("TOTAL CONTRACT PRICE").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    ws.cell(r, col['H']).string(this.formatDisplay(reservation.total_contract_price)).style(bordered_style).style(aligned_style).style(regular_style)
+                    
+                    ws.cell(++r, col['A']).string("PHASE").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    ws.cell(r, col['B'], r, col['D'], true).string(phase).style(bordered_style).style(left_aligned_style).style(regular_style)
+                    ws.cell(r, col['E'], r, col['G'], true).string("RUNNING TCP BALANCE").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    ws.cell(r, col['H']).string(this.formatDisplay(this.running_tcp_balance)).style(bordered_style).style(aligned_style).style(regular_style)
+                    
+                    ws.cell(++r, col['A']).string("BLOCK - LOT").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    ws.cell(r, col['B'], r, col['D'], true).string(`${block.name} ${lot.name}`).style(bordered_style).style(left_aligned_style).style(regular_style)
+                    ws.cell(r, col['E'], r, col['G'], true).string("TOTAL PAYMENTS MADE").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    ws.cell(r, col['H']).string(this.formatDisplay(this.total_payments_made)).style(bordered_style).style(aligned_style).style(regular_style)
+
+                    // ws.cell(++r, col['A']).string("LOT").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    // ws.cell(r, col['B'], r, col['D'], true).string(lot.name).style(bordered_style).style(left_aligned_style).style(regular_style)
+                    // ws.cell(r, col['E'], r, col['G'], true).string("RUNNING EQUITY BALANCE").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    // ws.cell(r, col['H']).string(this.formatDisplay(this.running_equity_balance)).style(bordered_style).style(aligned_style).style(regular_style)
+                    
+                    // ws.cell(++r, col['A']).string("RESERVATION FEE").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    // ws.cell(r, col['B'], r, col['D'], true).string(this.formatDisplay(reservation.reservation_fee)).style(bordered_style).style(left_aligned_style).style(regular_style)
+                    // ws.cell(r, col['E'], r, col['G'], true).string("RUNNING TCP BALANCE").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    // ws.cell(r, col['H']).string(this.formatDisplay(this.running_tcp_balance)).style(bordered_style).style(aligned_style).style(regular_style)
                 }
 
                 ws.cell(++r, col['A'], r, col['H'], true).string('DETAILS OF PAYMENT').style(bordered_style).style(aligned_style).style(header_style)
@@ -682,8 +711,26 @@
                 // to change destination path
                 // wb.write(`PAYMENT - ${file_name}.xlsx`);
                 
-                wb.write(`${homedir}/MYHOME/Payments/${file_name}.xlsx`);
+                // wb.write(`${homedir}/MYHOME/Payments/${file_name}.xlsx`);
                 // wb.write(`./outputs/${buyer_name}.xlsx`);
+
+                switch(project.id) {
+                    case 1:
+                        console.log('unit project MYHOME')
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/MYHOME/Payments/${file_name}.xlsx`); break;
+                    case 2:
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/MYHOME-DOS/Payments/${file_name}.xlsx`); break;
+                    case 3:
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/GREGORY-HOMES/Payments/${file_name}.xlsx`); break;
+                    case 4:
+                        const laurence_file = `${this.buyer.phase} ${block.name.toUpperCase()} ${lot.name.toUpperCase()} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/LAURENCE-VILLE/Payments/${laurence_file}.xlsx`); break;                    
+                    case 5:
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/SAN-ISIDRO-ENCLAVE/Payments/${file_name}.xlsx`); break;
+                    default: break;
+                }
+
+                alert('DONE EXPORTING')
                 console.log('Done Exporting Payment for Buyer', this.buyer.id)
             }
         }
