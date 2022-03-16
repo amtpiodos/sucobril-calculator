@@ -1,6 +1,23 @@
 <template>
     <div>
         <main-header />
+        <div class="flex my-5 mx-24 ">
+            <div class="w-1/2">
+                <div class="text-xs font-bold"> TUMABINI REAL ESTATE DEVELOPMENT </div>
+                <div class="text-xs"> 133 MC Briones St., Hiway Bakilid, Mandaue City 6014 </div>
+                <div class="text-xs"> Contact: (032) 260-1522  Email: tumabinidevelopment@gmail.com </div>
+            </div>
+            <div class="w-full">
+                <div class="flex items-right justify-right gap-8">
+                    <button class="w-1/3"> </button>
+                    <button class="w-1/3"> </button>
+                    <button type="button" v-on:click="backToReservationTypes()"
+                        class="bg-gray-500 p-4 w-1/3 items-center align-center text-white font-regular border rounded-md mb-4">
+                        Back To Reservation Types
+                    </button>
+                </div>
+            </div>
+        </div>
         <div class="my-5 mx-24 px-5">
             <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-lg"> RA - FORM 2A - LO </p> </div>
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 p-1">
@@ -115,6 +132,9 @@
             console.log('ADD BUYER FORM mounted STATE.UNIT', this.$store.state.unit)
         },
         methods: {
+            backToReservationTypes() {
+                this.$router.push({ name: "Choose-Reservation-Type"})
+            },
             getDate() {
                 const today = new Date()
                 this.payment_details.date = today

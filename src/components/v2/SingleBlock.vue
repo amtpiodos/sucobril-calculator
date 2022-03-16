@@ -11,7 +11,8 @@
                 'block_id',
                 'block_status',
                 'project_id',
-                'has_phase'],
+                'has_phase',
+                'phase_id'],
         data() {
             return {
                 status: this.block_status === 0 ? 'Available' : 'Sold Out',
@@ -24,7 +25,12 @@
             fetchBlock(block_id, block_name) {
                 const block = { block_id, block_name }
                 this.$store.dispatch('unit/setBlock', block)
-                this.$router.push({ name: "Lots", params: { id: block_id, name: block_name, project_id: this.project_id }})
+                this.$router.push({ name: "Lots", params: {
+                    id: block_id,
+                    name: block_name,
+                    project_id: this.project_id,
+                    phase_id: this.phase_id
+                }})
             }
         }
     })

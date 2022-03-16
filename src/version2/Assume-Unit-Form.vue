@@ -125,7 +125,8 @@
                 if(reservation_type == 1
                     || reservation_type == 2
                     || reservation_type == 3
-                    || reservation_type == 4) {
+                    || reservation_type == 4
+                    || reservation_type == 8) {
                         console.log('ASSUMING BUYER HL')
                         ipcRenderer.send('assume-HL-unit', dataToSubmit)
                         ipcRenderer.once('assumed-HL-unit', (event, data) => {
@@ -172,7 +173,8 @@
                 } else if(reservation_type == 1
                     || reservation_type == 2
                     || reservation_type == 3
-                    || reservation_type == 4) {
+                    || reservation_type == 4
+                    || reservation_type == 8) {
                         this.$router.push({name: 'View-Buyer-HL', params: { id: this.newBuyer.id }})
                 } else {
                     alert(`VIEW BUYER ERROR: Incorrect reservation type ${reservation_type}`)

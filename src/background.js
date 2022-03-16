@@ -1037,6 +1037,19 @@ function makeBuyerInactive(id) {
 //   return knex
 // }
 
+// function getDbConnection() {
+//   const knex = require('knex')({
+//     client: 'mysql',
+//     connection: {
+//       host: '192.168.1.41',
+//       user: 'user',
+//       password: 'password',
+//       database: 'tumabini_db'
+//     }
+//   })
+//   return knex
+// }
+
 function getDbConnection() {
   console.log('getdbconnection')
   const knex = require('knex')({

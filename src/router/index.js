@@ -153,6 +153,12 @@ const routes = [
   },
 
   {
+    path: '/ra-form-1a-inhouse-financing',
+    name: 'RA-Form-1A-HL-Inhouse-Financing',
+    component: () => import('../version2/RA-Form-1A-HL-Inhouse-Financing')
+  },
+
+  {
     path: '/view-buyer-LO/:id',
     name: 'View-Buyer-LO',
     component: () => import('../version2/View-Buyer-LO'),

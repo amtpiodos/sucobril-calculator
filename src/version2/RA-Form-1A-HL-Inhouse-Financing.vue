@@ -56,7 +56,7 @@
                     </div>
                 </div>
 
-                <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION </p> </div>
+                <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> INHOUSE FINANCING </p> </div>
                 <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                     <!-- TOTAL CONTRACT PRICE -->
                     <div class="flex px-4 gap-4 my-2">
@@ -71,21 +71,7 @@
                         </div>
                     </div>
 
-                    <!-- REQUIRED EQUITY if reservation date is before 2021 and is Laurence Ville -->
-                    <div class="flex px-4 gap-4 my-2" v-if="dateIsBefore2021 && unit.project_id == 4">
-                        <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Required Equity Amount: </p> </div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4">
-                            <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
-                                <input type="text"
-                                    :value="formatDisplay(payment_details.required_equity_amount)"
-                                    @change="updateREA"
-                                    class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
-                            </div> </div>
-                        </div>
-                    </div>
-
-                    <!-- ELSE Normal Regular Reservation -->
-                    <div class="flex px-4 gap-4 my-2" v-else>
+                    <div class="flex px-4 gap-4 my-2">
                         <div class="w-1/4 items-center py-2 mt-1">
                             <p class="align-middle text-right text-xs font-bold">Required Equity
                                 <input type="number"
@@ -165,21 +151,8 @@
                         </div>
                     </div>
 
-                    <!-- BALANCE LOANABLE if reservation date is before 2021 and is Laurence Ville -->
-                    <div class="flex px-4 gap-4 my-2" v-if="dateIsBefore2021 && unit.project_id == 4">
-                        <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity: </p> </div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4">
-                            <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
-                                <input type="text"
-                                    :value="formatDisplay(payment_details.balance_loanable_amount)"
-                                    @change="updateBLA"
-                                    class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
-                            </div> </div>
-                        </div>
-                    </div>
-
                     <!-- NORMAL BALANCE LOANABLE  -->
-                    <div class="flex px-4 gap-4 my-2" v-else>
+                    <div class="flex px-4 gap-4 my-2">
                         <div class="w-1/4 items-center py-2">
                             <p class="align-middle text-right text-xs font-bold">Balance Loanable Amount <br/> After Equity
                                 <input type="text"
@@ -197,29 +170,6 @@
                                     readonly disabled>
                             </div>
                         </div> </div>
-                    </div>
-
-                    <!-- NEW BALANCE LOANABLE if project is GREGORY HOMES -->
-                    <div v-if="unit.project_id == 3" class="flex px-4 gap-4 my-2">
-                        <div class="w-1/4 items-center py-2 my-2">
-                            <p class="align-middle text-right text-xs font-bold">
-                                New Balance Loanable Amount 
-                            </p>
-                            <div class="float-right">
-                                <label class="flex items-center">
-                                    <input type="checkbox" class="form-checkbox" v-model="addOn100k" v-on:change="updateCalculations()"/>
-                                    <span class="text-xs text-right ml-2 font-bold">(Add-on Php 100,000.00):</span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="w-3/4"> <div class="items-starts w-3/4">
-                            <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
-                                <input type="text"
-                                    :value="formatDisplay(payment_details.new_balance_loanable_amount)"
-                                    class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase bg-gray-100"
-                                    readonly disabled>
-                            </div>
-                        </div></div>
                     </div>
 
                     <div class="flex items-center my-4">
@@ -302,7 +252,7 @@
                     balance_loanable_percentage: '',
                     balance_loanable_amount: '',
                     new_balance_loanable_amount: '',
-                    reservation_type: 1,
+                    reservation_type: 8,
                 },
                 // for gregory homes
                 addOn100k: true
@@ -420,11 +370,6 @@
                 this.payment_details.total_contract_price = this.formatParsedFloat(this.payment_details.total_contract_price)
                 this.payment_details.reservation_fee = this.formatParsedFloat(this.payment_details.reservation_fee)
 
-                // format for Laurence Ville 2019-2020
-                if(this.unit.project_id == 4 && this.dateIsBefore2021) {
-                    this.payment_details.required_equity_amount = this.formatParsedFloat(this.payment_details.required_equity_amount)
-                    this.payment_details.balance_loanable_amount = this.formatParsedFloat(this.payment_details.balance_loanable_amount)
-                }
                 const dataToSubmit = {  buyer: this.buyer,
                                         unit: this.unit,
                                         payment_details: this.payment_details }
@@ -448,7 +393,7 @@
                 })
             },
             autoExport() {
-                console.log('AutoExport after Adding Buyer, 1A-HL Regular Reservation')
+                console.log('AutoExport after Adding Buyer, 1A-HL Inhouse Financing')
                 const homedir = require('os').homedir();
                 
                 const buyer_name = `${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
@@ -520,7 +465,7 @@
                 ws.cell(++r, col['A'], ++r, col['H'], true).string('133 MC Briones St., Hi-way Bakilid, Mandaue City 6014 Tel#: 032 414-5103, 09564791879 Email: tumabinidevelopment@gmail.com').style(regular_style).style(aligned_style).style({font: {size: 8}})
                 ws.cell(r-1, col['I']).string('ANNEX A').style(bold_header_style).style({font: {size: 10}, alignment: {horizontal: 'right'}})
 
-                ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET').style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET - INHOUSE FINANCING').style(bordered_style).style(aligned_style).style(header_style)
 
                 ws.cell(++r, col['A']).string(` BUYER'S NAME: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(buyer_name).style(regular_style)
@@ -564,7 +509,7 @@
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
 
-                ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET - REGULAR RESERVATION').style(bordered_style).style(aligned_style).style(header_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET - INHOUSE FINANCING').style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
 
                 ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (inclusive of transfer fee charges and move-in fee): `).style(italic_rightaligned_style)
@@ -603,11 +548,11 @@
                 ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
                 ws.cell(r, col['H'], r, col['I'], true).string(balance_loanable_amount).style(center_bold)
 
-                if(this.unit.project_id == 3) {
-                    ws.cell(++r, col['A'], r, col['F'], true).string(` New Balance Loanable Amount (add-on 100k): `).style(italic_rightaligned_style)
-                    ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).string(new_balance_loanable_amount).style(center_bold)
-                }
+                // if(this.unit.project_id == 3) {
+                //     ws.cell(++r, col['A'], r, col['F'], true).string(` New Balance Loanable Amount (add-on 100k): `).style(italic_rightaligned_style)
+                //     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
+                //     ws.cell(r, col['H'], r, col['I'], true).string(new_balance_loanable_amount).style(center_bold)
+                // }
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
                 ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(bordered_style).style(aligned_style).style(header_style)
@@ -615,22 +560,48 @@
                 ws.cell(++r, col['A'], r, col['I'], true).string(` 2. The balance amount shall be loanable to bank / PAG-IBIG financinng.`).style(italic_leftaligned_style)
                 ws.cell(++r, col['A'], r, col['I'], true).string(` 3. For cash payment of balance amount, it shall be paid on or before 30 days after last payment of monthly equity.`).style(italic_leftaligned_style)
 
+                // ws.cell(++r, col['A'], r, col['I'], true).string('Sample Computation for Bank/Pag-ibig Financing').style(bordered_style).style(aligned_style).style(header_style)
+                // ws.cell(++r, col['A'], r, col['I'], true).string(`Sample Computation at 6.00% annual interest rate`).style(italic_leftaligned_style)
+                // ws.cell(++r, col['B'], r, col['C'], true).string(`30 years`).style(italic_leftaligned_style)
+                // ws.cell(r, col['D'], r, col['E'], true).string(`14,548.76 / month`).style(italic_leftaligned_style)            
+                // ws.cell(r, col['F'], r, col['G'], true).string(`15 years`).style(italic_leftaligned_style)
+                // ws.cell(r, col['H']).string(`20,477.12 / month`).style(italic_leftaligned_style)
+                
+                // ws.cell(++r, col['B'], r, col['C'], true).string(`25 years`).style(italic_leftaligned_style)
+                // ws.cell(r, col['D'], r, col['E'], true).string(`15,634.69 / month`).style(italic_leftaligned_style)        
+                // ws.cell(r, col['F'], r, col['G'], true).string(`10 years`).style(italic_leftaligned_style)
+                // ws.cell(r, col['H']).string(`26,940.36 / month`).style(italic_leftaligned_style)
+                
+                // ws.cell(++r, col['B'], r, col['C'], true).string(`20 years`).style(italic_leftaligned_style)
+                // ws.cell(r, col['D'], r, col['E'], true).string(`17,385.00 / month`).style(italic_leftaligned_style)     
+                // ws.cell(r, col['F'], r, col['G'], true).string(`5 years`).style(italic_leftaligned_style)
+                // ws.cell(r, col['H']).string(`46,913.19 / month`).style(italic_leftaligned_style)
+
+
+                const rate30 = this.formatDisplay((0.006992145 * parseFloat(balance_loanable_amount)))
+                const rate25 = this.formatDisplay((0.007389912 * parseFloat(balance_loanable_amount)))
+                const rate20 = this.formatDisplay((0.008055932 * parseFloat(balance_loanable_amount)))
+                const rate15 = this.formatDisplay((0.009270124 * parseFloat(balance_loanable_amount)))
+                const rate10 = this.formatDisplay((0.011870177 * parseFloat(balance_loanable_amount)))
+                const rate5 = this.formatDisplay((0.020037949 * parseFloat(balance_loanable_amount)))
+
+                console.log(new_balance_loanable_amount, typeof(balance_loanable_amount))
                 ws.cell(++r, col['A'], r, col['I'], true).string('Sample Computation for Bank/Pag-ibig Financing').style(bordered_style).style(aligned_style).style(header_style)
-                ws.cell(++r, col['A'], r, col['I'], true).string(`Sample Computation at 6.00% annual interest rate`).style(italic_leftaligned_style)
+                ws.cell(++r, col['A'], r, col['I'], true).string(`Sample Computation at 7.50% annual interest rate`).style(italic_leftaligned_style)
                 ws.cell(++r, col['B'], r, col['C'], true).string(`30 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['D'], r, col['E'], true).string(`14,548.76 / month`).style(italic_leftaligned_style)            
+                ws.cell(r, col['D'], r, col['E'], true).string(`${rate30} / month`).style(italic_leftaligned_style)            
                 ws.cell(r, col['F'], r, col['G'], true).string(`15 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['H']).string(`20,477.12 / month`).style(italic_leftaligned_style)
-                
+                ws.cell(r, col['H']).string(`${rate15} / month`).style(italic_leftaligned_style)
+                    
                 ws.cell(++r, col['B'], r, col['C'], true).string(`25 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['D'], r, col['E'], true).string(`15,634.69 / month`).style(italic_leftaligned_style)        
+                ws.cell(r, col['D'], r, col['E'], true).string(`${rate25} / month`).style(italic_leftaligned_style)        
                 ws.cell(r, col['F'], r, col['G'], true).string(`10 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['H']).string(`26,940.36 / month`).style(italic_leftaligned_style)
-                
+                ws.cell(r, col['H']).string(`${rate10} / month`).style(italic_leftaligned_style)
+                    
                 ws.cell(++r, col['B'], r, col['C'], true).string(`20 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['D'], r, col['E'], true).string(`17,385.00 / month`).style(italic_leftaligned_style)     
+                ws.cell(r, col['D'], r, col['E'], true).string(`${rate20} / month`).style(italic_leftaligned_style)     
                 ws.cell(r, col['F'], r, col['G'], true).string(`5 years`).style(italic_leftaligned_style)
-                ws.cell(r, col['H']).string(`46,913.19 / month`).style(italic_leftaligned_style)
+                ws.cell(r, col['H']).string(`${rate5} / month`).style(italic_leftaligned_style)
 
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
@@ -684,6 +655,8 @@
                         wb.write(`${homedir}/TUMABINI-PROJECTS/GREGORY-HOMES/Reservations/${file_name}.xlsx`); break;
                     case 4:
                         wb.write(`${homedir}/TUMABINI-PROJECTS/LAURENCE-VILLE/Reservations/${phase}-${file_name}.xlsx`); break;
+                    case 6:
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/FATIMA-HEIGHTS/Reservations/${file_name}.xlsx`); break;
                     default: break;
                 }
 

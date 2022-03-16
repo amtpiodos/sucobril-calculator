@@ -498,6 +498,8 @@
                         wb.write(`${homedir}/TUMABINI-PROJECTS/GREGORY-HOMES/Reservations/${file_name}.xlsx`); break;
                     case 4:
                         wb.write(`${homedir}/TUMABINI-PROJECTS/LAURENCE-VILLE/Reservations/${file_name}.xlsx`); break;
+                    case 6:
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/FATIMA-HEIGHTS/Reservations/${phase}-${file_name}.xlsx`); break;
                     default: break;
                 }
 

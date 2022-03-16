@@ -14,7 +14,11 @@
                 <div class="flex items-right justify-right gap-8">
                     <button class="w-1/3"> </button>
                     <button class="w-1/3"> </button>
-                    <button type="button" v-on:click="backToProjects"
+                    <button type="button" v-if="has_phase" v-on:click="backToPhases"
+                        class="bg-gray-500 p-4 w-1/3 items-center align-center text-white font-regular border rounded-md mb-4">
+                        Back To Phases
+                    </button>
+                    <button type="button" v-else v-on:click="backToProjects"
                         class="bg-gray-500 p-4 w-1/3 items-center align-center text-white font-regular border rounded-md mb-4">
                         Back To Projects
                     </button>
@@ -28,6 +32,7 @@
                             v-bind:block_status="block.status"
                             v-bind:project_id="project_id"
                             v-bind:has_phase="has_phase"
+                            v-bind:phase_id="phase_id"
                             project_logo="../../assets/img/p2.jpeg"/>
             </div>
         </div>
@@ -61,11 +66,21 @@
             this.$store.dispatch('unit/setBlock', {})
             this.$store.dispatch('unit/setLot', {})
             this.fetchBlocks()
-            console.log('ROUTE', this.$route.fullPath)
+            console.log('ROUTE', this.$route.fullPath, this.$route.params)
+            console.log('UNIT', this.$store.state.unit)
         },
         methods: {
             backToProjects() {
                 this.$router.push({ name: 'Projects'})
+            },
+            backToPhases() {
+                this.$router.push({ name: "Phases",
+                                    params: { 
+                                        id: this.project_id,
+                                        name: this.project_name,
+                                        location: this.project_location
+                                    }
+                                })
             },
             fetchBlocks() {
                 console.log('store project', this.$store.state.unit.project.project_id)

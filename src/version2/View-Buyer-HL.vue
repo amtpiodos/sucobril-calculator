@@ -89,10 +89,11 @@
                         </button>
                     </div>
 
-                    <!-- HOUSE AND LOT REGULAR RESERVATION -->
-                    <div v-if="buyer.reservation_type==1">
+                    <!-- HOUSE AND LOT REGULAR RESERVATION or IN HOUSE FINANCING -->
+                    <div v-if="buyer.reservation_type==1 || buyer.reservation_type == 8">
                         <div class="full m-4 bg-gray-200">
-                            <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION </p>
+                            <p class="text-center py-2 font-bold text-md" v-if="buyer.reservation_type == 1"> REGULAR RESERVATION </p>
+                            <p class="text-center py-2 font-bold text-md" v-else-if="buyer.reservation_type == 8"> INHOUSE FINANCING </p>
                             <!-- <p class="text-center pb-2 font-regular text-sm" v-if="buyer.status" v-on:click="editReservation()"> Edit Reservation </p> -->
                         </div>
                         <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
@@ -128,7 +129,6 @@
                                 <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.required_equity_amount)" /> </div> </div>
                             </div>
 
-                            
                             <div class="flex px-4 gap-4 my-2">
                                 <div class="w-1/4 items-center py-2 my-2"> <p class="align-middle text-right text-xs font-bold">Reservation Fee: </p></div>
                                 <div class="w-3/4"> <div class="items-starts w-3/4"> <readonly-form :value="formatDisplay(buyer.payment.reservation_fee)" /> </div> </div>
@@ -678,8 +678,12 @@
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
 
-                if(reservationType == 1) {
-                    ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET - REGULAR RESERVATION').style(bordered_style).style(aligned_style).style(header_style)
+                if(reservationType == 1 || reservationType == 8) {
+                    if(reservationType == 1) {
+                        ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET - REGULAR RESERVATION').style(bordered_style).style(aligned_style).style(header_style)
+                    } else if(reservationType == 8) {
+                        ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET - INHOUSE FINANCING').style(bordered_style).style(aligned_style).style(header_style)
+                    }
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (inclusive of transfer fee charges and move-in fee): `).style(italic_rightaligned_style)
@@ -829,19 +833,30 @@
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                 }
                 
-                if(reservationType == 1 || reservationType == 4) {
-                    // ws.cell(++r, col['A'], r, col['I'], true).string('')
-                    // ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(bordered_style).style(aligned_style).style(header_style)
-                    // ws.cell(++r, col['A'], r, col['I'], true).string(` 1. Failure to pay the first monthly equity after 30 days after reservation date shall mean cancelled & forefeited reservation. `).style(italic_leftaligned_style)
-                    // ws.cell(++r, col['A'], r, col['I'], true).string(` 2. The balance amount shall be loanable to bank / PAG-IBIG financinng.`).style(italic_leftaligned_style)
-                    // ws.cell(++r, col['A'], r, col['I'], true).string(` 3. For cash payment of balance amount, it shall be paid on or before 30 days after last payment of monthly equity.`).style(italic_leftaligned_style)
-
-                    const rate30 = this.formatDisplay((0.005995505 * parseFloat(this.buyer.payment.balance_loanable_amount)))
-                    const rate25 = this.formatDisplay((0.006443014 * parseFloat(this.buyer.payment.balance_loanable_amount)))
-                    const rate20 = this.formatDisplay((0.007164311 * parseFloat(this.buyer.payment.balance_loanable_amount)))
-                    const rate15 = this.formatDisplay((0.008438568 * parseFloat(this.buyer.payment.balance_loanable_amount)))
-                    const rate10 = this.formatDisplay((0.01110205 * parseFloat(this.buyer.payment.balance_loanable_amount)))
-                    const rate5 = this.formatDisplay((0.0193328082 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                if(reservationType == 1 || reservationType == 4 || reservationType == 8) {
+                    let rate30 = 0
+                    let rate25 = 0
+                    let rate20 = 0
+                    let rate15 = 0
+                    let rate10 = 0
+                    let rate5 = 0
+ 
+                    if(reservationType == 1 || reservationType == 4) {
+                        rate30 = this.formatDisplay((0.005995505 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        rate25 = this.formatDisplay((0.006443014 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        rate20 = this.formatDisplay((0.007164311 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        rate15 = this.formatDisplay((0.008438568 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        rate10 = this.formatDisplay((0.01110205 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        rate5 = this.formatDisplay((0.0193328082 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                    } else if(reservationType == 8) {
+                        rate30 = this.formatDisplay((0.006992145 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        rate25 = this.formatDisplay((0.007389912 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        rate20 = this.formatDisplay((0.008055932 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        rate15 = this.formatDisplay((0.009270124 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        rate10 = this.formatDisplay((0.011870177 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        rate5 = this.formatDisplay((0.020037949 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                    }
+                    
 
                     ws.cell(++r, col['A'], r, col['I'], true).string('Sample Computation for Bank/Pag-ibig Financing').style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(++r, col['A'], r, col['I'], true).string(`Sample Computation at 6.00% annual interest rate`).style(italic_leftaligned_style)
@@ -860,7 +875,6 @@
                     ws.cell(r, col['F'], r, col['G'], true).string(`5 years`).style(italic_leftaligned_style)
                     ws.cell(r, col['H']).string(`${rate5} / month`).style(italic_leftaligned_style)
                 }
-                
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
                 ws.cell(++r, col['A'], r, col['I'], true).string('REQUIREMENTS').style(bordered_style).style(aligned_style).style(header_style)
@@ -914,6 +928,8 @@
                         wb.write(`${homedir}/TUMABINI-PROJECTS/GREGORY-HOMES/Reservations/${file_name}.xlsx`); break;
                     case 4:
                         wb.write(`${homedir}/TUMABINI-PROJECTS/LAURENCE-VILLE/Reservations/${file_name}.xlsx`); break;
+                    case 6:
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/FATIMA-HEIGHTS/Reservations/${file_name}.xlsx`); break;    
                     default: break;
                 }
 

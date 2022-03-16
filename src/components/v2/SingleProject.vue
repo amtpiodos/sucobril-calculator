@@ -37,7 +37,12 @@
 
                 this.$store.dispatch('unit/setProject', project)
                 this.project_hasPhases
-                    ? this.$router.push({ name: "Phases", params: { id: project_id, name: project_name, location: project_location }})
+                    ? this.$router.push({ name: "Phases", params: {
+                                                                    id: project_id,
+                                                                    name: project_name,
+                                                                    location: project_location,
+                                                                    has_phase: true
+                                                                }})
                     : this.$router.push({ name: "Blocks-Without-Phase", params: {
                                                                             project_id: project_id,
                                                                             name: project_name,

@@ -44,7 +44,7 @@
                     </select>
                 </div>
                 <div class="w-1/5 flex items-center my-1 ">
-                    <button type="button" v-on:click="exportBuyers"
+                    <button type="button" v-on:click="exportBuyersPerProject"
                         class="bg-gray-500 mx-2 p-4 w-full items-center align-center text-white text-sm font-regular border rounded-md">
                         Export Buyers
                     </button> 
@@ -148,38 +148,14 @@
             // console.log('HOME - created')
             this.fetchAllBuyers()
             this.fetchAllProjects()
-            this.fetchAllPhases()
-            this.fetchAllBlocks()
-            this.fetchAllLots()
         },
         methods: {
 
             fetchAllProjects() {
-                console.log('fetchAllProjects')
-                ipcRenderer.send('fetchAllProjects')
-                ipcRenderer.once('fetchedAllProjects', (event, data) => {
+                console.log('fetchProjectsList')
+                ipcRenderer.send('fetchProjectsList')
+                ipcRenderer.once('fetchedProjectsList', (event, data) => {
                     this.all_projects = data
-                })
-            },
-            fetchAllPhases() {
-                console.log('fetchAllPhases')
-                ipcRenderer.send('fetchAllPhases')
-                ipcRenderer.once('fetchedAllPhases', (event, data) => {
-                    this.all_phases = data
-                })
-            },
-            fetchAllBlocks() {
-                console.log('fetchAllBlocks')
-                ipcRenderer.send('fetchAllBlocks')
-                ipcRenderer.once('fetchedAllBlocks', (event, data) => {
-                    this.all_blocks = data
-                })
-            },
-            fetchAllLots() {
-                console.log('fetchAllLots')
-                ipcRenderer.send('fetchAllLots')
-                ipcRenderer.once('fetchedAllLots', (event, data) => {
-                    this.all_lots = data
                 })
             },
             fetchUnitDetails(buyer) {
@@ -221,6 +197,19 @@
 
                 
 
+            },
+            exportBuyersPerProject() {
+                console.log('Exporting Buyers')
+                // const homedir = require('os').homedir();
+                var xl = require('excel4node')
+                const homedir = require('os').homedir()
+                var wb = new xl.Workbook()
+                // console.log('all projets', this.all_projects)
+                this.all_projects.forEach(project => {
+                    wb.addWorksheet(project.name)
+                })
+
+                wb.write( `${homedir}/TUMABINI-PROJECTS/MASTERLIST.xlsx`)
             },
 
             exportBuyers() {
@@ -289,7 +278,7 @@
                             ws.cell(r, col['F']).string(status).style(regular_style).style(aligned_style).style({font: {size: 8}})
                             
                         })
-                        wb.write(`${homedir}/TUMABINI-PROJECTS/sample-masterlists.xlsx`)
+                        wb.write( `${homedir}/TUMABINI-PROJECTS/sample-masterlists.xlsx`)
                         console.log('DONE Exporting Buyers')
                     } else {
                         this.isFetchingData = false

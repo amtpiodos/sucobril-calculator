@@ -517,7 +517,8 @@
 
                 ws.cell(++r, col['A'], r, col['H'], true).string('STATEMENT OF ACCOUNT').style(bordered_style).style(aligned_style).style(header_style)
                 
-                if(reservation.reservation_type == 1) {
+                // REGULAR RESERVATION || INHOUSE FINANCING
+                if(reservation.reservation_type == 1 || reservation.reservation_type == 8) {
                     ws.cell(++r, col['A']).string("BUYER'S NAME").style(bordered_style).style(left_aligned_style).style(bold_style)
                     ws.cell(r, col['B'], r, col['D'], true).string(buyer_name).style(left_aligned_style).style(regular_style)
                     ws.cell(r, col['E'], r, col['G'], true).string("REQUIRED EQUITY").style(bordered_style).style(left_aligned_style).style(bold_style)
@@ -727,6 +728,8 @@
                         wb.write(`${homedir}/TUMABINI-PROJECTS/LAURENCE-VILLE/Payments/${laurence_file}.xlsx`); break;                    
                     case 5:
                         wb.write(`${homedir}/TUMABINI-PROJECTS/SAN-ISIDRO-ENCLAVE/Payments/${file_name}.xlsx`); break;
+                    case 6:
+                        wb.write(`${homedir}/TUMABINI-PROJECTS/FATIMA-HEIGHTS/Payments/${file_name}.xlsx`); break;
                     default: break;
                 }
 

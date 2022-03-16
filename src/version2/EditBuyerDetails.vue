@@ -121,7 +121,8 @@
                 } else if(reservation_type == 1
                     || reservation_type == 2
                     || reservation_type == 3
-                    || reservation_type == 4) {
+                    || reservation_type == 4
+                    || reservation_type == 8) {
                         this.$router.push({name: 'View-Buyer-HL', params: { id: this.buyer.id }})
                 } else {
                     alert(`VIEW BUYER ERROR: Incorrect reservation type ${reservation_type}`)
