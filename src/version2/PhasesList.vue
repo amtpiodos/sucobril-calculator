@@ -61,6 +61,7 @@
             this.$store.dispatch('unit/setLot', {})
             this.fetchPhases()
             console.log('PHASES Route', this.$route.params)
+            console.log('PHASES Unit', this.$store.state)
         },
         methods: {
             backToProjects() {

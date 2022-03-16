@@ -69,10 +69,7 @@
         },
         methods: {
             backToBlocks() {
-                // const phase_id = this.$store.state.unit.phase
-
-                // push if has phase_id
-                this.phase_id ? this.$router.push({ name: "Blocks-With-Phase",
+                this.phase.phase_id ? this.$router.push({ name: "Blocks-With-Phase",
                                     params: {   phase_id: this.phase.phase_id,
                                                 name: this.phase.phase_name,
                                                 project_id: this.project.project_id,
