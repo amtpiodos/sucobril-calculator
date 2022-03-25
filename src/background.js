@@ -347,12 +347,43 @@ ipcMain.on('fetchAllLots', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+
+// FUNCTION TO FETCH ALL HL RESERVATIONS
+ipcMain.on('fetchAllHLReservations', (event, data) => {
+  console.log('Fetching ALL HL RESERVATIONS')
+  const knex = getDbConnection()
+  knex('hl_payment').select().then((lots) => {
+    event.reply('fetchedAllHLReservations', lots)
+  }).catch((err) => { console.log('FETCH ALL HL RESERVATIONS ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH ALL LOT ONLY RESERVATIONS
+ipcMain.on('fetchAllLotOnlyReservations', (event, data) => {
+  console.log('Fetching ALL LOT ONLY RESERVATIONS')
+  const knex = getDbConnection()
+  knex('lot_payment').select().then((lots) => {
+    event.reply('fetchedAllLotOnlyReservations', lots)
+  }).catch((err) => { console.log('FETCH ALL LOT ONLY RESERVATIONS ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
 // FUNCTION TO FETCH ALL BUYERS
 ipcMain.on('fetchBuyersList', (event, data) => {
   const knex = getDbConnection()
   knex('Buyer').select().orderBy('last_name', 'asc').then((buyers) => {
     event.reply('fetchedBuyersList', buyers)
   }).catch((err) => { console.log('FETCH BUYERS LIST ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH ALL PAYMENTS OF ALL BUYERS
+ipcMain.on('fetchAllPayments', (event, data) => {
+  console.log('Fetching ALL PAYMENTS OF ALL BUYERS')
+  const knex = getDbConnection()
+  knex('buyer_payment').select().then((lots) => {
+    event.reply('fetchedAllPayments', lots)
+  }).catch((err) => { console.log('Fetching ALL PAYMENTS OF ALL BUYERS ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
 
@@ -557,6 +588,49 @@ ipcMain.on('forefeitBuyer', (event, data) => {
       throw err
     }).finally(() => knex.destroy())
 })
+
+
+
+// FUNCTION TO ON HOLD LOTS
+ipcMain.on('onHoldLots', (event, data) => {
+  const { selected_lots } = data
+  selected_lots.forEach(selected_lot => {
+    const knex = getDbConnection()
+    knex('lot')
+      .where({ id: selected_lot  })
+      .update({
+        'status': 2
+      }).then(() => {
+        console.log('LOT is not ON HOLD', selected_lot)
+        // Reopen lot, clear owner id
+          event.reply('heldLots', 1)
+      }).catch((err) => {
+        console.log('ON HOLD LOT ERROR', err)
+        throw err
+      }).finally(() => knex.destroy())
+  })
+})
+
+// FUNCTION TO REOPEN HELD LOTS
+ipcMain.on('reopenLots', (event, data) => {
+  const { selected_lots } = data
+  selected_lots.forEach(selected_lot => {
+    const knex = getDbConnection()
+    knex('lot')
+      .where({ id: selected_lot  })
+      .update({
+        'status': 0
+      }).then(() => {
+        console.log('LOT is now REOPENED', selected_lot)
+        // Reopen lot, clear owner id
+          event.reply('reopenedLots', 1)
+      }).catch((err) => {
+        console.log('REOPEN LOT ERROR', err)
+        throw err
+      }).finally(() => knex.destroy())
+  })
+})
+
 
 // FUNCTION TO ADD BUYER PAYMENT IN DB
 ipcMain.on('addPayment', (event, data) => {

@@ -13,11 +13,38 @@
                 'lot_id'],
         data() {
             return {
-                status: this.lot_status === 0 ? 'Available' : 'Sold Out',
-                class_color: this.lot_status === 0 ? 'bg-gray-500 p-3 rounded-md' : 'bg-gray-100 p-3 rounded-md',
-                font1: this.lot_status === 0 ? 'text-center text-white font-bold' : 'text-center text-gray-500 font-bold',
-                font2: this.lot_status === 0 ?  'text-center text-white' : 'text-center text-gray-500'
+                status: '',
+                class_color: '',
+                font1: '',
+                font2: ''
+                // status: this.lot_status === 0 ? 'Available' : 'Sold Out',
+                // class_color: this.lot_status === 0 ? 'bg-gray-500 p-3 rounded-md' : 'bg-gray-100 p-3 rounded-md',
+                // font1: this.lot_status === 0 ? 'text-center text-white font-bold' : 'text-center text-gray-500 font-bold',
+                // font2: this.lot_status === 0 ?  'text-center text-white' : 'text-center text-gray-500'
             }
+        },
+        created() {
+            switch(this.lot_status) {
+                case 0:
+                    this.status = 'Available'
+                    this.class_color = 'bg-gray-500 p-3 rounded-md'
+                    this.font1 = 'text-center text-white font-bold'
+                    this.font2 = 'text-center text-white'
+                    break
+                case 1:
+                    this.status = 'Sold Out'
+                    this.class_color = 'bg-gray-100 p-3 rounded-md'
+                    this.font1 = 'text-center text-gray-500 font-bold'
+                    this.font2 = 'text-center text-gray-500'
+                    break
+                case 2:
+                    this.status = 'On Hold'
+                    this.class_color = 'bg-yellow-100 p-3 rounded-md'
+                    this.font1 = 'text-center text-gray-500 font-bold'
+                    this.font2 = 'text-center text-gray-500'
+                    break
+                default: break
+            } 
         },
         methods: {
             fetchLot(lot_id, lot_name) {
@@ -34,7 +61,11 @@
                     })
                 } else if(this.lot_status === 1) {
                     alert(`${this.lot_name} is already unavailable.`)
-                } else {
+                } else if(this.lot_status === 2) {
+                    alert(`${this.lot_name} is currently on hold.`)
+                }
+                
+                else {
                     alert('Lot status error:', this.lot.id, this.lot.status)
                 }
             }

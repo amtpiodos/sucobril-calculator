@@ -56,6 +56,19 @@ const routes = [
   },
 
   {
+    path: '/project/:project_id/block/:id/hold-lots',
+    name: 'Hold-Lots',
+    component: () => import('../version2/Hold-Lots.vue')
+  },
+
+  {
+    path: '/project/:project_id/block/:id/reopen-lots',
+    name: 'Reopen-Lots',
+    component: () => import('../version2/Reopen-Lots.vue')
+  },
+
+
+  {
     path: '/addbuyerform',
     name: "Add Buyer Form",
     component: () => import('../version2/AddBuyerForm')

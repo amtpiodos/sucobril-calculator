@@ -13,8 +13,14 @@
             </div>
             <div class="w-full">
                 <div class="flex items-right justify-right gap-8">
-                    <button class="w-1/3"> </button>
-                    <button class="w-1/3"> </button>
+                    <button type="button" v-on:click="holdLots()"
+                        class="bg-gray-500 p-4 w-1/3 items-center align-center text-white font-regular border rounded-md mb-4">
+                        Hold Lots
+                    </button>
+                   <button type="button" v-on:click="reopenLots()"
+                        class="bg-gray-500 p-4 w-1/3 items-center align-center text-white font-regular border rounded-md mb-4">
+                        Reopen Lots
+                    </button>
                     <button type="button" v-on:click="backToBlocks()"
                         class="bg-gray-500 p-4 w-1/3 items-center align-center text-white font-regular border rounded-md mb-4">
                         Back To Blocks
@@ -79,7 +85,6 @@
                                                 name: this.project.project_name,
                                                 location: this.project.project_location,
                                                 has_phase: false }})
-                        
             },
             fetchLots() {
                 console.log('block_id', this.block_id)
@@ -88,6 +93,14 @@
                     this.lots = data
                     console.log('fetchedLotsList', typeof(this.lots), this.lots)
                 })
+            },
+
+            holdLots() {
+                this.$router.push({ name: "Hold-Lots", params: { id: this.block.block_id, name: this.block.block_name, project_id: this.project.project_id }})
+            },
+
+            reopenLots() {
+                this.$router.push({ name: "Reopen-Lots", params: { id: this.block.block_id, name: this.block.block_name, project_id: this.project.project_id }})
             }
         }
     })

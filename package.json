@@ -1,6 +1,6 @@
 {
-  "name": "local-tumabini-app",
-  "version": "0.9.0",
+  "name": "tumabini-app",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -16,14 +16,19 @@
     "@fortawesome/vue-fontawesome": "^2.0.6",
     "@ianwalter/vuex-reset": "^4.3.4",
     "@northwalker/vue-hotel-datepicker": "^2.0.7",
+    "@vueform/multiselect": "^2.3.3",
     "core-js": "^3.6.5",
     "excel4node": "^1.7.2",
+    "exceljs": "^4.3.0",
+    "file-saver": "^2.0.5",
     "knex": "^0.95.6",
     "mysql": "^2.18.1",
     "sqlite3": "^5.0.2",
     "vue": "^2.6.11",
+    "vue-multiselect": "^2.1.6",
     "vue-router": "^3.2.0",
     "vue-scroll-table": "^0.2.11",
+    "vue-select": "^4.0.0-beta.3",
     "vue-tailwind-modal": "^1.0.7",
     "vuejs-datepicker": "^1.6.2",
     "vuex": "^3.4.0"

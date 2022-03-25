@@ -20,7 +20,7 @@
                     <p class="text-center pb-2 font-bold text-sm text-red-700" v-if="!buyer.status"> This buyer has been forefeited and is now inactive. </p>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 py-1" v-if="payment.reservation_type > 0 && payment.reservation_type < 5">
+                <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 py-1" v-if="(payment.reservation_type > 0 && payment.reservation_type < 5) || payment.reservation_type == 8">
                     <div class="w-full">
                         <div class="flex gap-4 my-2">
                             <div class="w-2/5"> <readonly-form label="Last Name" :value="buyer.last_name" /> </div>
@@ -40,7 +40,7 @@
                     </div>
 
                     <!-- HL REGULAR RESERVATION  -->
-                    <div class="w-full" v-if="payment.reservation_type == 1">
+                    <div class="w-full" v-if="payment.reservation_type == 1 || payment.reservation_type == 8">
                         <div class="full my-2"> <readonly-form label="Required Equity" :value="formatDisplay(payment.required_equity_amount)" /> </div>
                         <div class="full my-2"> <readonly-form label="Equity Net of Reservation:" :value="formatDisplay(payment.equity_net_of_reservation_fee)" /> </div>
                         <div class="full my-2">                            
@@ -334,6 +334,7 @@
             }
         },
         created() {
+            console.log('payment', this.payment)
             this.getAllPayments(this.buyer.id)
         },
         methods: {
@@ -345,7 +346,8 @@
                 } else if(this.payment.reservation_type == 1
                     || this.payment.reservation_type == 2
                     || this.payment.reservation_type == 3
-                    || this.payment.reservation_type == 4) {
+                    || this.payment.reservation_type == 4
+                    || this.payment.reservation_type == 8) {
                         this.$router.push({name: 'View-Buyer-HL', params: { id: this.buyer.id }})
                 } else {
                     alert(`VIEW BUYER ERROR: Incorrect reservation type ${this.buyer_details.reservation_type}`)
@@ -428,7 +430,7 @@
                         this.total_payments_made = this.total_payments_made + single_payment.amount
                         console.log('PAYMENTS MADE', this.total_payments_made, single_payment)
                         this.running_tcp_balance = this.payment.total_contract_price - this.total_payments_made
-                        if(this.payment.reservation_type == 1) {
+                        if(this.payment.reservation_type == 1 || this.payment.reservation_type == 8) {
                             this.running_equity_balance = this.payment.required_equity_amount - this.total_payments_made
                         } else if(this.payment.reservation_type == 2) {
                             this.running_balance = this.payment.balance_loanable_amount - (this.total_payments_made - this.payment.equity_net_of_reservation_fee)
@@ -442,7 +444,7 @@
                     }         
                 } else {
                     console.log ('No payments yet', payee_id, single_payment)
-                    if(this.payment.reservation_type == 1) {
+                    if(this.payment.reservation_type == 1 || this.payment.reservation_type == 8) {
                         this.running_equity_balance = this.payment.equity_net_of_reservation_fee
                     } else if(this.payment.reservation_type == 2) {
                         this.running_balance = this.payment.equity_net_of_reservation_fee
