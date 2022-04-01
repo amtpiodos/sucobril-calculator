@@ -333,6 +333,9 @@
             },
             exportDetails() {
                 console.log('exporting details')
+                const file_name = `${this.buyer.block.name} ${this.buyer.lot.name} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                const homedir = require('os').homedir();
+
                 const reservationType = this.buyer.reservation_type
                 const php = ` Php `
                 const buyer_name = `${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}`
@@ -345,6 +348,7 @@
                 const lot_type = this.buyer.lot.lot_type
                 const realty = this.buyer.realty
                 const agent = this.buyer.agent
+                const agent_number = this.buyer.agent_number.toString()
                 const project_address = this.buyer.project.location
                 const home_address = this.buyer.home_address
                 const email_address = this.buyer.email_address
@@ -358,6 +362,10 @@
                 const spot_cash_discount_percentage = this.buyer.payment.spot_cash_discount_percentage
                 const spot_cash_discount_amount = this.buyer.payment.spot_cash_discount_amount
                 const new_tcp_less_discount = this.buyer.payment.new_tcp_less_discount
+
+                const monthly_start_date = this.formatDate(this.buyer.payment.monthly_start_date)
+                const monthly_end_date = this.formatDate(this.buyer.payment.monthly_end_date)
+                const reservation_date = this.formatDate(this.buyer.payment.date)
                 
                 var wb = new excel4node.Workbook()
                 var ws = wb.addWorksheet('RA - FORM 2A LO')
@@ -379,6 +387,7 @@
                 const bold_header_style = wb.createStyle({ font: { color: '#000000', size: 13, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
                 const bordered_style = wb.createStyle({ border: { left: { style: 'thin', color: '#000000' }, right: { style: 'thin', color: '#000000' }, top: { style: 'thin', color: '#000000' }, bottom: { style: 'thin', color: '#000000' }} })
                 const aligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const small_aligned_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
                 const header_style = wb.createStyle({ font: { color: '#000000', size: 11, bold: true } })
                 const bold_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true } })
                 const regular_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: false } })
@@ -399,6 +408,8 @@
                 ws.cell(r, col['E']).string(` BLOCK: `).style(bold_style)
                 ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(regular_style)
                 ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
+                ws.cell(r, col['I']).string(reservation_date).style(regular_style)
+                
 
                 ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)
@@ -414,20 +425,20 @@
                 ws.cell(r, col['H']).string(` TYPE OF LOT: `).style(bold_style)
                 ws.cell(r, col['I']).string(lot_type).style(regular_style)
 
-                ws.cell(++r, col['A']).string(` PROJECT ADDRESS: `).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string(project_address).style(regular_style)
-                ws.cell(r, col['E'], r, col['F'], true).string(` HOME ADDRESS: `).style(bold_style)
-                ws.cell(r, col['G'], r, col['I'], true).string(home_address).style(regular_style)
+                // ws.cell(++r, col['A']).string(` PROJECT ADDRESS: `).style(bold_style)
+                // ws.cell(r, col['B'], r, col['D'], true).string(project_address).style(regular_style)
+                // ws.cell(r, col['E'], r, col['F'], true).string(` HOME ADDRESS: `).style(bold_style)
+                // ws.cell(r, col['G'], r, col['I'], true).string(home_address).style(regular_style)
 
-                ws.cell(++r, col['A']).string(` EMAIL ADDRESS: `).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string(email_address).style(regular_style)
-                ws.cell(r, col['E'], r, col['F'], true).string(` CONTACT NUMBER: `).style(bold_style)
-                ws.cell(r, col['G'], r, col['I'], true).number(contact_number).style(regular_style)
+                // ws.cell(++r, col['A']).string(` EMAIL ADDRESS: `).style(bold_style)
+                // ws.cell(r, col['B'], r, col['D'], true).string(email_address).style(regular_style)
+                // ws.cell(r, col['E'], r, col['F'], true).string(` CONTACT NUMBER: `).style(bold_style)
+                // ws.cell(r, col['G'], r, col['I'], true).number(contact_number).style(regular_style)
 
-                ws.cell(++r, col['A']).string(` REALTY: `).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string(realty).style(regular_style)
-                ws.cell(r, col['E'], r, col['F'], true).string(` AGENT: `).style(bold_style)
-                ws.cell(r, col['G'], r, col['I'], true).string(agent).style(regular_style)
+                // ws.cell(++r, col['A']).string(` REALTY: `).style(bold_style)
+                // ws.cell(r, col['B'], r, col['D'], true).string(realty).style(regular_style)
+                // ws.cell(r, col['E'], r, col['F'], true).string(` AGENT: `).style(bold_style)
+                // ws.cell(r, col['G'], r, col['I'], true).string(agent).style(regular_style)
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
 
@@ -452,7 +463,9 @@
 
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                     ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Starts: `).style(italic_rightaligned_style)
+                    ws.cell(r, col['C'], r, col['D'], true).string(monthly_start_date).style(center_bold)
                     ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Ends: `).style(italic_rightaligned_style)
+                    ws.cell(r, col['C'], r, col['D'], true).string(monthly_end_date).style(center_bold)
                 
                 } else if(reservationType == 6) {
                     ws.cell(++r, col['A'], r, col['I'], true).string('WITH SPOT DOWNPAYMENT / ADVANCE PAYMENT').style(bordered_style).style(aligned_style).style(header_style)
@@ -478,7 +491,9 @@
 
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                     ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Starts: `).style(italic_rightaligned_style)
+                    ws.cell(r, col['C'], r, col['D'], true).string(monthly_start_date).style(center_bold)
                     ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Ends: `).style(italic_rightaligned_style)
+                    ws.cell(r, col['C'], r, col['D'], true).string(monthly_end_date).style(center_bold)
 
                 } else if(reservationType == 7) {
                     ws.cell(++r, col['A'], r, col['I'], true).string('SPOT CASH').style(bordered_style).style(aligned_style).style(header_style)
@@ -509,8 +524,35 @@
                 ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Marriage contract if married `).style(italic_leftaligned_style)
                 ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
 
-                wb.write(`./${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
+                r+=2
+                ws.cell(++r, col['A'], r, col['C'], true).string(`Confirmed and Accepted By Buyer:`).style(bold_style)
+                ws.cell(++r, col['D'], r, col['F'], true).string(buyer_name).style(bold_style).style(small_aligned_style)
+                ws.cell(r, col['H']).string('Contact #:').style(italic_leftaligned_style)
+                ws.cell(r, col['I']).string(contact_number).style(bold_style).style(small_aligned_style)
+                
+                r+=2
+                ws.cell(++r, col['A'], r, col['C'], true).string(`Broker/Agent's Name and Signature:`).style(bold_style)
+                ws.cell(r, col['D'], r, col['F'], true).string(agent).style(bold_style).style(small_aligned_style)
+                ws.cell(r, col['H']).string('Contact #:').style(italic_leftaligned_style)
+                ws.cell(r, col['I']).string(agent_number).style(bold_style).style(small_aligned_style)
+                
+                ws.cell(++r, col['A'], r, col['C'], true).string(`Realty Name:`).style(bold_style)
+                ws.cell(r, col['D'], r, col['F'], true).string(realty).style(bold_style).style(small_aligned_style)
 
+                r+=2
+                ws.cell(++r, col['A']).string(`Account Officer:`).style(bold_style)
+                ws.cell(r, col['B'], r, col['D'], true).string('_____________________________________').style(bold_style).style(small_aligned_style)
+
+                ws.cell(r, col['E'], r, col['F'], true).string(`Confirmed By:`).style(bold_style)
+                ws.cell(r, col['G'], r, col['I'], true).string('_____________________________________').style(bold_style).style(small_aligned_style)
+
+                // wb.write(`./${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
+                switch(this.buyer.project.id) {
+                    case 5: wb.write(`${homedir}/TUMABINI-PROJECTS/SAN-ISIDRO-ENCLAVE/Reservations/${file_name}.xlsx`); break;  
+                    default: alert('WRONG PROJECT ID', this.buyer.project.id); break;
+                }
+                alert('Done Exporting')
+                console.log('Done Exporting Payment for Buyer', this.buyer.id)
                 // wb.write(`./outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
                 // wb.write(`../../outputs/buyers-list/${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
             }

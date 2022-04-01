@@ -269,11 +269,11 @@
                             class="bg-gray-500 p-4 w-1/4 align-middle text-white font-regular border rounded-md mb-4">
                             + Add Payment
                         </button>
-                        <button type="button" v-if="buyer.status" v-on:click="exportPayment"
+                        <button type="button" v-on:click="exportPayment"
                             class="bg-gray-500 p-4 w-1/4 align-middle text-white font-regular border rounded-md mb-4">
                             Export Payment
                         </button>
-                        <button type="button" v-if="buyer.status" v-on:click="backToReservationDetails"
+                        <button type="button" v-on:click="backToReservationDetails"
                             class="bg-gray-500 p-4 w-1/4 align-middle text-white font-regular border rounded-md mb-4">
                             Back to Reservation Details
                         </button>
@@ -323,7 +323,7 @@
                 incorrectCredentials: false,
                 credentials: {
                     username: 'MANAGER',
-                    password: 'password123'
+                    password: 'TredM@2022'
                 },
                 inputtedCredentials: {
                     username: '',

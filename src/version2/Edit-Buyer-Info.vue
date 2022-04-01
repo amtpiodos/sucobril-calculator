@@ -72,7 +72,7 @@
                 </div>
 
                 <!-- REGULAR RESERVATION EDIT  -->
-                <div v-if="unedited_payment.reservation_type == 1 || unedited.payment.reservation_type == 8">
+                <div v-if="unedited_payment.reservation_type == 1 || unedited_payment.reservation_type == 8">
                     <div class="full m-4 bg-gray-200"> <p class="text-center py-2 font-bold text-md"> REGULAR RESERVATION </p> </div>
                     <div class="full lg:container lg:mx-48px md:container md:mx-auto gap-4">
                         <!-- TOTAL CONTRACT PRICE -->

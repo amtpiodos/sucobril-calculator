@@ -401,7 +401,7 @@
                     if(data.response == 1) {
                         this.isFetchingData
                         console.log('Add H&L Buyer SUCCESSFUL')
-                        this.autoExport()
+                        // this.autoExport()
 
                         // add loading screen
                         this.$router.push({name: 'View-Buyer-HL', params: { id: data.new_id }})

@@ -43,18 +43,31 @@
                         <option value=0>Inactive</option>
                     </select>
                 </div>
-                <div class="w-1/6 flex items-center my-1 ">
-                    <button type="button" v-on:click="exportBuyersPerProject"
+
+                <div class="w-1/6 flex items-center my-1 " v-if="!isExportingDetails">
+                    <button type="button" v-on:click="exportData(1)"
                         class="bg-gray-500 mx-2 p-4 w-full items-center align-center text-white text-sm font-regular border rounded-md">
                         EXPORT MASTERLIST
+                    </button>
+                </div>
+                <div class="w-1/6 flex items-center my-1 " v-else>
+                    <button type="button"
+                        class="bg-gray-200 mx-2 p-4 w-full items-center align-center text-white text-sm font-regular border rounded-md">
+                        Exporting...
                     </button> 
                 </div>
+
                 <div class="w-1/6 flex items-center my-1 ">
-                    <button type="button" v-on:click="exportAllPayments"
+                    <button type="button" v-if="!isExportingDetails" v-on:click="exportData(2)"
                         class="bg-gray-500 mx-2 p-4 w-full items-center align-center text-white text-sm font-regular border rounded-md">
                         EXPORT PAYMENTS
+                    </button>
+                    <button type="button" v-else
+                        class="bg-gray-200 mx-2 p-4 w-full items-center align-center text-white text-sm font-regular border rounded-md">
+                        Exporting...
                     </button> 
                 </div>
+
             </div>
             <div class="flex my-4">
                 <div class="w-1/4 h-96">
@@ -66,6 +79,7 @@
                         <div v-for="buyer in filtered_buyers" :key="buyer.id">
                             <single-buyer v-bind:lastname="buyer.last_name"
                                         :firstname="buyer.first_name"
+                                        :middle_initial="buyer.middle_initial"
                                         v-on:click.native="hasClicked(buyer.id)"/>
                                         <!-- {{ buyer.first_name}} -->
                         </div>
@@ -73,14 +87,14 @@
                 </div>
 
                 <div class="h-96 w-3/4 bg-white items-center content-center space-y-3">
-                    <div class="mx-auto h-full content-center grid grid-cols-1 space-y-6">
+                    <div class="mx-auto h-full content-center grid grid-cols-1 space-y-6" v-if="!isExportingDetails">
                         <div v-if="!hasClickedBuyer">
                             <p class="text-xl leading-tight font-bold text-center mx-4"> Buyer's Information </p>
                             <p class="text-center align-center"> CLICK ON A BUYER TO VIEW BUYER DETAILS </p>
                         </div>
-                        <div class="my-5 mx-5 px-5" v-if="hasClickedBuyer">
+                        <div class="my-5 mx-5 px-5" v-else-if="hasClickedBuyer && !isFetchingDetails">
                             <div class="my-32">
-                                <p class="my-2 text-center align-center font-semibold uppercase text-xl"> {{ buyer_details.last_name }}, {{ buyer_details.first_name }} </p>
+                                <p class="my-2 text-center align-center font-semibold uppercase text-xl"> {{ buyer_details.last_name }}, {{ buyer_details.first_name }} {{ buyer_details.middle_initial }} </p>
                                 <!-- <p class="my-2 text-center align-center font-regular uppercase text-md"> {{ buyer_details.home_address }} </p> -->
                                 <p class="my-2 text-center align-center font-regular uppercase text-md"> {{ unit_details }} </p>
                                 <p class="my-2 text-center align-center font-bold uppercase text-sm" v-if="buyer_details.status"> Status: Active</p>
@@ -101,6 +115,15 @@
                                 </button> -->
                             </div>
                         </div>
+                        <div class="my-5 mx-5 px-5" v-else-if="hasClickedBuyer && isFetchingDetails">
+                            <div class="my-32">
+                                <p class="my-2 text-center align-center font-semibold uppercase text-xl"> LOADING DETAILS... </p>
+                        
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mx-auto h-full content-center grid grid-cols-1 space-y-6" v-else>
+                            <p class="text-xl leading-tight font-bold text-center mx-4"> EXPORTING DATA...</p>
                     </div>
                 </div>
             </div>
@@ -134,6 +157,8 @@
                 toExportBuyers: [],
                 id: 0,
                 isFetchingData: false,
+                isFetchingDetails: false,
+                isExportingDetails: false,
                 
                 buyer_to_export: {},
                 all_buyers: {},
@@ -241,6 +266,7 @@
                 // //     ? this.all_phases.find(phase => phase.id === specific_block.phase_id).name : ''
                 // // return `${specific_lot.name}
                 // return specific_lot
+                this.isFetchingDetails = true
 
                 ipcRenderer.send('fetchBuyer', buyer)
                 ipcRenderer.once('fetchedBuyer', (event, data) => {
@@ -265,7 +291,9 @@
                                 const phase_name = this.phase_details.name ? this.phase_details.name : ''
                                 this.unit_details = `${this.project_details.name} ${phase_name} ${this.block_details.name} ${this.lot_details.name}`
                                 
-                                ipcRenderer.send('fetchHouseAndLotPayment', this.buyer.id)
+                                
+                                this.isFetchingDetails = false
+                                ipcRenderer.send('fetchHouseAndLotPayment', buyer.id)
                                 ipcRenderer.once('fetchedHouseAndLotPayment', (event, data) => {
                                     this.reservation_details = data
                                 })
@@ -275,8 +303,33 @@
                 })
 
             },
+            
+            formatDate(value) {
+                return value && value.toDateString() ? value.toDateString().replace(/^\S+\s/,'') : value
+            },
 
-            async exportAllPayments() {
+            exportData(type) {
+              // type 1 == buyers masterlist ; 2 == payment
+              this.isExportingDetails = true
+                console.log('this.isExporting', this.isExportingDetails)
+              if(type == 1) {
+                  this.exportBuyersPerProject(() => {
+                      this.isExportingDetails = false
+                  })
+              } else if(type == 2) {
+                  this.exportAllPayments(() => {
+                      this.isExportingDetails = false
+                  })
+              } else {
+                  alert('WRONG EXPORT TYPE', type)
+                  this.isExportingDetails = false
+              }
+            },
+
+            async exportAllPayments(callback) {
+                // this.isExportingDetails = true
+                
+                this.isExportingDetails = true
                 const wb = new Excel.Workbook()
                 const ws = wb.addWorksheet('PAYMENTS MASTERLIST')
                 let r = 1   // row
@@ -350,6 +403,7 @@
                 this.all_payments.forEach(payment => {
                     this.getBuyerDetails(payment.buyer_id, () => {
                         this.getUnitWithProjectDetails(this.buyer_to_export.lot_id, () => {
+
                             ws.getCell(`${col_letters.payment_date}${r}`).value = payment.payment_date;
                             ws.getCell(`${col_letters.payment_date}${r}`).font = { name: 'Calibri', size: 8, bold: false };
                             ws.getCell(`${col_letters.payment_date}${r}`).alignment = { vertical: 'middle', horizontal: 'center' };
@@ -394,15 +448,20 @@
                         })
                         
                     })
+                    
+                    // this.isExportingDetails = false
+                    // console.log('this.isExporting', this.isExportingDetails)
                 })
 
                 
                 const buf = await wb.xlsx.writeBuffer()
                 saveAs(new Blob([buf]), `TUMABINI-PROJECTS/PAYMENTS-MASTERLIST.xlsx`)
+                
+                callback()
             },
 
             
-            async exportBuyersPerProject() {
+            async exportBuyersPerProject(callback) {
                 console.log('Exporting Buyers per project new')
                 
                 const wb = new Excel.Workbook()
@@ -491,6 +550,7 @@
                             
                             this.getReservationDetails(buyer.id, project.type, () => {
                                 this.getUnitDetails(buyer.lot_id, () => {
+                                    const color = buyer.status == 1 ? '#000000': '#800000' 
                                     ws.getCell(`${col_letters.date_of_reservation}${r}`).value
                                             = this.reservation_details && this.reservation_details.date
                                             ? this.reservation_details.date : '-';
@@ -511,7 +571,7 @@
                                     ws.getCell(`${col_letters.contact_number}${r}`).alignment = { vertical: 'middle', horizontal: 'center' };
 
                                     ws.getCell(`${col_letters.agent}${r}`).value = buyer.agent;
-                                    ws.getCell(`${col_letters.agent}${r}`).font = { name: 'Calibri', size: 8, bold: false };
+                                    ws.getCell(`${col_letters.agent}${r}`).font = { name: 'Calibri', size: 8, bold: false, color: { argb: color} };
                                     ws.getCell(`${col_letters.agent}${r}`).alignment = { vertical: 'middle', horizontal: 'center' };
 
                                     ws.getCell(`${col_letters.agent_number}${r}`).value = buyer.agent_number;
@@ -524,7 +584,9 @@
 
                                     const status = buyer.status == 0 ? 'Inactive' : 'Active'
                                     ws.getCell(`${col_letters.status}${r}`).value = status;
-                                    ws.getCell(`${col_letters.status}${r}`).font = { name: 'Calibri', size: 8, bold: false };
+                                    buyer.status == 0
+                                        ? ws.getCell(`${col_letters.status}${r}`).font = { name: 'Calibri', size: 8, bold: false, color: 'red' }
+                                        : ws.getCell(`${col_letters.status}${r}`).font = { name: 'Calibri', size: 8, bold: false }
                                     ws.getCell(`${col_letters.status}${r}`).alignment = { vertical: 'middle', horizontal: 'center' };
 
                                     ws.getCell(`${col_letters.tcp}${r}`).value
@@ -533,9 +595,17 @@
                                     ws.getCell(`${col_letters.tcp}${r}`).font = { name: 'Calibri', size: 8, bold: false };
                                     ws.getCell(`${col_letters.tcp}${r}`).alignment = { vertical: 'middle', horizontal: 'center' };
 
-                                    ws.getCell(`${col_letters.monthly_amount}${r}`).value
+                                    if(project.type == 1) {
+                                        ws.getCell(`${col_letters.monthly_amount}${r}`).value
                                                 = this.reservation_details && this.reservation_details.monthly_equity_amount
                                                 ? this.formatDisplay(this.reservation_details.monthly_equity_amount) : '-';
+                                    } else if(project.type == 2) {
+                                        ws.getCell(`${col_letters.monthly_amount}${r}`).value
+                                                = this.reservation_details && this.reservation_details.monthly_installment
+                                                ? this.formatDisplay(this.reservation_details.monthly_installment) : '-';
+                                    } else {
+                                        alert('WRONG PROJECT TYPE', project_type)
+                                    }
                                     ws.getCell(`${col_letters.monthly_amount}${r}`).font = { name: 'Calibri', size: 8, bold: false };
                                     ws.getCell(`${col_letters.monthly_amount}${r}`).alignment = { vertical: 'middle', horizontal: 'center' };
 
@@ -550,7 +620,6 @@
                                     }
 
                                     r++
-                                    
                                 })
                             })
                             
@@ -560,6 +629,7 @@
 
                 const buf = await wb.xlsx.writeBuffer()
                 saveAs(new Blob([buf]), `TUMABINI-PROJECTS/MASTERLIST.xlsx`)
+                callback()
                 
             },
 

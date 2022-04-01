@@ -404,7 +404,7 @@
                 incorrectCredentials: false,
                 credentials: {
                     username: 'MANAGER',
-                    password: 'password123'
+                    password: 'TredM@2022'
                 },
                 inputtedCredentials: {
                     username: '',
@@ -558,10 +558,12 @@
 
                 const reservationType = this.buyer.reservation_type
                 const php = ` Php `
-                const buyer_name = `${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}`
-                const block_name = `${this.buyer.block.name}`
+                const buyer_name = `${this.buyer.first_name} ${this.buyer.middle_initial} ${this.buyer.last_name}`
+                // const block_name = `${this.buyer.block.name}`
+                const block_name = this.buyer.block.name.replace('Block ', '')
                 const project_name = `${this.buyer.project.name}`
-                const lot_name = `${this.buyer.lot.name}`
+                // const lot_name = `${this.buyer.lot.name}`
+                const lot_name = this.buyer.lot.name.replace('Lot ', '')
                 const price_per_sqm = `${this.buyer.lot.price_per_sqm}`
                 const phase = `${this.buyer.phase}`
                 const lot_area = `${this.buyer.lot.lot_area} SQ.M`
@@ -615,93 +617,85 @@
                 ws.column(col['C']).setWidth(s*3)
                 ws.column(col['D']).setWidth(s*2)
                 ws.column(col['E']).setWidth(s*2)
-                ws.column(col['F']).setWidth(s*2)
-                ws.column(col['G']).setWidth(s*2)
-                ws.column(col['H']).setWidth(s*4)
+                ws.column(col['F']).setWidth(s*1.2)
+                ws.column(col['G']).setWidth(s*1.1)
+                ws.column(col['H']).setWidth(s*3.5)
                 ws.column(col['I']).setWidth(s*4)
 
                 const bold_header_style = wb.createStyle({ font: { color: '#000000', size: 13, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
                 const bordered_style = wb.createStyle({ border: { left: { style: 'thin', color: '#000000' }, right: { style: 'thin', color: '#000000' }, top: { style: 'thin', color: '#000000' }, bottom: { style: 'thin', color: '#000000' }} })
                 const aligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const small_aligned_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' },  border: { bottom: { style: 'thin', color: '#000000' } } })
                 const header_style = wb.createStyle({ font: { color: '#000000', size: 11, bold: true } })
+                const center_bold_small = wb.createStyle({ font: { color: '#000000', size: 9, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' }, border: { bottom: { style: 'thin', color: '#000000' }} })
                 const bold_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true } })
                 const regular_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: false } })
-                const center_bold = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' }, font: { color: '#000000', size: 11, bold: true } })
-                const italic_rightaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'right', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
-                const italic_leftaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'left', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false, italics: true}  })
+                const center_regular = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' }, font: { color: '#000000', size: 11, bold: false }, border: { bottom: { style: 'thin', color: '#000000' }} })
+                const center_bold = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' }, font: { color: '#000000', size: 11, bold: true }, border: { bottom: { style: 'thin', color: '#000000' }}  })
+                const italic_rightaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'right', vertical: 'center' }, font: { color: '#000000', size: 10, bold: false, italics: true}  })
+                const italic_leftaligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'left', vertical: 'center' }, font: { color: '#000000', size: 10, bold: false, italics: true}  })
+                const italic_center_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' }, font: { color: '#000000', size: 10, bold: false, italics: true}  })
 
                 ws.cell(r, col['A'], r, col['H'], true).string('TUMABINI REAL ESTATE DEVELOPMENT').style(bold_header_style)
-                ws.cell(r, col['I']).string('LO-RA - FORM 2A').style(bold_header_style).style({font: {size: 12}, alignment: {horizontal: 'right'}})
+                ws.cell(r, col['I']).string('RA - FORM 1A').style(bold_header_style).style({font: {size: 12}, alignment: {horizontal: 'right'}})
 
                 ws.cell(++r, col['A'], ++r, col['H'], true).string('133 MC Briones St., Hi-way Bakilid, Mandaue City 6014 Tel#: 032 414-5103, 09564791879 Email: tumabinidevelopment@gmail.com').style(regular_style).style(aligned_style).style({font: {size: 8}})
                 ws.cell(r-1, col['I']).string('ANNEX A').style(bold_header_style).style({font: {size: 10}, alignment: {horizontal: 'right'}})
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET').style(bordered_style).style(aligned_style).style(header_style)
 
-                ws.cell(++r, col['A']).string(` BUYER'S NAME: `).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string(buyer_name).style(regular_style)
-                ws.cell(r, col['E']).string(` BLOCK: `).style(bold_style)
-                ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(regular_style)
-                ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
-                ws.cell(r, col['I']).string(reservation_date).style(regular_style)
+                ws.cell(++r, col['A']).string(` BUYER'S NAME: `).style(regular_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(buyer_name).style(center_bold_small)
+                ws.cell(r, col['E']).string(` BLOCK: `).style(regular_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(block_name).style(center_bold_small)
+                ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(regular_style)
+                ws.cell(r, col['I']).string(reservation_date).style(center_bold_small)
 
-                ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)
-                ws.cell(r, col['E']).string(` LOT: `).style(bold_style)
-                ws.cell(r, col['F'], r, col['G'], true).string(lot_name).style(regular_style)
-                ws.cell(r, col['H']).string(` PRICE PER SQ.M: `).style(bold_style)
-                ws.cell(r, col['I']).string(price_per_sqm).style(regular_style)
+                ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(regular_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(center_bold_small)
+                ws.cell(r, col['E']).string(` LOT: `).style(regular_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(lot_name).style(center_bold_small)
+                ws.cell(r, col['H']).string(` FLOOR AREA: `).style(regular_style)
+                ws.cell(r, col['I']).string(floor_area).style(center_bold_small)
 
-                ws.cell(++r, col['A']).string(` PHASE: `).style(bold_style)
-                ws.cell(r, col['B']).string(phase).style(regular_style)
-                ws.cell(r, col['C']).string(` LOT AREA: `).style(bold_style)
-                ws.cell(r, col['D']).string(lot_area).style(regular_style)
-                ws.cell(r, col['E']).string(` FLR AREA: `).style(bold_style)
-                ws.cell(r, col['F'], r, col['G'], true).string(floor_area).style(regular_style)
-                ws.cell(r, col['H']).string(` TYPE OF HOUSE: `).style(bold_style)
-                ws.cell(r, col['I']).string(lot_type).style(regular_style)
-
-                ws.cell(++r, col['A']).string(` PROJECT ADDRESS: `).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string(project_address).style(regular_style)
-                ws.cell(r, col['E'], r, col['F'], true).string(` HOME ADDRESS: `).style(bold_style)
-                ws.cell(r, col['G'], r, col['I'], true).string(home_address).style(regular_style)
-
-                ws.cell(++r, col['A']).string(` EMAIL ADDRESS: `).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string(email_address).style(regular_style)
-                ws.cell(r, col['E'], r, col['F'], true).string(` CONTACT NUMBER: `).style(bold_style)
-                ws.cell(r, col['G'], r, col['I'], true).string(contact_number).style(regular_style)
-
-                ws.cell(++r, col['A']).string(` REALTY: `).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string(realty).style(regular_style)
-                ws.cell(r, col['E'], r, col['F'], true).string(` AGENT: `).style(bold_style)
-                ws.cell(r, col['G'], r, col['I'], true).string(agent).style(regular_style)
+                ws.cell(++r, col['A']).string(` PHASE: `).style(regular_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(phase).style(center_bold_small)
+                ws.cell(r, col['E']).string(` LOT AREA: `).style(regular_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(lot_area).style(center_bold_small)
+                ws.cell(r, col['H']).string(` TYPE OF HOUSE: `).style(regular_style)
+                ws.cell(r, col['I']).string(lot_type).style(center_bold_small)
 
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
 
+                let reg_or_inhouse = {
+                    title: 'REGULAR RESERVATION',
+                    loan: 'PAG-IBIG'
+                }
                 if(reservationType == 1 || reservationType == 8) {
-                    if(reservationType == 1) {
-                        ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET - REGULAR RESERVATION').style(bordered_style).style(aligned_style).style(header_style)
-                    } else if(reservationType == 8) {
-                        ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET - INHOUSE FINANCING').style(bordered_style).style(aligned_style).style(header_style)
+                    if(reservationType == 8) {
+                        reg_or_inhouse.title = 'IN-HOUSE FINANCING'
+                        reg_or_inhouse.loan = 'IN-HOUSE'
                     }
+                    ws.cell(++r, col['A'], r, col['I'], true).string(`COMPUTATION SHEET - ${reg_or_inhouse.title}`).style(bordered_style).style(aligned_style).style(header_style)
+
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (inclusive of transfer fee charges and move-in fee): `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).string(total_contract_price).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(total_contract_price).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['E'], true).string(` REQUIRED EQUITY `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${required_equity_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).string(required_equity_amount).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(required_equity_amount).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` Reservation Fee:`).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).string(reservation_fee).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(reservation_fee).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` Equity Net of Reservation Fee:`).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).string(equity_net_of_reservation_fee).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(equity_net_of_reservation_fee).style(center_regular)
 
                     ws.cell(++r, col['A']).string('Equity Term: ').style(italic_leftaligned_style)
                     ws.cell(r, col['B']).number(equity_months).style(center_bold)
@@ -720,39 +714,39 @@
                     ws.cell(++r, col['A'], r, col['E'], true).string(` Balance Loanable Amount after Equity: `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${balance_loanable_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).string(balance_loanable_amount).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(balance_loanable_amount).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                     ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(aligned_style).style(header_style)
                     ws.cell(++r, col['A'], r, col['I'], true).string(` 1. Failure to pay the first monthly equity after 30 days after reservation date shall mean cancelled & forefeited reservation. `).style(italic_leftaligned_style)
-                    ws.cell(++r, col['A'], r, col['I'], true).string(` 2. The balance amount shall be loanable to bank / PAG-IBIG financinng.`).style(italic_leftaligned_style)
-                    ws.cell(++r, col['A'], r, col['I'], true).string(` 3. For cash payment of balance amount, it shall be paid on or before 30 days after last payment of monthly equity.`).style(italic_leftaligned_style)
-                   
+                    ws.cell(++r, col['A'], r, col['I'], true).string(` 2. For cash payment of balance amount, it shall be paid on or before 30 days after last payment of monthly equity.`).style(italic_leftaligned_style)
+                    ws.cell(++r, col['A'], r, col['I'], true).string(` 3. The balance amount shall be loanable to bank / ${reg_or_inhouse.loan} financinng.`).style(italic_leftaligned_style)
+                                       
                 } else if(reservationType == 2) {
                     ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET with SPOT CASH EQUITY').style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (inclusive of transfer fee charges and move-in fee): `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['E'], true).string(` REQUIRED EQUITY: `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${required_equity_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(required_equity_amount).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(required_equity_amount).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['E'], true).string(` SPOT CASH Equity Less: `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${spot_cash_equity_less_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(spot_cash_equity_less_amount).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(spot_cash_equity_less_amount).style(center_regular)
                     
                     ws.cell(++r, col['A'], r, col['F'], true).string(` Net Equity Less Discount:`).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(net_equity_less_discount).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(net_equity_less_discount).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` Reservation Fee:`).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_regular)
 
                     ws.cell(++r, col['A'], r+1, col['F'], true).string(` Equity Net of Reservation Fee (shall be paid on or before thirty (30) days from reservation date):`).style(italic_rightaligned_style)
                     ws.cell(r, col['G'], r+1, col['G']).string(php).style(italic_rightaligned_style)
@@ -761,7 +755,7 @@
                     ws.cell(++r, col['A'], r, col['E'], true).string(` Balance Loanable Amount after Equity: `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${balance_loanable_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(balance_loanable_amount).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(balance_loanable_amount).style(center_regularv)
 
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                     ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(aligned_style).style(header_style)
@@ -775,20 +769,20 @@
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (inclusive of transfer fee charges and move-in fee): `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['E'], true).string(` SPOT CASH Discount Less: `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${spot_cash_discount_less_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(spot_cash_discount_less_amount).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(spot_cash_discount_less_amount).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(`NET TOTAL Contract Price: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(net_total_contract_price).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(net_total_contract_price).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(`Reservation Fee: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_regular)
 
                      ws.cell(++r, col['A'], r+1, col['F'], true).string(`Balance TCP (shall be paid on or before thirty (30) days from reservation date):`).style(italic_rightaligned_style)
                     ws.cell(r, col['G'], r+1, col['G'], true).string(php).style(italic_rightaligned_style)
@@ -804,15 +798,15 @@
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (inclusive of transfer fee charges and move-in fee): `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(`Reservation Fee: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(`Balance Amount after Reservation Fee: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(balance_amount_after_reservation).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).number(balance_amount_after_reservation).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['E'], true).string(` Balance Amount after Reservation Fee is payable in `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).number(installment_months).style(bordered_style).style(aligned_style).style(header_style)
@@ -849,15 +843,36 @@
                         rate10 = this.formatDisplay((0.01110205 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         rate5 = this.formatDisplay((0.0193328082 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                     } else if(reservationType == 8) {
-                        rate30 = this.formatDisplay((0.006992145 * parseFloat(this.buyer.payment.balance_loanable_amount)))
-                        rate25 = this.formatDisplay((0.007389912 * parseFloat(this.buyer.payment.balance_loanable_amount)))
-                        rate20 = this.formatDisplay((0.008055932 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        // rate30 = this.formatDisplay((0.006992145 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        rate25 = this.formatDisplay((0.008052271 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                        // rate20 = this.formatDisplay((0.008055932 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+        
                         rate15 = this.formatDisplay((0.009270124 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         rate10 = this.formatDisplay((0.011870177 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         rate5 = this.formatDisplay((0.020037949 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                     }
                     
+                if(reservationType == 8){
+                    ws.cell(++r, col['A'], r, col['I'], true).string(`7.50% FIXED INTEREST RATE FOR IN-HOUSE FINANCING FOR 15 YEARS`).style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(++r, col['A'], r, col['E'], true).string(`Computation at 7.50% annual interest rate`).style(italic_leftaligned_style)
 
+                    ws.cell(++r, col['F'], r+2, col['I'], true).string(`A separate CONTRACT OF CONDITIONAL SALE for IN-HOUSE FINANCING shall be signed prior to turn-over of property.`).style(italic_center_style)
+
+
+                    ws.cell(r, col['B'], r, col['C'], true).string(`15 years`).style(italic_leftaligned_style)
+                    ws.cell(r, col['D'], r, col['E'], true).string(`${rate15} / month`).style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['C'], true).string(`10 years`).style(italic_leftaligned_style)
+                    ws.cell(r, col['D'], r, col['E'], true).string(`${rate10} / month`).style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['C'], true).string(`5 years`).style(italic_leftaligned_style)
+                    ws.cell(r, col['D'], r, col['E'], true).string(`${rate5} / month`).style(italic_leftaligned_style)
+
+                    ws.cell(++r, col['A'], r, col['I'], true).string(`8.50% FIXED INTEREST RATE FOR IN-HOUSE FINANCING FOR 25 YEARS`).style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(++r, col['A'], r, col['I'], true).string(`Computation at 8.50% annual interest rate`).style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['C'], true).string(`25 years`).style(italic_leftaligned_style)
+                    ws.cell(r, col['D'], r, col['E'], true).string(`${rate25} / month`).style(italic_leftaligned_style)
+                   
+                    
+                } else {
                     ws.cell(++r, col['A'], r, col['I'], true).string('Sample Computation for Bank/Pag-ibig Financing').style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(++r, col['A'], r, col['I'], true).string(`Sample Computation at 6.00% annual interest rate`).style(italic_leftaligned_style)
                     ws.cell(++r, col['B'], r, col['C'], true).string(`30 years`).style(italic_leftaligned_style)
@@ -876,46 +891,60 @@
                     ws.cell(r, col['H']).string(`${rate5} / month`).style(italic_leftaligned_style)
                 }
 
+                }
+
                 ws.cell(++r, col['A'], r, col['I'], true).string('')
                 ws.cell(++r, col['A'], r, col['I'], true).string('REQUIREMENTS').style(bordered_style).style(aligned_style).style(header_style)
                 ws.cell(++r, col['A'], r, col['B'], true).string('Upon Reservation:').style(italic_leftaligned_style)
                 ws.cell(++r, col['B'], r, col['I'], true).string(` 2 Valid IDs government issued with 3 speciment signature`).style(italic_leftaligned_style)
                 ws.cell(++r, col['B'], r, col['I'], true).string(` TIN number/TIN ID `).style(italic_leftaligned_style)
-                ws.cell(++r, col['B'], r, col['I'], true).string(` RESERVATION FEE / First Monthly `).style(italic_leftaligned_style)
+                ws.cell(++r, col['B'], r++, col['I'], true).string(` RESERVATION FEE / First Monthly `).style(italic_leftaligned_style)
                 
-                ws.cell(++r, col['A'], r, col['B'], true).string('FOR PAG-IBIG/BANK LOAN').style(italic_leftaligned_style)
-                ws.cell(r, col['C'], r, col['I'], true).string("to be given upon developer's request (more or less 5 monts before EQUITY ENDS)").style(italic_leftaligned_style)
+                // in-house financing
+                if(reservationType == 8) {
+                    ws.cell(++r, col['B'], r, col['I'], true).string("To be given upon developer's request (more or less 5 months before EQUITY ENDS)").style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['I'], true).string(`Post dated Check for IN-HOUSE FINANCING`).style(italic_leftaligned_style)
+                }
+                else {
+                    ws.cell(++r, col['A'], r, col['B'], true).string('FOR PAG-IBIG/BANK LOAN').style(italic_leftaligned_style)
+                    ws.cell(r, col['C'], r, col['I'], true).string("To be given upon developer's request (more or less 5 monts before EQUITY ENDS)").style(italic_leftaligned_style)
+                    
+                    ws.cell(++r, col['B'], r, col['I'], true).string(` Certificate of Employment with stated gross income `).style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['I'], true).string(` Latest 3 months payslip signed by HR or Compensation Personnel `).style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['I'], true).string(` 4 pcs 2x2 ID picture `).style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Marriage Certificate if married `).style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['I'], true).string(` Proof Of Billing`).style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['I'], true).string(` Post dated Check (if Pag-ibig will request) and or needed if opt for IN-HOUSE FINANCING `).style(italic_leftaligned_style)
+                    ws.cell(++r, col['B'], r, col['I'], true).string(` Others as may be required by bank/Pag-ibig`).style(italic_leftaligned_style)
                 
-                ws.cell(++r, col['B'], r, col['I'], true).string(` Certificate of Employment with stated gross income `).style(italic_leftaligned_style)
-                ws.cell(++r, col['B'], r, col['I'], true).string(` Latest 3 months payslip signed by HR or Compensation Personnel `).style(italic_leftaligned_style)
-                ws.cell(++r, col['B'], r, col['I'], true).string(` 4 pcs 2x2 ID picture `).style(italic_leftaligned_style)
-                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Marriage Certificate if married `).style(italic_leftaligned_style)
-                ws.cell(++r, col['B'], r, col['I'], true).string(` Photocopy of NSO Birth Certificate `).style(italic_leftaligned_style)
-                ws.cell(++r, col['B'], r, col['I'], true).string(` Proof Of Billing`).style(italic_leftaligned_style)
-                ws.cell(++r, col['B'], r, col['I'], true).string(` Post dated Check (if Pag-ibig will request) and or needed if opt for IN-HOUSE FINANCING `).style(italic_leftaligned_style)
-                ws.cell(++r, col['B'], r, col['I'], true).string(` Others as may be required by bank/Pag-ibig`).style(italic_leftaligned_style)
+                }
+
+                ws.cell(++r, col['A'], r, col['I'], true).string('')
+                ws.cell(++r, col['A'], r, col['I'], true).string('').style(bordered_style).style(aligned_style).style(header_style)
+
                 
                 r+=2
                 ws.cell(++r, col['A'], r, col['C'], true).string(`Confirmed and Accepted By Buyer:`).style(bold_style)
-                ws.cell(++r, col['D'], r, col['F'], true).string(buyer_name).style(bold_style).style(aligned_style)
+                ws.cell(++r, col['D'], r, col['F'], true).string(buyer_name).style(bold_style).style(small_aligned_style)
                 ws.cell(r, col['H']).string('Contact #:').style(italic_leftaligned_style)
-                ws.cell(r, col['I']).string(contact_number).style(bold_style).style(aligned_style)
+                ws.cell(r, col['I']).string(contact_number).style(bold_style).style(small_aligned_style)
                 
                 r+=2
                 ws.cell(++r, col['A'], r, col['C'], true).string(`Broker/Agent's Name and Signature:`).style(bold_style)
-                ws.cell(r, col['D'], r, col['F'], true).string(agent).style(bold_style).style(aligned_style)
+                ws.cell(r, col['D'], r, col['F'], true).string(agent).style(bold_style).style(small_aligned_style)
                 ws.cell(r, col['H']).string('Contact #:').style(italic_leftaligned_style)
-                ws.cell(r, col['I']).string(agent_number).style(bold_style).style(aligned_style)
+                ws.cell(r, col['I']).string(agent_number).style(bold_style).style(small_aligned_style)
                 
                 ws.cell(++r, col['A'], r, col['C'], true).string(`Realty Name:`).style(bold_style)
-                ws.cell(r, col['D'], r, col['F'], true).string(realty).style(bold_style).style(aligned_style)
+                ws.cell(r, col['D'], r, col['F'], true).string(realty).style(bold_style).style(small_aligned_style)
 
                 r+=2
                 ws.cell(++r, col['A']).string(`Account Officer:`).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string('_____________________________________').style(bold_style).style(aligned_style)
+                ws.cell(r, col['B'], r, col['D'], true).string('').style(bold_style).style(small_aligned_style)
 
                 ws.cell(r, col['E'], r, col['F'], true).string(`Confirmed By:`).style(bold_style)
-                ws.cell(r, col['G'], r, col['I'], true).string('_____________________________________').style(bold_style).style(aligned_style)
+                ws.cell(r, col['G'], r, col['I'], true).string('').style(bold_style).style(small_aligned_style)
 
                 
 
@@ -930,7 +959,7 @@
                         wb.write(`${homedir}/TUMABINI-PROJECTS/LAURENCE-VILLE/Reservations/${file_name}.xlsx`); break;
                     case 6:
                         wb.write(`${homedir}/TUMABINI-PROJECTS/FATIMA-HEIGHTS/Reservations/${file_name}.xlsx`); break;    
-                    default: break;
+                    default: alert('WRONG PROJECT ID', this.buyer.project_id); break;
                 }
 
                 // wb.write(`./${file_name}.xlsx`);
