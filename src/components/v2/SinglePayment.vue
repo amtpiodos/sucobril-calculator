@@ -1,6 +1,5 @@
 <template>
-    <div class="my-1 flex overflow-auto bg-gray-100 border border-gray-500 border-opacity-100 rounded-md px-3 py-2
-            hover:bg-gray-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
+    <div :class="style_class">
         <div class="w-4/6 flex">
             <div class="w-full"> <p class="text-center text-xs font-regular uppercase break-all"> {{ formatDate(buyer_payment.payment_date) }} </p> </div>
             <div class="w-full"> <p class="text-center text-xs font-regular break-all"> {{ buyer_payment.remarks }} </p> </div>
@@ -22,6 +21,20 @@
 <script>
     export default ({
         props: ['buyer_payment'],
+        data() {
+            return {
+                style_class: '',
+           }
+        },
+        created() {
+            if(this.buyer_payment.or_ar_no.length <= 0) {
+                this.style_class = "my-1 flex overflow-auto bg-yellow-100 border border-gray-500 border-opacity-100 rounded-md px-3 py-2 hover:bg-yellow-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+            } else {
+                this.style_class = this.buyer_payment.isDeductible
+                    ? "my-1 flex overflow-auto bg-gray-100 border border-gray-500 border-opacity-100 rounded-md px-3 py-2 hover:bg-gray-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+                    : "my-1 flex overflow-auto bg-green-200 border border-gray-500 border-opacity-100 rounded-md px-3 py-2 hover:bg-green-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+            }
+        },
         methods: {
             formatDisplay(value) {
                 return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value

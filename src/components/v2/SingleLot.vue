@@ -43,6 +43,12 @@
                     this.font1 = 'text-center text-gray-500 font-bold'
                     this.font2 = 'text-center text-gray-500'
                     break
+                case 3:
+                    this.status = 'Not For Sale'
+                    this.class_color = 'bg-red-100 p-3 rounded-md'
+                    this.font1 = 'text-center text-gray-500 font-bold'
+                    this.font2 = 'text-center text-gray-500'
+                    break
                 default: break
             } 
         },
@@ -63,9 +69,9 @@
                     alert(`${this.lot_name} is already unavailable.`)
                 } else if(this.lot_status === 2) {
                     alert(`${this.lot_name} is currently on hold.`)
-                }
-                
-                else {
+                } else if(this.lot_status === 3) {
+                    alert(`${this.lot_name} is not for sale.`)
+                } else {
                     alert('Lot status error:', this.lot.id, this.lot.status)
                 }
             }

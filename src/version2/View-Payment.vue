@@ -95,7 +95,7 @@
 
                         </div>
                         <div class="full my-2">
-                            <label-component label="Running Balance:"/>
+                            <label-component label="Running Balance"/>
                             <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                                 <input type="text"
                                     :value="formatDisplay(running_balance)"
@@ -235,6 +235,59 @@
                             </div>
                         </div>
 
+                        <div class="flex my-4">
+                            <div class="w-2/5 border rounded-sm border-gray-500 mr-4 py-4 flex">
+                                <div class="w-1/3 px-8 font-bold"> LEGEND </div>
+                                <!-- <div class="bg-green-200 w-1/6">  </div> -->
+                                <div class="w-2/3 px-4">
+                                    <div class="flex"> <div class="w-1/4 bg-gray-200 py-1 my-1"> </div> <div class="m-1 px-8"> <p class="text-xs"> Regular Payment </p> </div> </div>
+                                    <div class="flex"> <div class="w-1/4 bg-yellow-100 py-1 my-1"> </div> <div class="m-1 px-8"> <p class="text-xs"> For Verification </p> </div> </div>
+                                    <div class="flex"> <div class="w-1/4 bg-green-200 py-1 my-1"> </div> <div class="m-1 px-8"> <p class="text-xs"> Not Deductible </p> </div> </div>
+                                    <div class="flex" v-if="unpaid_months.length > 0"> <div class="w-1/4 bg-red-100 py-1 my-1"> </div> <div class="m-1 px-8"> <p class="text-xs"> No Payment Made </p> </div> </div>
+                                </div>
+                            </div>
+                            <div class="w-3/5 border rounded-sm border-gray-500 ml-4 p-1 px-12 content-center ">
+                                <div class="w-full my-auto">
+                                    <p class="font-bold text-center mt-2"> UNPAID MONTHS (Php {{ formatDisplay(total_unpaid_months) }}) </p>
+                                    <div class="flex items-center mx-auto justify-center mb-2">
+                                        <button class="w-1/4 mx-auto justify-center font-semibold text-xs text-red-500" v-on:click="addUnpaidMonthsEntry()"> + Add Entry </button>
+                                    </div>
+                                    <!-- <p class="italic text-center"> No unpaid bills </p> -->
+                                    <div v-if="unpaid_months.length > 0">
+                                        <div class="flex flex-wrap">
+                                            <div class="w-full flex mx-1">
+                                                <div class="w-1/6"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Description </p> </div>
+                                                <div class="w-1/6"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Amount </p> </div>
+                                                <div class="w-1/6"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Penalty </p> </div>
+                                                <div class="w-1/6"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> TOTAL </p> </div>
+                                                <div class="w-2/6"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Actions </p> </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-wrap w-full">
+                                            <div class="w-full overflow-x-scroll">
+                                                <div class="max-h-24 mx-1">
+                                                    <div class="overflow-y-auto h-full w-full" :key="componentKey">
+                                                        <div v-for="single_unpaid in unpaid_months" :key="single_unpaid.id" class="w-full flex">
+                                                            <div class="w-1/6"> <p class="text-center border border-red-300 bg-red-100 text-sm"> {{ formatMonthYear(single_unpaid.payment_date) }} </p> </div>
+                                                            <div class="w-1/6"> <p class="text-center border border-red-300 bg-red-100 text-sm"> {{ formatDisplay(single_unpaid.amount) }}  </p> </div>
+                                                            <div class="w-1/6"> <p class="text-center border border-red-300 bg-red-100 text-sm"> {{ formatDisplay(single_unpaid.penalty) }}  </p> </div>
+                                                            <div class="w-1/6"> <p class="text-center border border-red-300 bg-red-100 text-sm"> {{ calculateTotalUnpaid(single_unpaid.amount, single_unpaid.penalty) }} </p> </div>
+                                                            <div class="w-2/6 flex place-content-center border border-red-300 bg-red-100 text-sm">
+                                                                <button class="w-1/3 text-center font-semibold text-xs text-green-700" v-on:click="addPaymentForUnpaid(single_unpaid)"> PAY </button> ||
+                                                                <button class="w-1/3 text-center font-semibold text-xs text-blue-500" v-on:click="editUnpaid(single_unpaid)"> EDIT </button> ||
+                                                                <button class="w-1/3 text-center text-xs text-red-500"  v-on:click="deleteUnpaid(single_unpaid)"> DELETE </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-else> <p class="italic text-center text-green-700"> No unpaid bills </p> </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="flex flex-wrap">
                             <div class="w-4/6 flex">
                             <div class="w-full"> <p class="text-center border border-gray-500 bg-gray-100 text-sm font-semibold"> Date </p> </div>
@@ -257,8 +310,21 @@
                         <div class="max-h-96 mx-1">
                             <div class="overflow-y-auto h-full">
                                 <div v-for="single_payment in previous_payees_payments" :key="single_payment.id">
-                                        <single-payment v-bind:buyer_payment="single_payment" v-on:click.native="editPayment(single_payment)"/>
-                                
+                                    <!-- <single-payment v-bind:buyer_payment="single_payment" v-on:click.native="editPayment(single_payment)"/> -->
+                                    <single-payment v-bind:buyer_payment="single_payment" v-on:click.native="showPayment(single_payment.id)"/>
+                                    <div class="flex border border-gray-500 rounded-md p-8 align-middle" v-if="single_payment.id == clickedPaymentID && clickedHasChanged">
+                                        <div class="w-1/2 flex">
+                                            <p class="font-bold"> NOTE/S: </p>
+                                            <p v-if="single_payment.notes" class="">{{ single_payment.notes }} </p>
+                                            <!-- <p else class=""> N/A</p> -->
+                                        </div>
+                                        <div class="w-1/2 text-right place-content-end">
+                                            <!-- <div class="w-2/6 flex place-content-center border border-red-300 bg-red-100 text-sm"> -->
+                                            <!-- <button class="w-1/3 text-center font-semibold text-xs text-green-700" v-on:click="addPaymentForUnpaid(single_unpaid)"> PAY </button> || -->
+                                            <button class="w-1/6 py-2 bg-blue-100 text-center font-semibold text-xs text-blue-500 mr-2" v-on:click="editPayment(single_payment)"> EDIT </button>
+                                            <button class="w-1/6 py-2 bg-red-100 text-center font-semibold text-xs text-red-500 ml-2"  v-on:click="deleteUnpaid(single_payment)"> DELETE </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -309,9 +375,12 @@
                 buyer: this.$route.params.buyer,
                 payment: this.$route.params.buyer.payment,
                 buyer_payments: {},
+
                 previous_payees: [],
                 previous_payees_payments: [],
+                unpaid_months: [],
 
+                total_unpaid_months: 0,
                 total_payments_made: 0,
                 running_equity_balance: 0,
                 running_tcp_balance: 0, //change
@@ -330,7 +399,12 @@
                     password: ''
                 },
                 clickedPaymentID: 0,
-                clickedPayment: {}
+                clickedPayment: {},
+                clickedHasChanged: false,
+
+                componentKey: 0,
+
+                months_list: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
             }
         },
         created() {
@@ -338,6 +412,23 @@
             this.getAllPayments(this.buyer.id)
         },
         methods: {
+            addPaymentForUnpaid(unpaid_payment) {
+                this.$router.push({ name: 'Edit-Payment-Info',
+                                    params: {   id: unpaid_payment.id,
+                                                buyer: this.buyer,
+                                                payment: unpaid_payment,
+                                                isUnpaid: 1,
+                                                isEditingUnpaid: 0,
+                                            }})
+            },
+            addUnpaidMonthsEntry() {
+                this.$router.push({ name: "Add-Payment",
+                                    params: {   id: this.buyer.id,
+                                                buyer: this.buyer,
+                                                payment: this.payment,
+                                                isUnpaid: 1
+                                            }})
+            },
             backToReservationDetails() {
                 if(this.payment.reservation_type == 5
                     || this.payment.reservation_type == 6
@@ -353,16 +444,30 @@
                     alert(`VIEW BUYER ERROR: Incorrect reservation type ${this.buyer_details.reservation_type}`)
                 }
             },
-            firstFunction(id, _callback) {
-                setTimeout(() => {
-                    console.log('First function should run first', id)
-                    _callback()
-                }, 5000)
+            deleteUnpaid(single_unpaid) {
+                if(confirm(`Do you want to delete this unpaid entry?`)) {
+                    ipcRenderer.send('deletePayment', single_unpaid.id)
+                    ipcRenderer.once('deletedPayment', (event, deleted) => {
+                        if(deleted) {
+                            alert('Unpaid payment deleted')
+                            this.getAllPayments()
+                            // this.componentKey += 1
+                        } else {
+                            alert('Unpaid payment DELETE FAILED')
+                        }
+                    })
+                } else {
+                    console.log('CANCELLED')
+                }
             },
-            secondFunction() {
-                this.firstFunction(1, () => {
-                    console.log('Then second function runs after')
-                });
+            showPayment(single_payment_id) {
+                if(single_payment_id !== this.clickedPaymentID) {
+                    this.clickedPaymentID = single_payment_id
+                    // this.clickedHasChanged = true
+                }
+                this.clickedHasChanged = !this.clickedHasChanged
+                console.log('SHOW PAYMENT', this.clickedPaymentID)
+
             },
             editPayment(single_payment) {
                 console.log('EDITING PAYMENT ID', single_payment.id)
@@ -372,10 +477,21 @@
                 // this.isRequestingEdit = true
                 // remove this to re-add credentials
                 this.$router.push({ name: 'Edit-Payment-Info',
-                                            params: {   id: this.clickedPaymentID,
-                                                        buyer: this.buyer,
-                                                        payment: this.clickedPayment
-                                                    }})
+                                    params: {   id: this.clickedPaymentID,
+                                                buyer: this.buyer,
+                                                payment: this.clickedPayment,
+                                                isUnpaid: 0,
+                                                isEditingUnpaid: 0
+                                            }})
+            },
+            editUnpaid(unpaid_payment) {
+                this.$router.push({ name: 'Edit-Payment-Info',
+                                    params: {   id: unpaid_payment.id,
+                                                buyer: this.buyer,
+                                                payment: unpaid_payment,
+                                                isUnpaid: 1,
+                                                isEditingUnpaid: 1,
+                                            }})
             },
             cancelEdit() {
                 // this.clickedPaymentID = 0
@@ -393,7 +509,9 @@
                         this.$router.push({ name: 'Edit-Payment-Info',
                                             params: {   id: this.clickedPaymentID,
                                                         buyer: this.buyer,
-                                                        payment: this.clickedPayment
+                                                        payment: this.clickedPayment,
+                                                        isUnpaid: 0,
+                                                        isEditingUnpaid: 0,
                                                     }})
                         // this.isRequestingEdit = false
                 } else {
@@ -409,8 +527,14 @@
                         ipcRenderer.send('fetchPaymentsList', {id: payee_id})
                         ipcRenderer.once('fetchedPaymentsList', (event2, fetchedPayments) => {
                             fetchedPayments.buyer_payments.forEach(single_payment => {
-                                this.previous_payees_payments.unshift(single_payment)
-                                this.calculateTotalPayments(payee_id, single_payment)
+                                // if is unpaid
+                                if(!single_payment.isUnpaid) {
+                                    this.previous_payees_payments.unshift(single_payment)
+                                    this.calculateTotalPayments(payee_id, single_payment)
+                                } else {
+                                    this.unpaid_months.unshift (single_payment) 
+                                    this.total_unpaid_months = parseFloat(this.total_unpaid_months) + parseFloat(single_payment.amount) + parseFloat(single_payment.penalty)
+                                }
                             })
 
                             payee_id = fetchedBuyer.assumer_id
@@ -418,6 +542,7 @@
                         })
                     })
                 } else {
+                    console.log('unpaid months', this.unpaid_months)
                     console.log('previous_payees', this.previous_payees)
                     console.log('previous_payees_payments', this.previous_payees_payments)
                     // is fetching payments false
@@ -457,18 +582,41 @@
                     }
                 }
             },
+
+            calculateTotalUnpaid(amount, penalty) {
+                return this.formatDisplay(parseFloat(amount) + parseFloat(penalty))
+            },
+            formatParsedFloat(value) {
+                console.log('type of ', value, typeof(value))
+                return value ? parseFloat(value.toString().replace(/,/g, '')).toFixed(2) : value
+            },
             addPayment() {
                 console.log('add payment', this.payment)
-                this.$router.push({ name: "Add-Payment", params: { id: this.buyer.id, buyer: this.buyer, payment: this.payment }})
+                this.$router.push({ name: "Add-Payment", params: {
+                                                            id: this.buyer.id,
+                                                            buyer: this.buyer,
+                                                            payment: this.payment,
+                                                            isUnpaid: 0 }})
             },
             formatDate(value) {
                 return value && value.toDateString() ? value.toDateString().replace(/^\S+\s/,'') : value
             },
+            formatMonthYear(value) {
+                return `${this.months_list[value.getMonth()]} ${value.getFullYear()}`
+                // return value && value.toDateString() ? value.toDateString().replace(/^\S+\s/,'') : value
+            },
             formatDisplay(value) {
-               return value ? `${(value.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}` : value
+                // console.log('FORMA TPE OF', typeof(value))
+                return value && value.toFixed() ? `${(value.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}` : value
+            },
+            // formatDisplay(value) {
+            //    return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value
+            // },
+            formatDecimal(value) {
+                return value ? value.toFixed(2) : value
             },
             exportPayment() {
-                console.log('Exporting Payment for Buyer', this.buyer.last_name, this.buyer.phase)
+                console.log('Exporting Payment for Buyer', this.buyer.last_name, this.buyer.phase, this.running_tcp_balance)
                 // const buyer = this.buyer
                 const { project, block, lot } = this.buyer
                 const phase = this.buyer.phase ? this.buyer.phase : 'N/A'
@@ -479,7 +627,8 @@
                 const buyer_name = `${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
 
                 const homedir = require('os').homedir();
-                const file_name = `${block.name.toUpperCase()} ${lot.name.toUpperCase()} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                const raw_file_name = `${block.name.toUpperCase()} ${lot.name.toUpperCase()} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                const file_name = raw_file_name.replace('/', '-')
 
                 var xl = require('excel4node');
                 var wb = new xl.Workbook();
@@ -549,15 +698,13 @@
                     ws.cell(++r, col['A']).string("TOTAL CONTRACT PRICE").style(bordered_style).style(left_aligned_style).style(bold_style)
                     ws.cell(r, col['B'], r, col['D'], true).string(this.formatDisplay(reservation.total_contract_price)).style(bordered_style).style(left_aligned_style).style(regular_style)
                     ws.cell(r, col['E'], r, col['G'], true).string("TOTAL PAYMENTS MADE").style(bordered_style).style(left_aligned_style).style(bold_style)
-                    ws.cell(r, col['H']).string(this.formatDisplay(this.total_payments_made)).style(bordered_style).style(aligned_style).style(regular_style)
-                    
-                    
+                    ws.cell(r, col['H']).string(this.formatDisplay(this.total_payments_made)).style(bordered_style).style(left_aligned_style).style(regular_style)
 
                 } else if(reservation.reservation_type == 2) {
                     ws.cell(++r, col['A']).string("BUYER'S NAME").style(bordered_style).style(left_aligned_style).style(bold_style)
                     ws.cell(r, col['B'], r, col['D'], true).string(buyer_name).style(left_aligned_style).style(regular_style)
                     ws.cell(r, col['E'], r, col['G'], true).string("REQUIRED EQUITY").style(bordered_style).style(left_aligned_style).style(bold_style)
-                    ws.cell(r, col['H']).string(this.formatDisplay(reservation.required_equity_amount)).style(bordered_style).style(aligned_style).style(regular_style)
+                    ws.cell(r, col['H']).string(this.formatDisplay(reservation.required_equity_amount)).style(bordered_style).style(left_aligned_style).style(regular_style)
                     
                     ws.cell(++r, col['A']).string("PHASE").style(bordered_style).style(left_aligned_style).style(bold_style)
                     ws.cell(r, col['B'], r, col['D'], true).string(phase).style(bordered_style).style(left_aligned_style).style(regular_style)
@@ -571,16 +718,21 @@
                     
                     ws.cell(++r, col['A']).string("LOT").style(bordered_style).style(left_aligned_style).style(bold_style)
                     ws.cell(r, col['B'], r, col['D'], true).string(lot.name).style(bordered_style).style(left_aligned_style).style(regular_style)
-                    ws.cell(r, col['E'], r, col['G'], true).string("RUNNING EQUITY BALANCE").style(bordered_style).style(left_aligned_style).style(bold_style)
-                    ws.cell(r, col['H']).string(this.formatDisplay(this.running_equity_balance)).style(bordered_style).style(left_aligned_style).style(regular_style)
-                    
-                    ws.cell(++r, col['A']).string("RESERVATION FEE").style(bordered_style).style(left_aligned_style).style(bold_style)
-                    ws.cell(r, col['B'], r, col['D'], true).string(this.formatDisplay(reservation.reservation_fee)).style(bordered_style).style(aligned_style).style(regular_style)
+                    // ws.cell(r, col['E'], r, col['G'], true).string("RUNNING EQUITY BALANCE").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    // ws.cell(r, col['H']).string(this.formatDisplay(this.running_equity_balance)).style(bordered_style).style(left_aligned_style).style(regular_style)
+                    ws.cell(r, col['E'], r, col['G'], true).string(`DISCOUNT (${reservation.spot_cash_equity_less_percentage}%)`).style(bordered_style).style(left_aligned_style).style(bold_style)
+                    ws.cell(r, col['H']).string(this.formatDisplay(reservation.spot_cash_equity_less_amount)).style(bordered_style).style(left_aligned_style).style(regular_style)
+
+                    // ws.cell(++r, col['A']).string("RESERVATION FEE").style(bordered_style).style(left_aligned_style).style(bold_style)
+                    // ws.cell(r, col['B'], r, col['D'], true).string(this.formatDisplay(reservation.reservation_fee)).style(bordered_style).style(aligned_style).style(regular_style)
+                    ws.cell(++r, col['A']).string(`NET EQUITY PAYABLE`).style(bordered_style).style(left_aligned_style).style(bold_style)
+                    ws.cell(r, col['B'], r, col['D'], true).string(this.formatDisplay(reservation.net_equity_less_discount)).style(bordered_style).style(left_aligned_style).style(regular_style)
                     ws.cell(r, col['E'], r, col['G'], true).string("RUNNING TCP BALANCE").style(bordered_style).style(left_aligned_style).style(bold_style)
-                    ws.cell(r, col['H']).string(this.formatDisplay(this.running_tcp_balance)).style(bordered_style).style(left_aligned_style).style(regular_style)
+                    // ws.cell(r, col['H']).string(this.formatDisplay(this.running_tcp_balance)).style(bordered_style).style(left_aligned_style).style(regular_style)
+                    ws.cell(r, col['H']).string(this.formatDisplay(this.running_balance)).style(bordered_style).style(left_aligned_style).style(regular_style)
                     
                     ws.cell(++r, col['A']).string("TOTAL CONTRACT PRICE").style(bordered_style).style(left_aligned_style).style(bold_style)
-                    ws.cell(r, col['B'], r, col['D'], true).string(this.formatDisplay(reservation.total_contract_price)).style(bordered_style).style(aligned_style).style(regular_style)
+                    ws.cell(r, col['B'], r, col['D'], true).string(this.formatDisplay(reservation.total_contract_price)).style(bordered_style).style(left_aligned_style).style(regular_style)
                     ws.cell(r, col['E'], r, col['G'], true).string("TOTAL PAYMENTS MADE").style(bordered_style).style(left_aligned_style).style(bold_style)
                     ws.cell(r, col['H']).string(this.formatDisplay(this.total_payments_made)).style(bordered_style).style(left_aligned_style).style(regular_style)
                     

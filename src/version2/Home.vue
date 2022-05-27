@@ -293,7 +293,7 @@
                                 
                                 
                                 this.isFetchingDetails = false
-                                ipcRenderer.send('fetchHouseAndLotPayment', buyer.id)
+                                ipcRenderer.send('fetchHouseAndLotPayment', this.buyer_details.id)
                                 ipcRenderer.once('fetchedHouseAndLotPayment', (event, data) => {
                                     this.reservation_details = data
                                 })

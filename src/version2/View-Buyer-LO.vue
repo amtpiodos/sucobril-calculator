@@ -46,12 +46,22 @@
                         <div class="w-1/2"> <readonly-form label="Contact No." :value="buyer.contact_number" /> </div>
                         <div class="w-1/2"> <readonly-form label="Email Address" :value="buyer.email_address" /> </div>
                     </div>
-                    <div class="full px-4"> <readonly-form label="Realty's Name" :value="buyer.realty" /> </div>
+                    <!-- <div class="full px-4"> <readonly-form label="Realty's Name" :value="buyer.realty" /> </div> -->
                     <!-- <div class="full px-4"> <readonly-form label="Agent's Name" :value="buyer.agent" /> </div> -->
+                    <!-- <div class="full px-4"> <readonly-form label="Realty's Name" :value="realty.name" /> </div> -->
+                    
+                    <div class="full px-4">
+                        <readonly-form label="Realty's Name" :value="realty.name" v-if="realty.id > 0" />
+                        <readonly-form label="Realty's Name" :value="buyer.realty" v-else />
+                        <!-- <readonly-form label="Realty's Name" :value="realty" v-else /> -->
+                    </div>
                     <div class="flex px-4 gap-4">
                         <div class="w-1/2"> <readonly-form label= "Agent's Name" :value="buyer.agent" /> </div>
                         <div class="w-1/2"> <readonly-form label= "Agent's Number" :value="buyer.agent_number" /> </div>
                     </div>
+                    <div class="w-full px-4"> <readonly-form label= "Encoded by:" :value="encoder.name" /> </div>
+                    <div class="w-full px-4"> <readonly-form label= "Confirmed by:" :value="manager.name" /> </div>
+                      
                 </div>
 
                 <div class="flex items-center mx-auto justify-center gap-8 my-4">
@@ -232,10 +242,21 @@
                 buyer: {},
                 payment: {},
                 isFetchingData: true,
-                isEditing: false
+                isEditing: false,
+
+                encoder: {},
+                manager: {},
+                realty: {},
+
+                all_encoders: [],
+                all_managers: [],
+                all_realties: []
             }
         },
         created() {
+            this.getAllEncoders()
+            this.getAllManagers()
+            this.getAllRealties()
             this.getDetails(this.$route.params.id)
         },
         methods: {
@@ -264,6 +285,28 @@
                 console.log('Viewing payment for buyer ', this.buyer.id)
                 this.$router.push({ name: "View-Payment", params: { id: this.buyer.id, buyer: this.buyer }})
             },
+
+
+            getAllEncoders() {
+                ipcRenderer.send('fetchAllEncoders')
+                ipcRenderer.once('fetchedAllEncoders', (event, data) => {
+                    this.all_encoders = data
+                })
+            },
+            getAllManagers() {
+                ipcRenderer.send('fetchAllManagers')
+                ipcRenderer.once('fetchedAllManagers', (event, data) => {
+                    this.all_managers = data
+                })
+            },
+            getAllRealties(){
+                ipcRenderer.send('fetchAllRealties')
+                ipcRenderer.once('fetchedAllRealties', (event, data) => {
+                    this.all_realties = data
+                })
+            },
+
+
             getDetails(id) {
                 this.isFetching = true,
                 ipcRenderer.send('fetchBuyer', id)
@@ -271,6 +314,9 @@
                     this.buyer = data
                     ipcRenderer.send('fetchLot', this.buyer.lot_id)
                     ipcRenderer.once('fetchedLot', (event, data) => {
+                        this.encoder = this.all_encoders.find(encoder => encoder.id === this.buyer.encoder_id)
+                        this.manager = this.all_managers.find(manager => manager.id === this.buyer.manager_id)
+                        this.realty = this.all_realties.find(realty => realty.id === this.buyer.realty_id)
                         this.buyer.lot = data
                         ipcRenderer.send('fetchBlock', this.buyer.lot.block_id)
                         ipcRenderer.once('fetchedBlock', (event, data) => {
@@ -333,39 +379,59 @@
             },
             exportDetails() {
                 console.log('exporting details')
-                const file_name = `${this.buyer.block.name} ${this.buyer.lot.name} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                const raw_file_name = `${this.buyer.block.name} ${this.buyer.lot.name} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                const file_name = raw_file_name.replace('/', '-')
                 const homedir = require('os').homedir();
 
                 const reservationType = this.buyer.reservation_type
                 const php = ` Php `
                 const buyer_name = `${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}`
-                const block_name = `${this.buyer.block.name}`
+                const block_name = this.buyer.block.name.replace('Block ', '')
                 const project_name = `${this.buyer.project.name}`
-                const lot_name = `${this.buyer.lot.name}`
+                const lot_name = this.buyer.lot.name.replace('Lot ', '')
                 const price_per_sqm = `${this.buyer.lot.price_per_sqm}`
+                
                 const phase = `${this.buyer.phase}`
-                const lot_area = this.buyer.lot.lot_area
-                const lot_type = this.buyer.lot.lot_type
-                const realty = this.buyer.realty
-                const agent = this.buyer.agent
+                const lot_area = `${this.buyer.lot.lot_area} SQM.`
+                const lot_type = this.buyer.lot.lot_type.toString()
+                // const realty = this.buyer.realty
+                
+                // const agent = this.buyer.agent
+                // const agent_number = this.buyer.agent_number.toString()
+                // const project_address = this.buyer.project.location
+                // const home_address = this.buyer.home_address
+                // const email_address = this.buyer.email_address
+                // const contact_number = this.buyer.contact_number
+
+                const agent = this.buyer.agent.toUpperCase()
                 const agent_number = this.buyer.agent_number.toString()
-                const project_address = this.buyer.project.location
-                const home_address = this.buyer.home_address
-                const email_address = this.buyer.email_address
-                const contact_number = this.buyer.contact_number
-                const total_contract_price = this.buyer.payment.total_contract_price
-                const installment_months = this.buyer.payment.installment_months
-                const monthly_installment = this.buyer.payment.monthly_installment
-                const reservation_fee = this.buyer.payment.reservation_fee
-                const spot_downpayment = this.buyer.payment.spot_downpayment
-                const new_tcp_less_downpayment = this.buyer.payment.new_tcp_less_downpayment
+                const project_address = this.buyer.project.location.toUpperCase()
+                const home_address = this.buyer.home_address.toUpperCase()
+                const email_address = this.buyer.email_address.toUpperCase()
+                const contact_number = this.buyer.contact_number.toString()
+
+                const realty = this.realty.name
+                const account_officer = this.encoder.name
+                const approver = this.manager.name
+
+                const reservation_date = this.formatDate(this.buyer.payment.date)
+                const total_contract_price = this.buyer.payment.total_contract_price ? this.formatDisplay(this.buyer.payment.total_contract_price) : this.buyer.payment.total_contract_price
+                const installment_months = this.buyer.payment.installment_months.toString()
+                const monthly_installment = this.buyer.payment.monthly_installment ? this.formatDisplay(this.buyer.payment.monthly_installment) : this.buyer.payment.monthly_installment
+                const reservation_fee = this.buyer.payment.reservation_fee ? this.formatDisplay(this.buyer.payment.reservation_fee) : this.buyer.payment.reservation_fee
+                const spot_downpayment = this.buyer.payment.spot_downpayment ? this.formatDisplay(this.buyer.payment.spot_downpayment) : this.buyer.payment.spot_downpayment 
+                const new_tcp_less_downpayment = this.buyer.payment.new_tcp_less_downpayment ? this.formatDisplay(this.buyer.payment.new_tcp_less_downpayment) : this.buyer.payment.new_tcp_less_downpayment 
                 const spot_cash_discount_percentage = this.buyer.payment.spot_cash_discount_percentage
-                const spot_cash_discount_amount = this.buyer.payment.spot_cash_discount_amount
-                const new_tcp_less_discount = this.buyer.payment.new_tcp_less_discount
+                const spot_cash_discount_amount = this.buyer.payment.spot_cash_discount_amount ? this.formatDisplay(this.buyer.payment.spot_cash_discount_amount) : this.buyer.payment.spot_cash_discount_amount
+                const new_tcp_less_discount = this.buyer.payment.new_tcp_less_discount ? this.formatDisplay(this.buyer.payment.new_tcp_less_discount ) : this.buyer.payment.new_tcp_less_discount
+
+                // const realty = this.realty.name
+                // const account_officer = this.encoder.name
+                // const approver = this.manager.name
 
                 const monthly_start_date = this.formatDate(this.buyer.payment.monthly_start_date)
                 const monthly_end_date = this.formatDate(this.buyer.payment.monthly_end_date)
-                const reservation_date = this.formatDate(this.buyer.payment.date)
+                // const reservation_date = this.formatDate(this.buyer.payment.date)
                 
                 var wb = new excel4node.Workbook()
                 var ws = wb.addWorksheet('RA - FORM 2A LO')
@@ -387,7 +453,8 @@
                 const bold_header_style = wb.createStyle({ font: { color: '#000000', size: 13, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
                 const bordered_style = wb.createStyle({ border: { left: { style: 'thin', color: '#000000' }, right: { style: 'thin', color: '#000000' }, top: { style: 'thin', color: '#000000' }, bottom: { style: 'thin', color: '#000000' }} })
                 const aligned_style = wb.createStyle({ alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
-                const small_aligned_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
+                const small_aligned_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' },  border: { bottom: { style: 'thin', color: '#000000' } } })  
+                // const small_aligned_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true }, alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } })
                 const header_style = wb.createStyle({ font: { color: '#000000', size: 11, bold: true } })
                 const bold_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: true } })
                 const regular_style = wb.createStyle({ font: { color: '#000000', size: 9, bold: false } })
@@ -410,18 +477,17 @@
                 ws.cell(r, col['H']).string(` RESERVATION DATE: `).style(bold_style)
                 ws.cell(r, col['I']).string(reservation_date).style(regular_style)
                 
-
                 ws.cell(++r, col['A']).string(` PROJECT NAME: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)
                 ws.cell(r, col['E']).string(` LOT: `).style(bold_style)
                 ws.cell(r, col['F'], r, col['G'], true).string(lot_name).style(regular_style)
-                ws.cell(r, col['H']).string(` PRICE PER SQ.M: `).style(bold_style)
+                ws.cell(r, col['H']).string(` PRICE PER SQM: `).style(bold_style)
                 ws.cell(r, col['I']).string(price_per_sqm).style(regular_style)
 
                 ws.cell(++r, col['A']).string(` PHASE: `).style(bold_style)
                 ws.cell(r, col['B'], r, col['D'], true).string(phase).style(regular_style)
                 ws.cell(r, col['E']).string(` LOT AREA: `).style(bold_style)
-                ws.cell(r, col['F'], r, col['G'], true).number(lot_area).style(regular_style)
+                ws.cell(r, col['F'], r, col['G'], true).string(lot_area).style(regular_style)
                 ws.cell(r, col['H']).string(` TYPE OF LOT: `).style(bold_style)
                 ws.cell(r, col['I']).string(lot_type).style(regular_style)
 
@@ -448,18 +514,18 @@
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (includes transfer fee): `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(total_contract_price).style(center_bold)
 
-                    ws.cell(++r, col['A'], r, col['D'], true).string(` Monthly Installment for: `).style(italic_rightaligned_style)
-                    ws.cell(r, col['E']).number(installment_months).style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(++r, col['A'], r, col['D'], true).string(` Monthly Installment for `).style(italic_rightaligned_style)
+                    ws.cell(r, col['E']).string(installment_months).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['F']).string(` months: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(monthly_installment).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(monthly_installment).style(center_bold)
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` First Monthly Installment Fee / Reservation Fee: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(reservation_fee).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                     ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Starts: `).style(italic_rightaligned_style)
@@ -473,21 +539,21 @@
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (includes transfer fee): `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(total_contract_price).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` Spot Downpayment / Advance Downpayment: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(spot_downpayment).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(spot_downpayment).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` NEW TCP Less Downpayment `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(new_tcp_less_downpayment).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(new_tcp_less_downpayment).style(center_bold)
                     
                     ws.cell(++r, col['A'], r, col['D'], true).string(` Monthly Installment for: `).style(italic_rightaligned_style)
-                    ws.cell(r, col['E']).number(installment_months).style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(r, col['E']).string(installment_months).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['F']).string(` months: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(monthly_installment).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(monthly_installment).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                     ws.cell(++r, col['A'], r, col['B'], true).string(` Monthly Installment Starts: `).style(italic_rightaligned_style)
@@ -501,16 +567,16 @@
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (includes transfer fee): `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(total_contract_price).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['E'], true).string(` Spot Cash Discount: `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${spot_cash_discount_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(spot_cash_discount_amount).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(spot_cash_discount_amount).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` NEW TCP Less Discount`).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(new_tcp_less_discount).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(new_tcp_less_discount).style(center_bold)
                 } else {
                     
                 }
@@ -531,6 +597,12 @@
                 ws.cell(r, col['I']).string(contact_number).style(bold_style).style(small_aligned_style)
                 
                 r+=2
+                ws.cell(++r, col['A'], r, col['C'], true).string(`Confirmed and Accepted By Buyer:`).style(bold_style)
+                ws.cell(++r, col['D'], r, col['F'], true).string(buyer_name).style(bold_style).style(small_aligned_style)
+                ws.cell(r, col['H']).string('Contact #:').style(italic_leftaligned_style)
+                ws.cell(r, col['I']).string(contact_number).style(bold_style).style(small_aligned_style)
+                
+                r+=2
                 ws.cell(++r, col['A'], r, col['C'], true).string(`Broker/Agent's Name and Signature:`).style(bold_style)
                 ws.cell(r, col['D'], r, col['F'], true).string(agent).style(bold_style).style(small_aligned_style)
                 ws.cell(r, col['H']).string('Contact #:').style(italic_leftaligned_style)
@@ -541,10 +613,24 @@
 
                 r+=2
                 ws.cell(++r, col['A']).string(`Account Officer:`).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string('_____________________________________').style(bold_style).style(small_aligned_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(account_officer).style(bold_style).style(small_aligned_style)
 
                 ws.cell(r, col['E'], r, col['F'], true).string(`Confirmed By:`).style(bold_style)
-                ws.cell(r, col['G'], r, col['I'], true).string('_____________________________________').style(bold_style).style(small_aligned_style)
+                ws.cell(r, col['G'], r, col['I'], true).string(approver).style(bold_style).style(small_aligned_style)
+                // ws.cell(++r, col['A'], r, col['C'], true).string(`Broker/Agent's Name and Signature:`).style(bold_style)
+                // ws.cell(r, col['D'], r, col['F'], true).string(agent).style(bold_style).style(small_aligned_style)
+                // ws.cell(r, col['H']).string('Contact #:').style(italic_leftaligned_style)
+                // ws.cell(r, col['I']).string(agent_number).style(bold_style).style(small_aligned_style)
+                
+                // ws.cell(++r, col['A'], r, col['C'], true).string(`Realty Name:`).style(bold_style)
+                // ws.cell(r, col['D'], r, col['F'], true).string(realty).style(bold_style).style(small_aligned_style)
+
+                // r+=2
+                // ws.cell(++r, col['A']).string(`Account Officer:`).style(bold_style)
+                // ws.cell(r, col['B'], r, col['D'], true).string('_____________________________________').style(bold_style).style(small_aligned_style)
+
+                // ws.cell(r, col['E'], r, col['F'], true).string(`Confirmed By:`).style(bold_style)
+                // ws.cell(r, col['G'], r, col['I'], true).string('_____________________________________').style(bold_style).style(small_aligned_style)
 
                 // wb.write(`./${this.buyer.last_name}, ${this.buyer.first_name} ${this.buyer.middle_initial}.xlsx`);
                 switch(this.buyer.project.id) {

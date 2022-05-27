@@ -190,7 +190,9 @@ ipcMain.on('addHouseAndLotBuyer', (event, data) => {
       home_address: buyer.home_address,
       lot_id: unit.lot_id,
       project_id: unit.project_id,
-      realty: unit.realty_name,
+      realty_id: unit.realty_id,
+      encoder_id: unit.encoder_id,
+      manager_id: unit.manager_id,
       agent: unit.agent_name,
       agent_number: unit.agent_number,
       status: 1,
@@ -377,6 +379,37 @@ ipcMain.on('fetchBuyersList', (event, data) => {
   }).finally(() => knex.destroy())
 })
 
+// FUNCTION TO FETCH ALL REALTIES
+ipcMain.on('fetchAllRealties', (event, data) => {
+  console.log('Fetching ALL REALTIES')
+  const knex = getDbConnection()
+  knex('Realty').select().then((realties) => {
+    event.reply('fetchedAllRealties', realties)
+  }).catch((err) => { console.log('FETCH ALL REALTIES ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH ALL ENCODERS
+ipcMain.on('fetchAllEncoders', (event, data) => {
+  console.log('Fetching ALL ENCODERS')
+  const knex = getDbConnection()
+  knex('Encoder').select().then((encoders) => {
+    event.reply('fetchedAllEncoders', encoders)
+  }).catch((err) => { console.log('FETCH ALL ENCODERS ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+// FUNCTION TO FETCH ALL MANAGERS
+ipcMain.on('fetchAllManagers', (event, data) => {
+  console.log('Fetching ALL MANAGERS')
+  const knex = getDbConnection()
+  knex('Manager').select().then((managers) => {
+    event.reply('fetchedAllManagers', managers)
+  }).catch((err) => { console.log('FETCH ALL MANAGERS ERROR', err) ; throw err
+  }).finally(() => knex.destroy())
+})
+
+
 // FUNCTION TO FETCH ALL PAYMENTS OF ALL BUYERS
 ipcMain.on('fetchAllPayments', (event, data) => {
   console.log('Fetching ALL PAYMENTS OF ALL BUYERS')
@@ -386,6 +419,19 @@ ipcMain.on('fetchAllPayments', (event, data) => {
   }).catch((err) => { console.log('Fetching ALL PAYMENTS OF ALL BUYERS ERROR', err) ; throw err
   }).finally(() => knex.destroy())
 })
+
+// FUNCTION TO DELETE A PAYMENT (unpaid or not)
+ipcMain.on('deletePayment', (event, data) => {
+  const knex = getDbConnection()
+  knex('buyer_payment').where({id: data}).del()
+  .then(() => {
+    event.reply('deletedPayment', { response: 1 })
+  }).catch((err) => {
+    event.reply('deletedPayment', { response: 0 })
+    console.log('DELETE PAYMENT LIST ERROR', err) ; throw err
+}).finally(() => knex.destroy())
+})
+
 
 // FUNCTION TO FETCH ALL ACTIVE OR INACTIVE BUYERS
 ipcMain.on('fetchActiveOrInactiveBuyersList', (event, data) => {
@@ -649,7 +695,9 @@ ipcMain.on('addPayment', (event, data) => {
       amount: payment.amount,
       penalty: payment.penalty,
       remarks: payment.remarks,
+      notes: payment.notes,
       isDeductible: payment.isDeductible,
+      isUnpaid: payment.isUnpaid,
       buyer_id: id
     })
     .then(() => {
@@ -660,6 +708,8 @@ ipcMain.on('addPayment', (event, data) => {
       console.log('FOREFEITING OF BUYER ERROR', err) ; throw err
     }).finally(() => knex.destroy())
 })
+
+// FUNCTION TO DELETE PAYMENT
 
 // FUNCTION TO FETCH BUYER PAYMENTS IN DB
 ipcMain.on('fetchPaymentsList', (event, data) => {
@@ -818,6 +868,7 @@ ipcMain.on('editBuyerInfo', (event, data) => {
       case 2:
       case 3:
       case 4:
+      case 8:
         payment_db = 'hl_payment'
         break;
       case 5:
@@ -1111,18 +1162,7 @@ function makeBuyerInactive(id) {
 //   return knex
 // }
 
-// function getDbConnection() {
-//   const knex = require('knex')({
-//     client: 'mysql',
-//     connection: {
-//       host: '192.168.1.41',
-//       user: 'user',
-//       password: 'password',
-//       database: 'tumabini_db'
-//     }
-//   })
-//   return knex
-// }
+// e
 
 function getDbConnection() {
   console.log('getdbconnection')

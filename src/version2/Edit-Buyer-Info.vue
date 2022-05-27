@@ -64,11 +64,23 @@
                         <div class="w-1/2"> <input-form label="Contact No." v-model="edited_buyer.contact_number" /> </div>
                         <div class="w-1/2"> <input-form label="Email Address" v-model="edited_buyer.email_address" /> </div>
                     </div>
-                    <div class="full px-4"> <input-form label="Realty's Name" v-model="edited_buyer.realty" /> </div>
+                    <!-- <div class="full px-4"> <input-form label="Realty's Name" v-model="edited_buyer.realty" /> </div> -->
+                    <div class="full px-4">
+                        <label-component label="REALTY"/>
+                        <model-select :options="all_realties" v-model="edited_buyer.realty_id" placeholder="Select REALTY" class="m-1"> </model-select>
+                    </div>
                     <div class="flex px-4 gap-4">
                         <div class="w-1/2"> <input-form label= "Agent's Name" v-model="edited_buyer.agent" /> </div>
                         <div class="w-1/2"> <input-form label= "Agent's Number" v-model="edited_buyer.agent_number" /> </div>
-                    </div> 
+                    </div>
+                    <div class="full px-4">
+                        <label-component label="ENCODED BY:"/>
+                        <model-select :options="all_encoders" v-model="edited_buyer.encoder_id" placeholder="Select ACCOUNT OFFICER" class="m-1"> </model-select>
+                    </div>
+                    <div class="full px-4">
+                        <label-component label="CONFIRMED BY:"/>
+                        <model-select :options="all_managers" v-model="edited_buyer.manager_id" placeholder="Select APPROVER" class="m-1"> </model-select>
+                    </div>
                 </div>
 
                 <!-- REGULAR RESERVATION EDIT  -->
@@ -551,9 +563,11 @@
     import PasswordForm from '../components/v2/PasswordForm'
     import ReadOnlyForm from '../components/v2/ReadonlyInput'
     import Datepicker from 'vuejs-datepicker'
+    import { ModelSelect } from 'vue-search-select'
+    import 'vue-search-select/dist/VueSearchSelect.css'
     // import { VueTailwindModal } from 'vue-tailwind-modal'
     // import XLSX from 'xlsx'
-    import excel4node from 'excel4node'
+    // import excel4node from 'excel4node'
 
     export default ({
         components: {
@@ -563,6 +577,7 @@
             'password-form': PasswordForm,
             'readonly-form': ReadOnlyForm,
             'datepicker': Datepicker,
+            'model-select': ModelSelect
             // 'vue-tailwind-modal': VueTailwindModal
         },
         data() {
@@ -587,9 +602,16 @@
                     this.$route.params.buyer.payment.balance_loanable_amount 
                     == this.$route.params.buyer.payment.new_balance_loanable_amount
                     ? false : true,
+
+                all_encoders: [],
+                all_managers: [],
+                all_realties: []
             }
         },
         created() {
+            this.getAllEncoders()
+            this.getAllManagers()
+            this.getAllRealties()
             console.log('this id EDIT BUYER', this.$route.params.id, this.$route.params.buyer)
             this.unedited_buyer = this.getDetails(this.$route.params.id)
         },
@@ -623,19 +645,38 @@
                     }
                 }
 
+                // for(const payment_field in edited_payment) {
+                //     if(edited_payment[payment_field] !== unedited_payment[payment_field]) {
+                //         if(typeof(edited_payment[payment_field]) !== 'object') {
+                //             this.changed_payment[payment_field] = isNaN(this.formatParsedFloat(edited_payment[payment_field]))
+                //             ? edited_payment[payment_field] : (this.formatParsedFloat(edited_payment[payment_field]))
+                //         } else {
+                            
+                //             if(payment_field == 'date' || payment_field == 'equity_end_date' || payment_field == 'equity_start_date') {
+                //                 console.log('edited vs unedited', edited_payment[payment_field], typeof(edited_payment[payment_field]), unedited_payment[payment_field], typeof(unedited_payment[payment_field]))
+                //                 this.changed_payment[payment_field] = edited_payment[payment_field]
+                //             }
+                //         }
+                //     }
+                // }
+
                 for(const payment_field in edited_payment) {
-                    if(edited_payment[payment_field] !== unedited_payment[payment_field]) {
-                        if(typeof(edited_payment[payment_field]) !== 'object') {
+                    if(typeof(edited_payment[payment_field]) !== 'object') {
+                        if(edited_payment[payment_field] !== unedited_payment[payment_field]) {
                             this.changed_payment[payment_field] = isNaN(this.formatParsedFloat(edited_payment[payment_field]))
                             ? edited_payment[payment_field] : (this.formatParsedFloat(edited_payment[payment_field]))
-                        } else {
-                            if(payment_field == 'date' || payment_field == 'equity_end_date' || payment_field == 'equity_start_date') {
-                                console.log('edited vs unedited', edited_payment[payment_field], typeof(edited_payment[payment_field]), unedited_payment[payment_field], typeof(unedited_payment[payment_field]))
+                        }
+                    } else {
+                        console.log('EDIT FIELD IS AN OBJECT')
+                        if(payment_field == 'date' || payment_field == 'equity_end_date' || payment_field == 'equity_start_date') {
+                            if(edited_payment[payment_field].getMonth() !== unedited_payment[payment_field].getMonth()) {
+                                console.log('EDITED vs UNEDITED', payment_field, edited_payment[payment_field].getMonth(), unedited_payment[payment_field].getMonth())
                                 this.changed_payment[payment_field] = edited_payment[payment_field]
                             }
                         }
                     }
                 }
+
 
                 _callback()
             },
@@ -649,6 +690,35 @@
             formatParsedFloat(value) {
                 return value ? parseFloat((value.toString()).replace(/,/g, '')).toFixed(2) : value
             },
+
+
+            getAllEncoders() {
+                ipcRenderer.send('fetchAllEncoders')
+                ipcRenderer.once('fetchedAllEncoders', (event, data) => {
+                    data.forEach(encoder => {
+                        this.all_encoders.push({value: encoder.id, text: encoder.name})
+                    })
+                })
+            },
+            getAllManagers() {
+                ipcRenderer.send('fetchAllManagers')
+                ipcRenderer.once('fetchedAllManagers', (event, data) => {
+                    data.forEach(manager => {
+                        this.all_managers.push({value: manager.id, text: manager.name})
+                    })
+                })
+            },
+            getAllRealties(){
+                ipcRenderer.send('fetchAllRealties')
+                ipcRenderer.once('fetchedAllRealties', (event, data) => {
+                    data.forEach(realty => {
+                        this.all_realties.push({value: realty.id, text: realty.name})
+                    })
+                })
+            },
+
+
+
             updateBLA(event){
                 this.edited_payment.balance_loanable_amount = event.target.value
                 console.log('UpdateBLA', this.edited_payment.balance_loanable_amount, typeof(this.edited_payment.balance_loanable_amount))
@@ -702,6 +772,7 @@
                 const formatted_reservation_fee = this.formatParsedFloat(this.edited_payment.reservation_fee)
                 
                 switch(this.unedited_payment.reservation_type) {
+                    case 8:
                     case 1:
                         if(this.dateIsBefore2021 && this.unedited_buyer.project.id == 4) {
                             console.log('is before 2021 and laurence ville')

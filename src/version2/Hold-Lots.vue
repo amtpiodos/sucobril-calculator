@@ -124,7 +124,7 @@
                 incorrectCredentials: false,
                 credentials: {
                     username: 'MANAGER',
-                    password: 'password123'
+                    password: 'TredM@2022'
                 },
                 inputtedCredentials: {
                     username: '',

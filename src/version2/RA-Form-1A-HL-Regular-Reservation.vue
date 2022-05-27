@@ -66,10 +66,22 @@
                         <div class="w-1/2"> <input-form label="Contact No." v-model="buyer.contact_number" /> </div>
                         <div class="w-1/2"> <input-form label="Email Address" v-model="buyer.email_address" /> </div>
                     </div>
-                    <div class="full px-4"> <input-form label="Realty's Name" v-model="unit.realty_name" /> </div>
+                    <!-- <div class="full px-4"> <input-form label="Realty's Name" v-model="unit.realty_name" /> </div> -->
+                    <div class="full px-4">
+                         <label-component label="REALTY"/>
+                         <model-select :options="realty_options" v-model="unit.realty_id" placeholder="Select REALTY" class="m-1"> </model-select>
+                    </div>
                     <div class="flex px-4 gap-4">
                         <div class="w-1/2"> <input-form label= "Agent's Name" v-model="unit.agent_name" /> </div>
                         <div class="w-1/2"> <input-form label= "Agent's Number" v-model="unit.agent_number" /> </div>
+                    </div>
+                    <div class="full px-4">
+                        <label-component label="ENCODED BY:"/>
+                        <model-select :options="encoder_options" v-model="unit.encoder_id" placeholder="Select ENCODER" class="m-1"> </model-select>
+                    </div>
+                    <div class="full px-4">
+                        <label-component label="CONFIRMED BY:"/>
+                        <model-select :options="manager_options" v-model="unit.manager_id" placeholder="Select MANAGER" class="m-1"> </model-select>
                     </div>
                 </div>
 
@@ -265,6 +277,8 @@
     import Label from '../components/v2/Label'
     import Datepicker from 'vuejs-datepicker'
     import VueHotelDatepicker from '@northwalker/vue-hotel-datepicker'
+    import { ModelSelect } from 'vue-search-select'
+    import 'vue-search-select/dist/VueSearchSelect.css'
 
 
     export default({
@@ -274,10 +288,15 @@
             'readonly-form': ReadOnlyForm,
             'label-component': Label,
             'datepicker': Datepicker,
-            'vue-date-picker': VueHotelDatepicker
+            'vue-date-picker': VueHotelDatepicker,
+            'model-select': ModelSelect
         },
         data() {
             return {
+                realty_options: [],
+                encoder_options: [],
+                manager_options: [],
+
                 dateToCheck: new Date('01/01/2021'),
                 dateIsBefore2021: false,
                 isSubmittingData: false,
@@ -299,6 +318,9 @@
                     project_address: this.$store.state.unit.project.project_location,
                     price_per_sqm: '',
                     realty_name: '',
+                    realty_id: 0,
+                    encoder_id: 0,
+                    manager_id: 0,
                     agent_name: '',
                     agent_number: '',
                     floor_area: '',
@@ -326,6 +348,9 @@
             }
         },
         created() {
+            this.getAllRealties()
+            this.getAllEncoders()
+            this.getAllManagers()
             let today = new Date()
             this.payment_details.date = today
             return this.payment_details.date
@@ -364,6 +389,34 @@
             formatParsedFloat(value) {
                 return value ? parseFloat(value.replace(/,/g, '')).toFixed(2) : value
             },
+
+
+            getAllEncoders() {
+                ipcRenderer.send('fetchAllEncoders')
+                ipcRenderer.once('fetchedAllEncoders', (event, data) => {
+                    data.forEach(encoder => {
+                        this.encoder_options.push({value: encoder.id, text: encoder.name})
+                    })
+                })
+            },
+            getAllManagers() {
+                ipcRenderer.send('fetchAllManagers')
+                ipcRenderer.once('fetchedAllManagers', (event, data) => {
+                    data.forEach(manager => {
+                        this.manager_options.push({value: manager.id, text: manager.name})
+                    })
+                })
+            },
+            getAllRealties(){
+                ipcRenderer.send('fetchAllRealties')
+                ipcRenderer.once('fetchedAllRealties', (event, data) => {
+                    data.forEach(realty => {
+                        this.realty_options.push({value: realty.id, text: realty.name})
+                    })
+                })
+            },
+
+
             // upDate(event) {
             //     console.log('Updating dates', event)
             //     this.payment_details.equity_start_date = event.start

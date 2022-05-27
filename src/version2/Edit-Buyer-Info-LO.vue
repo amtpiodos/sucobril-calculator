@@ -66,11 +66,23 @@
                         <div class="w-1/2"> <input-form label="Contact No." v-model="edited_buyer.contact_number" /> </div>
                         <div class="w-1/2"> <input-form label="Email Address" v-model="edited_buyer.email_address" /> </div>
                     </div>
-                    <div class="full px-4"> <input-form label="Realty's Name" v-model="edited_buyer.realty" /> </div>
+                    <!-- <div class="full px-4"> <input-form label="Realty's Name" v-model="edited_buyer.realty" /> </div> -->
+                    <div class="full px-4">
+                        <label-component label="REALTY"/>
+                        <model-select :options="all_realties" v-model="edited_buyer.realty_id" placeholder="Select REALTY" class="m-1"> </model-select>
+                    </div>
                     <div class="flex px-4 gap-4">
                         <div class="w-1/2"> <input-form label= "Agent's Name" v-model="edited_buyer.agent" /> </div>
                         <div class="w-1/2"> <input-form label= "Agent's Number" v-model="edited_buyer.agent_number" /> </div>
-                    </div> 
+                    </div>
+                    <div class="full px-4">
+                        <label-component label="ENCODED BY:"/>
+                        <model-select :options="all_encoders" v-model="edited_buyer.encoder_id" placeholder="Select ACCOUNT OFFICER" class="m-1"> </model-select>
+                    </div>
+                    <div class="full px-4">
+                        <label-component label="CONFIRMED BY:"/>
+                        <model-select :options="all_managers" v-model="edited_buyer.manager_id" placeholder="Select APPROVER" class="m-1"> </model-select>
+                    </div>
                 </div>
     
                 <div v-if="unedited_payment.reservation_type == 5">
@@ -83,8 +95,7 @@
                                 <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                                     <input type="text"
                                         class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase"
-                                        :value="formatDisplay(edited_payment.total_contract_price)"
-                                        readonly disabled>
+                                        :value="formatDisplay(edited_payment.total_contract_price)">
                                 </div>
                             </div> </div>
                         </div>
@@ -141,7 +152,6 @@
                             <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                                 <input type="text"
                                     :value="formatDisplay(edited_payment.total_contract_price)"
-                                    readonly disabled
                                     class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase">
                             </div>
                         </div> </div>
@@ -217,7 +227,6 @@
                             <div class="mt-1 relative rounded-md shadow-sm border-gray-200">
                                 <input type="numbers"
                                     :value="formatDisplay(edited_payment.total_contract_price)"
-                                    readonly disabled
                                     class="w-full py-2 px-4 text-md border border-gray-200 rounded-md uppercase"></div>
                             </div>
                         </div>
@@ -288,9 +297,11 @@
     import PasswordForm from '../components/v2/PasswordForm'
     import ReadOnlyForm from '../components/v2/ReadonlyInput'
     import Datepicker from 'vuejs-datepicker'
+    import { ModelSelect } from 'vue-search-select'
+    import 'vue-search-select/dist/VueSearchSelect.css'
     // import { VueTailwindModal } from 'vue-tailwind-modal'
     // import XLSX from 'xlsx'
-    import excel4node from 'excel4node'
+    // import excel4node from 'excel4node'
 
     export default ({
         components: {
@@ -300,6 +311,7 @@
             'password-form': PasswordForm,
             'readonly-form': ReadOnlyForm,
             'datepicker': Datepicker,
+            'model-select': ModelSelect
             // 'vue-tailwind-modal': VueTailwindModal
         },
         data() {
@@ -316,10 +328,17 @@
                 unedited_payment: '',
                 changed_payment: {},
 
-                isFetchingData: true
+                isFetchingData: true,
+
+                all_encoders: [],
+                all_managers: [],
+                all_realties: []
             }
         },
         created() {
+            this.getAllEncoders()
+            this.getAllManagers()
+            this.getAllRealties()
             console.log('this id EDIT BUYER LO', this.$route.params.id, this.$route.params.buyer)
             this.unedited_buyer = this.getDetails(this.$route.params.id)
         },
@@ -361,6 +380,31 @@
                 }
 
                 _callback()
+            },
+
+            getAllEncoders() {
+                ipcRenderer.send('fetchAllEncoders')
+                ipcRenderer.once('fetchedAllEncoders', (event, data) => {
+                    data.forEach(encoder => {
+                        this.all_encoders.push({value: encoder.id, text: encoder.name})
+                    })
+                })
+            },
+            getAllManagers() {
+                ipcRenderer.send('fetchAllManagers')
+                ipcRenderer.once('fetchedAllManagers', (event, data) => {
+                    data.forEach(manager => {
+                        this.all_managers.push({value: manager.id, text: manager.name})
+                    })
+                })
+            },
+            getAllRealties(){
+                ipcRenderer.send('fetchAllRealties')
+                ipcRenderer.once('fetchedAllRealties', (event, data) => {
+                    data.forEach(realty => {
+                        this.all_realties.push({value: realty.id, text: realty.name})
+                    })
+                })
             },
             
             formatDisplay(value) {
@@ -447,7 +491,7 @@
                 this.edited_unit.price_per_sqm = this.formatParsedFloat(this.edited_unit.price_per_sqm)
 
                 this.edited_payment.total_contract_price = this.formatParsedFloat(formatted_lot_area * formatted_price_per_sqm)
-
+                
                 // const formatted_total_contract_price = this.formatParsedFloat(this.edited_payment.total_contract_price)
                 // const formatted_reservation_fee = this.formatParsedFloat(this.edited_payment.reservation_fee)
                 const formatted_spot_downpayment = this.formatParsedFloat(this.edited_payment.spot_downpayment)

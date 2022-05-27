@@ -71,11 +71,18 @@
                             <div class="w-1/2"> <readonly-form label="Contact No." :value="buyer.contact_number" /> </div>
                             <div class="w-1/2"> <readonly-form label="Email Address" :value="buyer.email_address" /> </div>
                         </div>
-                        <div class="full px-4"> <readonly-form label="Realty's Name" :value="buyer.realty" /> </div>
+                        <div class="full px-4">
+                            <readonly-form label="Realty's Name" :value="realty.name" v-if="realty.id > 0" />
+                            <readonly-form label="Realty's Name" :value="buyer.realty" v-else />
+                            <!-- <readonly-form label="Realty's Name" :value="realty" v-else /> -->
+                        </div>
                         <div class="flex px-4 gap-4">
                             <div class="w-1/2"> <readonly-form label= "Agent's Name" :value="buyer.agent" /> </div>
                             <div class="w-1/2"> <readonly-form label= "Agent's Number" :value="buyer.agent_number" /> </div>
                         </div>
+                        <div class="w-full px-4"> <readonly-form label= "Encoded by:" :value="encoder.name" /> </div>
+                        <div class="w-full px-4"> <readonly-form label= "Confirmed by:" :value="manager.name" /> </div>
+                      
                         <!-- <div class="full px-4"> <readonly-form label="Agent's Name" :value="buyer.agent" /> </div> -->
                     </div>
                     <div class="flex items-center mx-auto justify-center gap-8 my-4">
@@ -411,11 +418,19 @@
                     password: ''
                 },
 
-                previous_payees: [],
-                previous_payees_payments: []
+                encoder: {},
+                manager: {},
+                realty: {},
+
+                all_encoders: [],
+                all_managers: [],
+                all_realties: []
             }
         },
         created() {
+            this.getAllEncoders()
+            this.getAllManagers()
+            this.getAllRealties()
             this.getDetails(this.$route.params.id)
         },
         methods: {
@@ -460,13 +475,37 @@
             },
             formatDate(value) {
                 return value && value.toDateString() ? value.toDateString().replace(/^\S+\s/,'') : value
-                // return value.toDateString().replace(/^\S+\s/,'')
             },
             formatDisplay(value) {
                 return value ? value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value
-            //    return value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-            //    return `₱ ${(value.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
             },
+
+
+            getAllEncoders() {
+                ipcRenderer.send('fetchAllEncoders')
+                ipcRenderer.once('fetchedAllEncoders', (event, data) => {
+                    this.all_encoders = data
+                    console.log('this.all ENCODERS', this.all_encoders)
+                })
+            },
+            getAllManagers() {
+                ipcRenderer.send('fetchAllManagers')
+                ipcRenderer.once('fetchedAllManagers', (event, data) => {
+                    this.all_managers = data
+                    console.log('this.all MANAGERS', this.all_managers)
+                })
+            },
+            getAllRealties(){
+                ipcRenderer.send('fetchAllRealties')
+                ipcRenderer.once('fetchedAllRealties', (event, data) => {
+                    this.all_realties = data
+                    console.log('this.all REALTIES', this.all_realties)
+                })
+            },
+
+
+
+
             
             viewPayment() {
                 console.log('Viewing payment for buyer ', this.buyer.id)
@@ -481,6 +520,9 @@
                     this.buyer = data
                     ipcRenderer.send('fetchLot', this.buyer.lot_id)
                     ipcRenderer.once('fetchedLot', (event, data) => {
+                        this.encoder = this.all_encoders.find(encoder => encoder.id === this.buyer.encoder_id)
+                        this.manager = this.all_managers.find(manager => manager.id === this.buyer.manager_id)
+                        this.realty = this.all_realties.find(realty => realty.id === this.buyer.realty_id)
                         this.buyer.lot = data
                         ipcRenderer.send('fetchBlock', this.buyer.lot.block_id)
                         ipcRenderer.once('fetchedBlock', (event, data) => {
@@ -496,11 +538,10 @@
                             ipcRenderer.send('fetchProject', this.buyer.block.project_id)
                             ipcRenderer.once('fetchedProject', (event, data) => {
                                 this.buyer.project = data
-                                ipcRenderer.send('fetchHouseAndLotPayment', this.buyer.id)
+                                ipcRenderer.send('fetchHouseAndLotPayment', id)
                                 ipcRenderer.once('fetchedHouseAndLotPayment', (event, data) => {
-                                    this.buyer.payment = data
+                                    this.buyer.payment = data                                    
                                     console.log('this.buyer in VIEW DETAILS HOUSE AND LOT BUYER', this.buyer)
-                                    console.log('============= payment', data)
                                     this.dateIsBefore2021 = this.buyer.payment.date < this.dateToCheck ? true : false
                                     this.isFetchingData = false
                                 })
@@ -548,7 +589,8 @@
             },
             exportDetails() {
                 // const buyer_name = `${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
-                const file_name = `${this.buyer.block.name} ${this.buyer.lot.name} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                const raw_file_name = `${this.buyer.block.name} ${this.buyer.lot.name} - ${(this.buyer.last_name.toUpperCase())}, ${this.buyer.first_name.toUpperCase()} ${this.buyer.middle_initial.toUpperCase()}`
+                const file_name = raw_file_name.replace('/', '-')
                 // const home_address = this.buyer.home_address.toUpperCase()
                 // const email_address = this.buyer.email_address.toUpperCase()
                 // const contact_number = this.buyer.contact_number.toUpperCase()
@@ -559,23 +601,26 @@
                 const reservationType = this.buyer.reservation_type
                 const php = ` Php `
                 const buyer_name = `${this.buyer.first_name} ${this.buyer.middle_initial} ${this.buyer.last_name}`
-                // const block_name = `${this.buyer.block.name}`
                 const block_name = this.buyer.block.name.replace('Block ', '')
                 const project_name = `${this.buyer.project.name}`
                 // const lot_name = `${this.buyer.lot.name}`
                 const lot_name = this.buyer.lot.name.replace('Lot ', '')
                 const price_per_sqm = `${this.buyer.lot.price_per_sqm}`
                 const phase = `${this.buyer.phase}`
-                const lot_area = `${this.buyer.lot.lot_area} SQ.M`
-                const floor_area = `${this.buyer.lot.floor_area} SQ.M`
+                const lot_area = `${this.buyer.lot.lot_area} SQM.`
+                const floor_area = `${this.buyer.lot.floor_area} SQM.`
                 const lot_type = this.buyer.lot.lot_type.toString()
-                const realty = this.buyer.realty.toUpperCase()
+                // const realty = this.buyer.realty.toUpperCase()
                 const agent = this.buyer.agent.toUpperCase()
                 const agent_number = this.buyer.agent_number.toString()
                 const project_address = this.buyer.project.location.toUpperCase()
                 const home_address = this.buyer.home_address.toUpperCase()
                 const email_address = this.buyer.email_address.toUpperCase()
                 const contact_number = this.buyer.contact_number.toString()
+
+                const realty = this.realty.name
+                const account_officer = this.encoder.name
+                const approver = this.manager.name
 
                 const reservation_date = this.formatDate(this.buyer.payment.date)
                 const total_contract_price = this.buyer.payment.total_contract_price ? this.formatDisplay(this.buyer.payment.total_contract_price) : this.buyer.payment.total_contract_price
@@ -728,34 +773,34 @@
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (inclusive of transfer fee charges and move-in fee): `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(total_contract_price).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['E'], true).string(` REQUIRED EQUITY: `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${required_equity_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(required_equity_amount).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(required_equity_amount).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['E'], true).string(` SPOT CASH Equity Less: `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${spot_cash_equity_less_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(spot_cash_equity_less_amount).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(spot_cash_equity_less_amount).style(center_regular)
                     
                     ws.cell(++r, col['A'], r, col['F'], true).string(` Net Equity Less Discount:`).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(net_equity_less_discount).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(net_equity_less_discount).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` Reservation Fee:`).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(reservation_fee).style(center_regular)
 
                     ws.cell(++r, col['A'], r+1, col['F'], true).string(` Equity Net of Reservation Fee (shall be paid on or before thirty (30) days from reservation date):`).style(italic_rightaligned_style)
                     ws.cell(r, col['G'], r+1, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r++, col['H'], r, col['I'], true).number(equity_net_of_reservation_fee).style(center_bold)
+                    ws.cell(r++, col['H'], r, col['I'], true).string(equity_net_of_reservation_fee).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['E'], true).string(` Balance Loanable Amount after Equity: `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${balance_loanable_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(balance_loanable_amount).style(center_regularv)
+                    ws.cell(r, col['H'], r, col['I'], true).string(balance_loanable_amount).style(center_regularv)
 
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                     ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(aligned_style).style(header_style)
@@ -769,53 +814,53 @@
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (inclusive of transfer fee charges and move-in fee): `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(total_contract_price).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['E'], true).string(` SPOT CASH Discount Less: `).style(italic_rightaligned_style)
                     ws.cell(r, col['F']).string(`${spot_cash_discount_less_percentage}%`).style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(spot_cash_discount_less_amount).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(spot_cash_discount_less_amount).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(`NET TOTAL Contract Price: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(net_total_contract_price).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(net_total_contract_price).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(`Reservation Fee: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(reservation_fee).style(center_regular)
 
                      ws.cell(++r, col['A'], r+1, col['F'], true).string(`Balance TCP (shall be paid on or before thirty (30) days from reservation date):`).style(italic_rightaligned_style)
                     ws.cell(r, col['G'], r+1, col['G'], true).string(php).style(italic_rightaligned_style)
-                    ws.cell(r++, col['H'], r, col['I'], true).number(balance_total_contract_price).style(center_bold)
+                    ws.cell(r++, col['H'], r, col['I'], true).string(balance_total_contract_price).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                     ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(aligned_style).style(header_style)
                     ws.cell(++r, col['A'], r, col['I'], true).string(` 1. Failure to pay the TCP Balance 30 days after reservation date shall mean cancelled & forefeited reservation. `).style(italic_leftaligned_style)
                 
                 } else if(reservationType == 4) {
-                    ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET with SPOT CASH TCP').style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(++r, col['A'], r, col['I'], true).string('COMPUTATION SHEET with DEFERRED CASH').style(bordered_style).style(aligned_style).style(header_style)
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(` TOTAL CONTRACT PRICE (inclusive of transfer fee charges and move-in fee): `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(total_contract_price).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(total_contract_price).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(`Reservation Fee: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(reservation_fee).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(reservation_fee).style(center_regular)
 
                     ws.cell(++r, col['A'], r, col['F'], true).string(`Balance Amount after Reservation Fee: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(balance_amount_after_reservation).style(center_regular)
+                    ws.cell(r, col['H'], r, col['I'], true).string(balance_amount_after_reservation).style(center_regular)
 
-                    ws.cell(++r, col['A'], r, col['E'], true).string(` Balance Amount after Reservation Fee is payable in `).style(italic_rightaligned_style)
-                    ws.cell(r, col['F']).number(installment_months).style(bordered_style).style(aligned_style).style(header_style)
-                    ws.cell(r, col['G']).string('months').style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).string('').style(center_bold)
+                    ws.cell(++r, col['A'], r, col['D'], true).string(` Balance Amount after Reservation Fee is payable in `).style(italic_rightaligned_style)
+                    ws.cell(r, col['E']).string(installment_months).style(bordered_style).style(aligned_style).style(header_style)
+                    ws.cell(r, col['F'], r, col['G'], true).string('months').style(italic_rightaligned_style)
+                    ws.cell(r, col['H'], r, col['I'], true).string(monthly_installment).style(center_bold)
                     
                     ws.cell(++r, col['A'], r, col['F'], true).string(`Monthly Installment Amount: `).style(italic_rightaligned_style)
                     ws.cell(r, col['G']).string(php).style(italic_rightaligned_style)
-                    ws.cell(r, col['H'], r, col['I'], true).number(balance_amount_after_reservation).style(center_bold)
+                    ws.cell(r, col['H'], r, col['I'], true).string(balance_amount_after_reservation).style(center_bold)
 
                     ws.cell(++r, col['A'], r, col['I'], true).string('')
                     ws.cell(++r, col['A'], r, col['I'], true).string('NOTE/S').style(aligned_style).style(header_style)
@@ -835,18 +880,24 @@
                     let rate10 = 0
                     let rate5 = 0
  
-                    if(reservationType == 1 || reservationType == 4) {
+                    if(reservationType == 1) {
                         rate30 = this.formatDisplay((0.005995505 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         rate25 = this.formatDisplay((0.006443014 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         rate20 = this.formatDisplay((0.007164311 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         rate15 = this.formatDisplay((0.008438568 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         rate10 = this.formatDisplay((0.01110205 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         rate5 = this.formatDisplay((0.0193328082 * parseFloat(this.buyer.payment.balance_loanable_amount)))
+                    } else if(reservationType == 4) {
+                        rate30 = this.formatDisplay((0.005995505 * parseFloat(this.buyer.payment.balance_amount_after_reservation)))
+                        rate25 = this.formatDisplay((0.006443014 * parseFloat(this.buyer.payment.balance_amount_after_reservation)))
+                        rate20 = this.formatDisplay((0.007164311 * parseFloat(this.buyer.payment.balance_amount_after_reservation)))
+                        rate15 = this.formatDisplay((0.008438568 * parseFloat(this.buyer.payment.balance_amount_after_reservation)))
+                        rate10 = this.formatDisplay((0.01110205 * parseFloat(this.buyer.payment.balance_amount_after_reservation)))
+                        rate5 = this.formatDisplay((0.0193328082 * parseFloat(this.buyer.payment.balance_amount_after_reservation)))
                     } else if(reservationType == 8) {
                         // rate30 = this.formatDisplay((0.006992145 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         rate25 = this.formatDisplay((0.008052271 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         // rate20 = this.formatDisplay((0.008055932 * parseFloat(this.buyer.payment.balance_loanable_amount)))
-        
                         rate15 = this.formatDisplay((0.009270124 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         rate10 = this.formatDisplay((0.011870177 * parseFloat(this.buyer.payment.balance_loanable_amount)))
                         rate5 = this.formatDisplay((0.020037949 * parseFloat(this.buyer.payment.balance_loanable_amount)))
@@ -941,10 +992,10 @@
 
                 r+=2
                 ws.cell(++r, col['A']).string(`Account Officer:`).style(bold_style)
-                ws.cell(r, col['B'], r, col['D'], true).string('').style(bold_style).style(small_aligned_style)
+                ws.cell(r, col['B'], r, col['D'], true).string(account_officer).style(bold_style).style(small_aligned_style)
 
                 ws.cell(r, col['E'], r, col['F'], true).string(`Confirmed By:`).style(bold_style)
-                ws.cell(r, col['G'], r, col['I'], true).string('').style(bold_style).style(small_aligned_style)
+                ws.cell(r, col['G'], r, col['I'], true).string(approver).style(bold_style).style(small_aligned_style)
 
                 
 

@@ -339,7 +339,7 @@
                 ws.cell(r, col['B'], r, col['D'], true).string(project_name).style(regular_style)
                 ws.cell(r, col['E']).string(` LOT: `).style(bold_style)
                 ws.cell(r, col['F'], r, col['G'], true).string(lot_name).style(regular_style)
-                ws.cell(r, col['H']).string(` PRICE PER SQ.M: `).style(bold_style)
+                ws.cell(r, col['H']).string(` PRICE PER SQM: `).style(bold_style)
                 ws.cell(r, col['I']).string(price_per_sqm).style(regular_style)
 
                 ws.cell(++r, col['A']).string(` PHASE: `).style(bold_style)
