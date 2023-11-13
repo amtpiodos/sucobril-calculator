@@ -1,0 +1,4 @@
+THINGS TO CONSIDER:
+
+1. error checking in forms
+2. if "add buyer" is clicked again after a successful insert in db

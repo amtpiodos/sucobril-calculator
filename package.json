@@ -1,0 +1,61 @@
+{
+  "name": "sucobril-fomula",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps"
+  },
+  "main": "background.js",
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/vue-fontawesome": "^2.0.6",
+    "@ianwalter/vuex-reset": "^4.3.4",
+    "@northwalker/vue-hotel-datepicker": "^2.0.7",
+    "@vueform/multiselect": "^2.3.3",
+    "core-js": "^3.6.5",
+    "excel4node": "^1.7.2",
+    "exceljs": "^4.3.0",
+    "file-saver": "^2.0.5",
+    "knex": "^0.95.6",
+    "mysql": "^2.18.1",
+    "sqlite3": "^5.0.2",
+    "vue": "^2.6.11",
+    "vue-heroicons": "^0.9.4",
+    "vue-multiselect": "^2.1.6",
+    "vue-router": "^3.2.0",
+    "vue-scroll-table": "^0.2.11",
+    "vue-search-select": "^2.9.5",
+    "vue-tailwind-icons": "^0.1.2",
+    "vue-tailwind-modal": "^1.0.7",
+    "vuejs-datepicker": "^1.6.2",
+    "vuex": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/vue-select": "^3.16.0",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "autoprefixer": "^9.8.6",
+    "electron": "^11.0.0",
+    "electron-devtools-installer": "^3.1.0",
+    "postcss": "^7.0.35",
+    "stylelint-config-recommended": "^5.0.0",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.1.2",
+    "vue-cli-plugin-electron-builder": "~2.0.0-rc.6",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "peerDependencies": {
+    "postcss": "^8.3.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
