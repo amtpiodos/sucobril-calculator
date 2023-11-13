@@ -4,7 +4,13 @@ import router from './router'
 import store from './store'
 import './assets/index.css'
 
+import HeroIcon from 'vue-heroicons'
+import { clipboard } from 'vue-heroicons/src/icons'
+
 Vue.config.productionTip = false
+
+HeroIcon.add([clipboard])
+Vue.use(HeroIcon)
 
 new Vue({
   router,

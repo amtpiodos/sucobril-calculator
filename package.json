@@ -1,6 +1,6 @@
 {
-  "name": "tumabini-app",
-  "version": "2.2.0",
+  "name": "sucobril-fomula",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -25,9 +25,12 @@
     "mysql": "^2.18.1",
     "sqlite3": "^5.0.2",
     "vue": "^2.6.11",
+    "vue-heroicons": "^0.9.4",
     "vue-multiselect": "^2.1.6",
     "vue-router": "^3.2.0",
     "vue-scroll-table": "^0.2.11",
+    "vue-search-select": "^2.9.5",
+    "vue-tailwind-icons": "^0.1.2",
     "vue-tailwind-modal": "^1.0.7",
     "vuejs-datepicker": "^1.6.2",
     "vuex": "^3.4.0"
